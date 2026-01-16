@@ -102,11 +102,11 @@ if (!customElements.get('loop-subscription-widget')) {
         try {
           this.showLoading();
           
-          // First try to get selling plans from Liquid data (most reliable)
-          const plansFromLiquid = this.getSellingPlansFromLiquid();
+          // First try to get selling plans from product JSON endpoint (most reliable)
+          const plansFromJSON = await this.getSellingPlansFromLiquid();
           
-          if (plansFromLiquid.length > 0) {
-            this.sellingPlans = plansFromLiquid;
+          if (plansFromJSON.length > 0) {
+            this.sellingPlans = plansFromJSON;
             this.renderSellingPlans();
             return;
           }
@@ -142,62 +142,122 @@ if (!customElements.get('loop-subscription-widget')) {
         }
       }
 
-      getSellingPlansFromLiquid() {
+      async getSellingPlansFromLiquid() {
         const plans = [];
         
-        // Get main product selling plans
+        // Get main product selling plans from JSON endpoint
         const mainProductData = this.querySelector('[data-selling-plans-data]');
         if (mainProductData) {
-          try {
-            const data = JSON.parse(mainProductData.textContent);
-            if (data.sellingPlans && data.sellingPlans.length > 0) {
-              data.sellingPlans.forEach(plan => {
-                plans.push({
-                  id: plan.id.toString(),
-                  gid: `gid://shopify/SellingPlan/${plan.id}`,
-                  name: plan.name,
-                  description: plan.description || '',
-                  billingPolicy: {
-                    interval: plan.billingInterval?.toUpperCase() || 'MONTH',
-                    intervalCount: parseInt(plan.billingIntervalCount) || 1
-                  },
-                  pricingPolicies: plan.pricingPolicies || [],
-                  productId: data.productId.toString(),
-                  variantId: data.variantId.toString(),
-                  variantPrice: data.variantPrice
-                });
-              });
+          const productHandle = mainProductData.dataset.productHandle;
+          if (productHandle) {
+            try {
+              const response = await fetch(`/products/${productHandle}.js`);
+              if (response.ok) {
+                const product = await response.json();
+                const variant = product.variants?.[0];
+                
+                // Extract selling plans from product JSON
+                // Shopify product JSON includes selling_plan_groups
+                if (product.selling_plan_groups && product.selling_plan_groups.length > 0) {
+                  product.selling_plan_groups.forEach(group => {
+                    if (group.selling_plans && group.selling_plans.length > 0) {
+                      group.selling_plans.forEach(plan => {
+                        // Parse billing policy from plan options
+                        const billingOption = plan.options?.[0];
+                        const interval = billingOption?.name || 'MONTH';
+                        const intervalCount = parseInt(billingOption?.values?.[0]) || 1;
+                        
+                        // Parse pricing policies
+                        const pricingPolicies = [];
+                        if (plan.price_adjustments && plan.price_adjustments.length > 0) {
+                          plan.price_adjustments.forEach(adjustment => {
+                            pricingPolicies.push({
+                              adjustmentType: adjustment.value_type === 'percentage' ? 'PERCENTAGE' : 'FIXED_AMOUNT',
+                              adjustmentValue: adjustment.value_type === 'percentage' 
+                                ? { percentage: adjustment.value }
+                                : { fixedValue: { amount: adjustment.value, currencyCode: 'USD' } }
+                            });
+                          });
+                        }
+                        
+                        plans.push({
+                          id: plan.id.toString(),
+                          gid: `gid://shopify/SellingPlan/${plan.id}`,
+                          name: plan.name,
+                          description: plan.description || '',
+                          billingPolicy: {
+                            interval: interval.toUpperCase(),
+                            intervalCount: intervalCount
+                          },
+                          pricingPolicies: pricingPolicies,
+                          productId: product.id.toString(),
+                          variantId: variant?.id?.toString() || null,
+                          variantPrice: variant ? variant.price * 100 : 0
+                        });
+                      });
+                    }
+                  });
+                }
+              }
+            } catch (error) {
+              console.error('Error fetching main product selling plans:', error);
             }
-          } catch (error) {
-            console.error('Error parsing main product selling plans:', error);
           }
         }
         
-        // Get 3-month product selling plans
+        // Get 3-month product selling plans from JSON endpoint
         const threeMonthData = this.querySelector('[data-three-month-selling-plans-data]');
         if (threeMonthData) {
-          try {
-            const data = JSON.parse(threeMonthData.textContent);
-            if (data.sellingPlans && data.sellingPlans.length > 0) {
-              data.sellingPlans.forEach(plan => {
-                plans.push({
-                  id: plan.id.toString(),
-                  gid: `gid://shopify/SellingPlan/${plan.id}`,
-                  name: plan.name,
-                  description: plan.description || '',
-                  billingPolicy: {
-                    interval: plan.billingInterval?.toUpperCase() || 'MONTH',
-                    intervalCount: parseInt(plan.billingIntervalCount) || 1
-                  },
-                  pricingPolicies: plan.pricingPolicies || [],
-                  productId: data.productId.toString(),
-                  variantId: data.variantId.toString(),
-                  variantPrice: data.variantPrice
-                });
-              });
+          const productHandle = threeMonthData.dataset.productHandle;
+          if (productHandle) {
+            try {
+              const response = await fetch(`/products/${productHandle}.js`);
+              if (response.ok) {
+                const product = await response.json();
+                const variant = product.variants?.[0];
+                
+                if (product.selling_plan_groups && product.selling_plan_groups.length > 0) {
+                  product.selling_plan_groups.forEach(group => {
+                    if (group.selling_plans && group.selling_plans.length > 0) {
+                      group.selling_plans.forEach(plan => {
+                        const billingOption = plan.options?.[0];
+                        const interval = billingOption?.name || 'MONTH';
+                        const intervalCount = parseInt(billingOption?.values?.[0]) || 1;
+                        
+                        const pricingPolicies = [];
+                        if (plan.price_adjustments && plan.price_adjustments.length > 0) {
+                          plan.price_adjustments.forEach(adjustment => {
+                            pricingPolicies.push({
+                              adjustmentType: adjustment.value_type === 'percentage' ? 'PERCENTAGE' : 'FIXED_AMOUNT',
+                              adjustmentValue: adjustment.value_type === 'percentage' 
+                                ? { percentage: adjustment.value }
+                                : { fixedValue: { amount: adjustment.value, currencyCode: 'USD' } }
+                            });
+                          });
+                        }
+                        
+                        plans.push({
+                          id: plan.id.toString(),
+                          gid: `gid://shopify/SellingPlan/${plan.id}`,
+                          name: plan.name,
+                          description: plan.description || '',
+                          billingPolicy: {
+                            interval: interval.toUpperCase(),
+                            intervalCount: intervalCount
+                          },
+                          pricingPolicies: pricingPolicies,
+                          productId: product.id.toString(),
+                          variantId: variant?.id?.toString() || null,
+                          variantPrice: variant ? variant.price * 100 : 0
+                        });
+                      });
+                    }
+                  });
+                }
+              }
+            } catch (error) {
+              console.error('Error fetching 3-month product selling plans:', error);
             }
-          } catch (error) {
-            console.error('Error parsing 3-month product selling plans:', error);
           }
         }
         
