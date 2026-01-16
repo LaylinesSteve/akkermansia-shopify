@@ -102,7 +102,17 @@ if (!customElements.get('loop-subscription-widget')) {
         try {
           this.showLoading();
           
-          console.log('Loading selling plans for product:', this.productId);
+          // First try to get selling plans from Liquid data (most reliable)
+          const plansFromLiquid = this.getSellingPlansFromLiquid();
+          
+          if (plansFromLiquid.length > 0) {
+            this.sellingPlans = plansFromLiquid;
+            this.renderSellingPlans();
+            return;
+          }
+          
+          // Fallback to API if Liquid data not available
+          console.log('Loading selling plans from API for product:', this.productId);
           if (this.threeMonthProductId) {
             console.log('Loading selling plans for 3-month product:', this.threeMonthProductId);
           }
@@ -130,6 +140,68 @@ if (!customElements.get('loop-subscription-widget')) {
           console.error('Error loading selling plans:', error);
           this.showNoSubscriptions();
         }
+      }
+
+      getSellingPlansFromLiquid() {
+        const plans = [];
+        
+        // Get main product selling plans
+        const mainProductData = this.querySelector('[data-selling-plans-data]');
+        if (mainProductData) {
+          try {
+            const data = JSON.parse(mainProductData.textContent);
+            if (data.sellingPlans && data.sellingPlans.length > 0) {
+              data.sellingPlans.forEach(plan => {
+                plans.push({
+                  id: plan.id.toString(),
+                  gid: `gid://shopify/SellingPlan/${plan.id}`,
+                  name: plan.name,
+                  description: plan.description || '',
+                  billingPolicy: {
+                    interval: plan.billingInterval?.toUpperCase() || 'MONTH',
+                    intervalCount: parseInt(plan.billingIntervalCount) || 1
+                  },
+                  pricingPolicies: plan.pricingPolicies || [],
+                  productId: data.productId.toString(),
+                  variantId: data.variantId.toString(),
+                  variantPrice: data.variantPrice
+                });
+              });
+            }
+          } catch (error) {
+            console.error('Error parsing main product selling plans:', error);
+          }
+        }
+        
+        // Get 3-month product selling plans
+        const threeMonthData = this.querySelector('[data-three-month-selling-plans-data]');
+        if (threeMonthData) {
+          try {
+            const data = JSON.parse(threeMonthData.textContent);
+            if (data.sellingPlans && data.sellingPlans.length > 0) {
+              data.sellingPlans.forEach(plan => {
+                plans.push({
+                  id: plan.id.toString(),
+                  gid: `gid://shopify/SellingPlan/${plan.id}`,
+                  name: plan.name,
+                  description: plan.description || '',
+                  billingPolicy: {
+                    interval: plan.billingInterval?.toUpperCase() || 'MONTH',
+                    intervalCount: parseInt(plan.billingIntervalCount) || 1
+                  },
+                  pricingPolicies: plan.pricingPolicies || [],
+                  productId: data.productId.toString(),
+                  variantId: data.variantId.toString(),
+                  variantPrice: data.variantPrice
+                });
+              });
+            }
+          } catch (error) {
+            console.error('Error parsing 3-month product selling plans:', error);
+          }
+        }
+        
+        return plans;
       }
 
       async fetchSellingPlansForProduct(productId) {
@@ -289,14 +361,23 @@ if (!customElements.get('loop-subscription-widget')) {
         
         if (plan.pricingPolicies && plan.pricingPolicies.length > 0) {
           const policy = plan.pricingPolicies[0];
-          if (policy.adjustmentType === 'PERCENTAGE' && policy.adjustmentValue.percentage) {
-            const discount = (basePrice * policy.adjustmentValue.percentage) / 100;
+          // Handle both API format and Liquid format
+          const adjustmentType = policy.adjustmentType || policy.adjustmentType;
+          const adjustmentValue = policy.adjustmentValue || {};
+          
+          if ((adjustmentType === 'PERCENTAGE' || adjustmentType === 'percentage') && adjustmentValue.percentage) {
+            const discount = (basePrice * adjustmentValue.percentage) / 100;
             subscriptionPrice = basePrice - discount;
-            savings = Math.round(policy.adjustmentValue.percentage);
-          } else if (policy.adjustmentType === 'FIXED_AMOUNT' && policy.adjustmentValue.fixedValue) {
-            const discountAmount = policy.adjustmentValue.fixedValue.amount * 100;
+            savings = Math.round(adjustmentValue.percentage);
+          } else if ((adjustmentType === 'FIXED_AMOUNT' || adjustmentType === 'fixed_amount') && adjustmentValue.fixedValue) {
+            const discountAmount = adjustmentValue.fixedValue.amount * 100;
             subscriptionPrice = basePrice - discountAmount;
             savings = Math.round((discountAmount / basePrice) * 100);
+          } else if (adjustmentValue.percentage !== undefined) {
+            // Direct percentage value
+            const discount = (basePrice * adjustmentValue.percentage) / 100;
+            subscriptionPrice = basePrice - discount;
+            savings = Math.round(adjustmentValue.percentage);
           }
         }
 
@@ -469,10 +550,15 @@ if (!customElements.get('loop-subscription-widget')) {
           if (pricingPolicies.length > 0) {
             const policy = pricingPolicies[0];
             let subscriptionPrice = this.selectedSellingPlan.variantPrice || 0;
-            if (policy.adjustmentType === 'PERCENTAGE' && policy.adjustmentValue.percentage) {
-              subscriptionPrice = subscriptionPrice - (subscriptionPrice * policy.adjustmentValue.percentage / 100);
-            } else if (policy.adjustmentType === 'FIXED_AMOUNT' && policy.adjustmentValue.fixedValue) {
-              subscriptionPrice = subscriptionPrice - (policy.adjustmentValue.fixedValue.amount * 100);
+            const adjustmentType = policy.adjustmentType || '';
+            const adjustmentValue = policy.adjustmentValue || {};
+            
+            if ((adjustmentType === 'PERCENTAGE' || adjustmentType === 'percentage') && adjustmentValue.percentage) {
+              subscriptionPrice = subscriptionPrice - (subscriptionPrice * adjustmentValue.percentage / 100);
+            } else if ((adjustmentType === 'FIXED_AMOUNT' || adjustmentType === 'fixed_amount') && adjustmentValue.fixedValue) {
+              subscriptionPrice = subscriptionPrice - (adjustmentValue.fixedValue.amount * 100);
+            } else if (adjustmentValue.percentage !== undefined) {
+              subscriptionPrice = subscriptionPrice - (subscriptionPrice * adjustmentValue.percentage / 100);
             }
             price = this.formatPrice(subscriptionPrice);
           } else {
