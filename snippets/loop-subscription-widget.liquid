@@ -10,11 +10,17 @@
   {% render 'loop-subscription-widget', product: product, block: block, product_form_id: product_form_id, section_id: section.id %}
 {% endcomment %}
 
+{%- liquid
+  assign three_month_product = block.settings.three_month_product
+  assign three_month_product_id = three_month_product.id | default: null
+-%}
+
 <loop-subscription-widget
   class="loop-subscription-widget" 
   data-product-id="{{ product.id }}"
   data-variant-id="{{ product.selected_or_first_available_variant.id }}"
   data-section-id="{{ section_id }}"
+  data-three-month-product-id="{{ three_month_product_id }}"
   {{ block.shopify_attributes }}
 >
   {%- assign current_variant = product.selected_or_first_available_variant -%}
@@ -109,6 +115,7 @@
       data-type: 'add-to-cart-form',
       data-loop-form: ''
     -%}
+      {%- assign current_product = product -%}
       <input
         type="hidden"
         name="id"
@@ -116,7 +123,7 @@
         data-variant-input
         class="product-variant-id"
       >
-      <input type="hidden" name="quantity" value="1" data-quantity-input>
+      <input type="hidden" name="quantity" value="1" data-quantity-input data-loop-quantity>
       <input type="hidden" name="selling_plan" value="" data-selling-plan-input>
 
       <div class="loop-subscription-widget__actions product-form__buttons" style="--loop-button-color: {{ button_color }}; --loop-button-radius: {{ button_border_radius }}px; --loop-button-font-size: {{ button_font_size }}px;">

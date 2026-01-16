@@ -7,9 +7,12 @@ if (!customElements.get('loop-subscription-widget')) {
         this.productId = this.dataset.productId;
         this.variantId = this.dataset.variantId;
         this.sectionId = this.dataset.sectionId;
+        this.threeMonthProductId = this.dataset.threeMonthProductId || null;
         this.selectedSellingPlan = null;
-        this.purchaseType = 'onetime'; // 'onetime' or 'subscribe'
+        this.purchaseType = 'onetime';
         this.sellingPlans = [];
+        this.currentProductId = this.productId;
+        this.currentVariantId = this.variantId;
         this.variantChangeUnsubscriber = undefined;
       }
 
@@ -18,7 +21,6 @@ if (!customElements.get('loop-subscription-widget')) {
         this.setupEventListeners();
         this.loadSellingPlans();
         
-        // Subscribe to variant changes
         if (typeof PUB_SUB_EVENTS !== 'undefined' || (window.PUB_SUB_EVENTS)) {
           const events = typeof PUB_SUB_EVENTS !== 'undefined' ? PUB_SUB_EVENTS : window.PUB_SUB_EVENTS;
           this.variantChangeUnsubscriber = subscribe(
@@ -35,7 +37,6 @@ if (!customElements.get('loop-subscription-widget')) {
       }
 
       init() {
-        // Initialize tab switching
         this.tabs = this.querySelectorAll('.loop-subscription-widget__tab');
         this.panels = this.querySelectorAll('.loop-subscription-widget__panel');
         this.optionsContainer = this.querySelector('.loop-subscription-widget__options');
@@ -47,12 +48,10 @@ if (!customElements.get('loop-subscription-widget')) {
         this.variantInput = this.querySelector('[data-variant-input]');
         this.sellingPlanInput = this.querySelector('[data-selling-plan-input]');
         
-        // Set initial tab
         this.switchTab(this.purchaseType);
       }
 
       setupEventListeners() {
-        // Tab switching
         this.tabs.forEach(tab => {
           tab.addEventListener('click', (e) => {
             const tabType = e.currentTarget.dataset.tab;
@@ -60,7 +59,6 @@ if (!customElements.get('loop-subscription-widget')) {
           });
         });
 
-        // Switch to subscribe button
         const switchToSubscribeBtn = this.querySelector('[data-action="switch-to-subscribe"]');
         if (switchToSubscribeBtn) {
           switchToSubscribeBtn.addEventListener('click', () => {
@@ -68,7 +66,6 @@ if (!customElements.get('loop-subscription-widget')) {
           });
         }
 
-        // Radio button changes
         this.addEventListener('change', (e) => {
           if (e.target.classList.contains('loop-subscription-widget__radio')) {
             this.handleOptionChange(e.target);
@@ -77,14 +74,12 @@ if (!customElements.get('loop-subscription-widget')) {
       }
 
       switchTab(tabType) {
-        // Update tabs
         this.tabs.forEach(tab => {
           const isActive = tab.dataset.tab === tabType;
           tab.classList.toggle('active', isActive);
           tab.setAttribute('aria-selected', isActive);
         });
 
-        // Update panels
         this.panels.forEach(panel => {
           const isActive = panel.dataset.panel === tabType;
           panel.classList.toggle('active', isActive);
@@ -92,12 +87,12 @@ if (!customElements.get('loop-subscription-widget')) {
 
         this.purchaseType = tabType;
         
-        // Clear selling plan selection when switching to one-time
         if (tabType === 'onetime') {
           this.selectedSellingPlan = null;
           if (this.sellingPlanInput) {
             this.sellingPlanInput.value = '';
           }
+          this.switchToProduct(this.productId);
         }
         
         this.updateButtonPrice();
@@ -107,99 +102,16 @@ if (!customElements.get('loop-subscription-widget')) {
         try {
           this.showLoading();
           
-          // Fetch selling plans using Shopify's Storefront API (GraphQL)
-          const query = `
-            query getProduct($id: ID!) {
-              product(id: $id) {
-                sellingPlanGroups(first: 10) {
-                  edges {
-                    node {
-                      id
-                      name
-                      options {
-                        name
-                        values
-                      }
-                      sellingPlans(first: 10) {
-                        edges {
-                          node {
-                            id
-                            name
-                            description
-                            billingPolicy {
-                              interval
-                              intervalCount
-                            }
-                            pricingPolicies {
-                              ... on SellingPlanFixedPricingPolicy {
-                                adjustmentType
-                                adjustmentValue {
-                                  ... on SellingPlanPricingPolicyPercentageValue {
-                                    percentage
-                                  }
-                                  ... on SellingPlanPricingPolicyFixedValue {
-                                    fixedValue {
-                                      amount
-                                      currencyCode
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          `;
-
-          // Use Shopify's Storefront API endpoint
-          const response = await fetch('/api/2024-01/graphql.json', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              query: query,
-              variables: {
-                id: `gid://shopify/Product/${this.productId}`
-              }
-            })
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to fetch selling plans');
+          const promises = [this.fetchSellingPlansForProduct(this.productId)];
+          
+          if (this.threeMonthProductId) {
+            promises.push(this.fetchSellingPlansForProduct(this.threeMonthProductId));
           }
-
-          const data = await response.json();
           
-          if (data.errors) {
-            console.error('GraphQL errors:', data.errors);
-            throw new Error('GraphQL query failed');
-          }
-
-          // Extract selling plans
-          const sellingPlanGroups = data.data?.product?.sellingPlanGroups?.edges || [];
-          const allSellingPlans = [];
+          const results = await Promise.all(promises);
+          const allPlans = results.flat();
           
-          sellingPlanGroups.forEach(group => {
-            const sellingPlans = group.node.sellingPlans.edges || [];
-            sellingPlans.forEach(planEdge => {
-              allSellingPlans.push({
-                id: planEdge.node.id.split('/').pop(), // Extract numeric ID
-                gid: planEdge.node.id,
-                name: planEdge.node.name,
-                description: planEdge.node.description,
-                billingPolicy: planEdge.node.billingPolicy,
-                pricingPolicies: planEdge.node.pricingPolicies
-              });
-            });
-          });
-          
-          this.sellingPlans = allSellingPlans;
+          this.sellingPlans = allPlans;
           
           if (this.sellingPlans.length > 0) {
             this.renderSellingPlans();
@@ -212,15 +124,126 @@ if (!customElements.get('loop-subscription-widget')) {
         }
       }
 
+      async fetchSellingPlansForProduct(productId) {
+        const query = `
+          query getProduct($id: ID!) {
+            product(id: $id) {
+              id
+              variants(first: 1) {
+                edges {
+                  node {
+                    id
+                    price {
+                      amount
+                      currencyCode
+                    }
+                  }
+                }
+              }
+              sellingPlanGroups(first: 10) {
+                edges {
+                  node {
+                    id
+                    name
+                    options {
+                      name
+                      values
+                    }
+                    sellingPlans(first: 10) {
+                      edges {
+                        node {
+                          id
+                          name
+                          description
+                          billingPolicy {
+                            interval
+                            intervalCount
+                          }
+                          pricingPolicies {
+                            ... on SellingPlanFixedPricingPolicy {
+                              adjustmentType
+                              adjustmentValue {
+                                ... on SellingPlanPricingPolicyPercentageValue {
+                                  percentage
+                                }
+                                ... on SellingPlanPricingPolicyFixedValue {
+                                  fixedValue {
+                                    amount
+                                    currencyCode
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        `;
+
+        const response = await fetch('/api/2024-01/graphql.json', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            query: query,
+            variables: {
+              id: `gid://shopify/Product/${productId}`
+            }
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch selling plans');
+        }
+
+        const data = await response.json();
+        
+        if (data.errors) {
+          console.error('GraphQL errors:', data.errors);
+          throw new Error('GraphQL query failed');
+        }
+
+        const product = data.data?.product;
+        if (!product) return [];
+
+        const sellingPlanGroups = product.sellingPlanGroups?.edges || [];
+        const plans = [];
+        const variant = product.variants?.edges?.[0]?.node;
+        const variantPrice = variant ? parseFloat(variant.price.amount) * 100 : 0;
+        
+        sellingPlanGroups.forEach(group => {
+          const sellingPlans = group.node.sellingPlans.edges || [];
+          sellingPlans.forEach(planEdge => {
+            plans.push({
+              id: planEdge.node.id.split('/').pop(),
+              gid: planEdge.node.id,
+              name: planEdge.node.name,
+              description: planEdge.node.description,
+              billingPolicy: planEdge.node.billingPolicy,
+              pricingPolicies: planEdge.node.pricingPolicies,
+              productId: productId,
+              variantId: variant?.id?.split('/').pop() || null,
+              variantPrice: variantPrice
+            });
+          });
+        });
+        
+        return plans;
+      }
+
       renderSellingPlans() {
         this.hideLoading();
         
         if (!this.optionsContainer) return;
 
-        // Clear existing options
         this.optionsContainer.innerHTML = '';
 
-        // Sort selling plans by interval count
         const sortedPlans = [...this.sellingPlans].sort((a, b) => {
           const intervalA = a.billingPolicy?.intervalCount || 0;
           const intervalB = b.billingPolicy?.intervalCount || 0;
@@ -232,9 +255,8 @@ if (!customElements.get('loop-subscription-widget')) {
           this.optionsContainer.appendChild(option);
         });
 
-        // Select first plan by default
         if (sortedPlans.length > 0) {
-          this.selectSellingPlan(sortedPlans[0]);
+          this.selectSellingPlan(sortedPlans[0], sortedPlans[0].productId, sortedPlans[0].variantId);
         }
       }
 
@@ -242,12 +264,10 @@ if (!customElements.get('loop-subscription-widget')) {
         const option = document.createElement('div');
         option.className = `loop-subscription-widget__option${isDefault ? ' selected' : ''}`;
         option.dataset.sellingPlanId = plan.id;
+        option.dataset.productId = plan.productId;
+        option.dataset.variantId = plan.variantId;
 
-        // Get variant price from DOM
-        const variantPriceElement = this.querySelector('[data-variant-price]');
-        const basePrice = variantPriceElement ? parseInt(variantPriceElement.dataset.variantPrice) : 0;
-        
-        // Calculate subscription price from pricing policies
+        const basePrice = plan.variantPrice || 0;
         let subscriptionPrice = basePrice;
         let savings = 0;
         
@@ -258,7 +278,7 @@ if (!customElements.get('loop-subscription-widget')) {
             subscriptionPrice = basePrice - discount;
             savings = Math.round(policy.adjustmentValue.percentage);
           } else if (policy.adjustmentType === 'FIXED_AMOUNT' && policy.adjustmentValue.fixedValue) {
-            const discountAmount = policy.adjustmentValue.fixedValue.amount * 100; // Convert to cents
+            const discountAmount = policy.adjustmentValue.fixedValue.amount * 100;
             subscriptionPrice = basePrice - discountAmount;
             savings = Math.round((discountAmount / basePrice) * 100);
           }
@@ -276,6 +296,8 @@ if (!customElements.get('loop-subscription-widget')) {
               class="loop-subscription-widget__radio"
               ${isDefault ? 'checked' : ''}
               data-selling-plan-id="${plan.id}"
+              data-product-id="${plan.productId}"
+              data-variant-id="${plan.variantId}"
             >
             <span class="loop-subscription-widget__radio-custom"></span>
             <div class="loop-subscription-widget__option-content">
@@ -292,7 +314,6 @@ if (!customElements.get('loop-subscription-widget')) {
           </label>
         `;
 
-        // Add click handler to select option
         option.addEventListener('click', (e) => {
           if (!e.target.closest('input')) {
             const radio = option.querySelector('input[type="radio"]');
@@ -327,11 +348,14 @@ if (!customElements.get('loop-subscription-widget')) {
           return `Billed ${unit === 'month' ? 'monthly' : unit === 'week' ? 'weekly' : unit + 'ly'}.`;
         }
         
+        if (intervalCount === 3 && unit === 'month') {
+          return `${formattedPrice} billed every 90 days.`;
+        }
+        
         return `${formattedPrice} billed every ${intervalCount} ${unit}${intervalCount > 1 ? 's' : ''}.`;
       }
 
       formatPrice(priceInCents) {
-        // Convert cents to dollars
         const priceInDollars = priceInCents / 100;
         return new Intl.NumberFormat('en-US', {
           style: 'currency',
@@ -345,17 +369,17 @@ if (!customElements.get('loop-subscription-widget')) {
         if (radio.dataset.sellingPlanId) {
           const sellingPlan = this.sellingPlans.find(sp => sp.id === radio.dataset.sellingPlanId);
           if (sellingPlan) {
-            this.selectSellingPlan(sellingPlan);
+            this.selectSellingPlan(sellingPlan, radio.dataset.productId, radio.dataset.variantId);
           }
         } else if (radio.dataset.purchaseType === 'onetime') {
           this.selectedSellingPlan = null;
           if (this.sellingPlanInput) {
             this.sellingPlanInput.value = '';
           }
+          this.switchToProduct(this.productId);
           this.updateButtonPrice();
         }
 
-        // Update visual selection
         this.querySelectorAll('.loop-subscription-widget__option').forEach(opt => {
           opt.classList.remove('selected');
         });
@@ -364,12 +388,59 @@ if (!customElements.get('loop-subscription-widget')) {
         }
       }
 
-      selectSellingPlan(sellingPlan) {
+      selectSellingPlan(sellingPlan, productId, variantId) {
         this.selectedSellingPlan = sellingPlan;
         if (this.sellingPlanInput) {
           this.sellingPlanInput.value = sellingPlan.id;
         }
+        
+        if (productId && variantId) {
+          this.switchToProduct(productId, variantId);
+        }
+        
+        const quantityInput = this.querySelector('[data-loop-quantity]');
+        if (quantityInput) {
+          quantityInput.value = 1;
+        }
+        
         this.updateButtonPrice();
+      }
+
+      async switchToProduct(productId, variantId = null) {
+        if (this.currentProductId === productId && this.currentVariantId === variantId) {
+          return;
+        }
+
+        this.currentProductId = productId;
+        
+        if (!variantId) {
+          try {
+            const response = await fetch(`/products/${productId.split('/').pop()}.js`);
+            const product = await response.json();
+            variantId = product.variants[0].id;
+          } catch (error) {
+            console.error('Error fetching product:', error);
+            return;
+          }
+        }
+        
+        this.currentVariantId = variantId;
+        
+        if (this.form) {
+          this.form.action = `/cart/add`;
+          
+          if (this.variantInput) {
+            this.variantInput.value = variantId;
+          }
+        }
+        
+        if (window.Shopify && Shopify.PaymentButton) {
+          const paymentButtonContainer = this.querySelector('.shopify-payment-button');
+          if (paymentButtonContainer) {
+            paymentButtonContainer.innerHTML = '';
+            Shopify.PaymentButton.init();
+          }
+        }
       }
 
       updateButtonPrice() {
@@ -378,24 +449,20 @@ if (!customElements.get('loop-subscription-widget')) {
         let price = '';
         
         if (this.purchaseType === 'subscribe' && this.selectedSellingPlan) {
-          // Calculate subscription price
-          const variantPriceElement = this.querySelector('[data-variant-price]');
-          if (variantPriceElement) {
-            const basePrice = parseInt(variantPriceElement.dataset.variantPrice);
-            const pricingPolicies = this.selectedSellingPlan.pricingPolicies || [];
-            if (pricingPolicies.length > 0) {
-              const policy = pricingPolicies[0];
-              let subscriptionPrice = basePrice;
-              if (policy.adjustmentType === 'PERCENTAGE' && policy.adjustmentValue.percentage) {
-                subscriptionPrice = basePrice - (basePrice * policy.adjustmentValue.percentage / 100);
-              } else if (policy.adjustmentType === 'FIXED_AMOUNT' && policy.adjustmentValue.fixedValue) {
-                subscriptionPrice = basePrice - (policy.adjustmentValue.fixedValue.amount * 100);
-              }
-              price = this.formatPrice(subscriptionPrice);
+          const pricingPolicies = this.selectedSellingPlan.pricingPolicies || [];
+          if (pricingPolicies.length > 0) {
+            const policy = pricingPolicies[0];
+            let subscriptionPrice = this.selectedSellingPlan.variantPrice || 0;
+            if (policy.adjustmentType === 'PERCENTAGE' && policy.adjustmentValue.percentage) {
+              subscriptionPrice = subscriptionPrice - (subscriptionPrice * policy.adjustmentValue.percentage / 100);
+            } else if (policy.adjustmentType === 'FIXED_AMOUNT' && policy.adjustmentValue.fixedValue) {
+              subscriptionPrice = subscriptionPrice - (policy.adjustmentValue.fixedValue.amount * 100);
             }
+            price = this.formatPrice(subscriptionPrice);
+          } else {
+            price = this.formatPrice(this.selectedSellingPlan.variantPrice || 0);
           }
         } else {
-          // Get one-time price from variant
           const onetimePriceElement = this.querySelector('[data-onetime-price]');
           if (onetimePriceElement) {
             price = onetimePriceElement.dataset.onetimePrice;
