@@ -81,23 +81,12 @@
             "swatch_shape": "circle"
           }
         },
-        "loop_subscription_widget_CjnYmW": {
-          "type": "loop_subscription_widget",
-          "settings": {
-            "three_month_product": "the-akkermansia-company-akkermansia-essential",
-            "button_color": "#5b3c94",
-            "button_border_radius": 8,
-            "button_font_size": 16
-          }
-        },
         "loop_subscriptions_loop_widget_QMBMHf": {
           "type": "shopify://apps/loop-subscriptions/blocks/loop_widget/267a7c64-5cb3-4552-b817-5485165f0a0b",
-          "disabled": true,
           "settings": {}
         },
         "buy_buttons_RV9rDm": {
           "type": "buy_buttons",
-          "disabled": true,
           "settings": {
             "show_dynamic_checkout": false,
             "show_gift_card_recipient": false
@@ -148,7 +137,6 @@
         "custom_liquid_zWzRdm_2",
         "custom_liquid_GKtqDp",
         "variant_picker_XqLDdf",
-        "loop_subscription_widget_CjnYmW",
         "loop_subscriptions_loop_widget_QMBMHf",
         "buy_buttons_RV9rDm",
         "collapsible_tab_m6CyXF",
