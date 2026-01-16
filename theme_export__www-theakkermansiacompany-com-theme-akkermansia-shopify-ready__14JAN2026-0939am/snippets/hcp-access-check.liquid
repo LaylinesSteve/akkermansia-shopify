@@ -1,0 +1,18 @@
+{%- comment -%}
+  Checks if customer has HCP access
+  Returns: is_hcp (boolean)
+  
+  Usage:
+  {%- render 'hcp-access-check' -%}
+  {%- if is_hcp -%}
+    <!-- HCP content -->
+  {%- endif -%}
+{%- endcomment -%}
+
+{%- liquid
+  assign is_hcp = false
+  if customer and customer.tags contains 'healthcare_provider'
+    assign is_hcp = true
+  endif
+-%}
+

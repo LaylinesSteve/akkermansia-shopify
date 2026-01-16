@@ -1,0 +1,63 @@
+.timeline {
+    position: relative;
+    padding: 40px 0; /* Increase padding for visual comfort */
+}
+
+.timeline::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    background-color: #e75c9a; /* Adjust color to match your site */
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.timeline-item {
+    position: relative;
+    width: 50%;
+    padding: 20px 30px;
+    box-sizing: border-box;
+}
+
+.timeline-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    position: relative;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1); /* Optional: adds depth */
+}
+
+.timeline-content.left {
+    left: 0;
+    margin-right: 30px;
+}
+
+.timeline-content.right {
+    left: calc(100% + 60px);
+    text-align: left;
+    margin-left: 30px;
+}
+
+.timeline-content::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    top: 20px; /* Adjust to align with the text inside the content box */
+}
+
+.timeline-content.left::before {
+    left: 100%; /* Align arrow on the left side */
+    border-width: 10px;
+    border-color: transparent white transparent transparent;
+}
+
+.timeline-content.right::before {
+    right: 100%; /* Align arrow on the right side */
+    border-width: 10px;
+    border-color: transparent transparent transparent white;
+}
+

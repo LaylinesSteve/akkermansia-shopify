@@ -1,0 +1,62 @@
+<!-- timeline.liquid -->
+{{ 'section-timeline.css' | asset_url | stylesheet_tag }}
+
+{% schema %}
+{
+  "name": "Timeline",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "timeline_item",
+      "name": "Timeline Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "year",
+          "label": "Year"
+        },
+        {
+          "type": "textarea",
+          "id": "content",
+          "label": "Content"
+        },
+        {
+          "type": "select",
+          "id": "position",
+          "label": "Position",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "right",
+              "label": "Right"
+            }
+          ],
+          "default": "left"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Timeline",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}
+
+<div class="page-width">
+  <div class="timeline">
+    {% for block in section.blocks %}
+      <div class="timeline-item">
+        <div class="timeline-content {{ block.settings.position }}">
+          <h2>{{ block.settings.year }}</h2>
+          <p>{{ block.settings.content }}</p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

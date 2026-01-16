@@ -1,0 +1,181 @@
+/* Restricted Buy Button (HCP Button) Styles */
+
+.restricted-buy-button {
+  width: 100%;
+  margin: 2rem 0;
+}
+
+/* HCP Button styling */
+.restricted-buy-button__submit {
+  background-color: var(--hcp-button-color, #5B3C94) !important;
+  border-radius: var(--hcp-button-radius, 8px) !important;
+  font-size: var(--hcp-button-font-size, 16px) !important;
+  transition: filter 0.2s ease, opacity 0.2s ease;
+}
+
+.restricted-buy-button__submit:hover:not(:disabled) {
+  filter: brightness(0.85);
+}
+
+/* Pricing display for authorized users */
+.restricted-buy-button__pricing {
+  margin-bottom: 1.5rem;
+}
+
+.restricted-buy-button__price {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Quantity selector */
+.restricted-buy-button__quantity {
+  margin-bottom: 1.5rem;
+}
+
+.restricted-buy-button__quantity .quantity__label {
+  margin-bottom: 0.8rem;
+  display: block;
+}
+
+.restricted-buy-button__quantity .quantity__info {
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: #666;
+  margin-left: 0.5rem;
+}
+
+.restricted-buy-button__quantity .quantity {
+  display: inline-flex;
+  align-items: center;
+  border: 0.1rem solid rgba(var(--color-foreground), 0.08);
+  border-radius: var(--inputs-radius);
+  position: relative;
+  width: fit-content;
+}
+
+.restricted-buy-button__quantity .quantity__input {
+  color: currentColor;
+  font-size: 1.4rem;
+  font-weight: 500;
+  opacity: 0.85;
+  text-align: center;
+  background-color: transparent;
+  border: 0;
+  padding: 0 0.5rem;
+  width: 4.4rem;
+  flex-grow: 1;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.restricted-buy-button__quantity .quantity__button {
+  width: 3.8rem;
+  flex-shrink: 0;
+  font-size: 1.8rem;
+  border: 0;
+  background-color: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(var(--color-foreground), 0.75);
+  padding: 0;
+}
+
+.restricted-buy-button__quantity .quantity__button:hover {
+  color: rgba(var(--color-foreground), 0.85);
+}
+
+.restricted-buy-button__quantity .quantity__button:focus-visible {
+  color: rgba(var(--color-foreground), 0.85);
+  background-color: rgba(var(--color-foreground), 0.03);
+  z-index: 1;
+}
+
+.restricted-buy-button__quantity .quantity__button:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.restricted-buy-button__quantity .quantity__button svg {
+  width: 1rem;
+  pointer-events: none;
+}
+
+/* Restricted access state */
+.restricted-buy-button__restricted {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.restricted-buy-button__sign-in-button {
+  display: inline-block;
+  width: 100%;
+  padding: 1.5rem 2rem;
+  background-color: #E91E63;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.6rem;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  cursor: pointer;
+  line-height: 1.5;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.restricted-buy-button__sign-in-button:hover {
+  background-color: #C2185B;
+  color: #fff;
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.restricted-buy-button__sign-in-button:active {
+  transform: translateY(0);
+}
+
+.restricted-buy-button__register-text {
+  font-size: 1.4rem;
+  color: #333;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.restricted-buy-button__register-text a {
+  color: #333;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.2s ease;
+}
+
+.restricted-buy-button__register-text a:hover {
+  color: #E91E63;
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media screen and (max-width: 749px) {
+  .restricted-buy-button__sign-in-button {
+    font-size: 1.4rem;
+    padding: 1.2rem 1.5rem;
+    min-height: 45px;
+  }
+
+  .restricted-buy-button__register-text {
+    font-size: 1.3rem;
+  }
+
+  .restricted-buy-button__price {
+    font-size: 1.8rem;
+  }
+}

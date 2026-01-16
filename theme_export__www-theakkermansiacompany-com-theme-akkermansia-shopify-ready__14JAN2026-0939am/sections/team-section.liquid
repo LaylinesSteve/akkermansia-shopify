@@ -1,0 +1,64 @@
+{{ 'section-team.css' | asset_url | stylesheet_tag }}
+{{ 'section-team.js' | asset_url | script_tag }}
+
+
+<section class="team-section">
+  <div class="page-width">
+    <div class="team-grid">
+      {% for block in section.blocks %}
+      <div class="team-member">
+        <img src="{{ block.settings.image | img_url: '500x500' }}" alt="{{ block.settings.name }}" class="team-image" data-modal="modal-{{ block.id }}">
+        <p class="team-name">{{ block.settings.name }}</p>
+      </div>
+
+      <!-- Modal Structure -->
+      <div id="modal-{{ block.id }}" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>{{ block.settings.name }}</h2>
+          <div class="bio-content">
+            {{ block.settings.bio }}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
+{% schema %}
+{
+  "name": "Team Section",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "member",
+      "name": "Team Member",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Member Image"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Name"
+        },
+        {
+          "type": "richtext",
+          "id": "bio",
+          "label": "Bio"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Team Section",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

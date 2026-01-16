@@ -1,0 +1,25 @@
+# Shopify Theme Development
+.DS_Store
+*.zip
+*.log
+node_modules/
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Shopify CLI
+.shopify/
+
+# Temporary files
+*.tmp
+*.temp

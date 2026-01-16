@@ -1,0 +1,148 @@
+{% comment %}
+  Renders Loop subscription widget with tabs for Subscribe & save and One-time purchase.
+  Accepts:
+  - product: {Object} product object.
+  - block: {Object} passing the block information.
+  - product_form_id: {String} product form id.
+  - section_id: {String} id of section to which this snippet belongs.
+
+  Usage:
+  {% render 'loop-subscription-widget', product: product, block: block, product_form_id: product_form_id, section_id: section.id %}
+{% endcomment %}
+
+<loop-subscription-widget
+  class="loop-subscription-widget" 
+  data-product-id="{{ product.id }}"
+  data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+  data-section-id="{{ section_id }}"
+  {{ block.shopify_attributes }}
+>
+  {%- assign current_variant = product.selected_or_first_available_variant -%}
+  {%- assign one_time_price = current_variant.price | money -%}
+
+  <div class="loop-subscription-widget__tabs">
+    <button 
+      type="button"
+      class="loop-subscription-widget__tab loop-subscription-widget__tab--subscribe active"
+      data-tab="subscribe"
+      aria-selected="true"
+    >
+      Subscribe & save
+    </button>
+    <button 
+      type="button"
+      class="loop-subscription-widget__tab loop-subscription-widget__tab--onetime"
+      data-tab="onetime"
+      aria-selected="false"
+    >
+      One-time purchase
+    </button>
+  </div>
+
+  <div class="loop-subscription-widget__content">
+    {%- comment -%} Subscribe & Save Tab Content {%- endcomment -%}
+    <div class="loop-subscription-widget__panel loop-subscription-widget__panel--subscribe active" data-panel="subscribe">
+      <div class="loop-subscription-widget__options" id="loop-subscription-options-{{ section_id }}">
+        {%- comment -%} Subscription options will be populated by JavaScript from Loop API {%- endcomment -%}
+        <div class="loop-subscription-widget__loading">
+          <span class="loading__spinner"></span>
+          <span>Loading subscription options...</span>
+        </div>
+        <div class="loop-subscription-widget__no-subscriptions hidden">
+          <p>No subscription options available for this product.</p>
+        </div>
+      </div>
+      <div class="loop-subscription-widget__shipping-info">
+        <p>Free shipping on subscription orders. Money-back guarantee.</p>
+      </div>
+    </div>
+
+    {%- comment -%} One-time Purchase Tab Content {%- endcomment -%}
+    <div class="loop-subscription-widget__panel loop-subscription-widget__panel--onetime" data-panel="onetime">
+      <div class="loop-subscription-widget__onetime-option">
+        <label class="loop-subscription-widget__radio-label">
+          <input 
+            type="radio" 
+            name="loop-purchase-type-{{ section_id }}" 
+            value="onetime"
+            class="loop-subscription-widget__radio"
+            checked
+            data-purchase-type="onetime"
+          >
+          <span class="loop-subscription-widget__radio-custom"></span>
+          <div class="loop-subscription-widget__option-content">
+            <span class="loop-subscription-widget__option-title">1-Month supply (one-time purchase)</span>
+            <span class="loop-subscription-widget__option-price" data-onetime-price="{{ one_time_price }}">
+              {{ one_time_price }}
+            </span>
+          </div>
+        </label>
+        <button 
+          type="button"
+          class="loop-subscription-widget__switch-to-subscribe"
+          data-action="switch-to-subscribe"
+        >
+          Subscribe & save up to 51%
+        </button>
+      </div>
+      <div class="loop-subscription-widget__shipping-info">
+        <p>$10 shipping & processing for one-time purchases.</p>
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} Action Buttons {%- endcomment -%}
+  {%- liquid
+    assign button_color = block.settings.button_color | default: '#5B3C94'
+    assign button_border_radius = block.settings.button_border_radius | default: 8
+    assign button_font_size = block.settings.button_font_size | default: 16
+  -%}
+  <product-form
+    class="product-form loop-subscription-widget__product-form"
+    data-section-id="{{ section_id }}"
+  >
+    {%- form 'product',
+      product,
+      id: product_form_id,
+      class: 'form loop-subscription-widget__form',
+      novalidate: 'novalidate',
+      data-type: 'add-to-cart-form',
+      data-loop-form: ''
+    -%}
+      <input
+        type="hidden"
+        name="id"
+        value="{{ current_variant.id }}"
+        data-variant-input
+        class="product-variant-id"
+      >
+      <input type="hidden" name="quantity" value="1" data-quantity-input>
+      <input type="hidden" name="selling_plan" value="" data-selling-plan-input>
+
+      <div class="loop-subscription-widget__actions product-form__buttons" style="--loop-button-color: {{ button_color }}; --loop-button-radius: {{ button_border_radius }}px; --loop-button-font-size: {{ button_font_size }}px;">
+        <button
+          type="submit"
+          name="add"
+          class="loop-subscription-widget__add-to-cart product-form__submit button button--primary button--full-width"
+          data-action="add-to-cart"
+          {% unless current_variant.available %}disabled{% endunless %}
+        >
+          <span class="loop-subscription-widget__button-text">
+            {%- if current_variant.available -%}
+              Add to cart - <span data-button-price>{{ one_time_price }}</span>
+            {%- else -%}
+              {{ 'products.product.sold_out' | t }}
+            {%- endif -%}
+          </span>
+          {%- render 'loading-spinner' -%}
+        </button>
+        
+        {{ form | payment_button }}
+
+        <div class="loop-subscription-widget__fsa-badge">
+          FSA/HSA Eligible with float
+        </div>
+      </div>
+    {%- endform -%}
+  </product-form>
+</loop-subscription-widget>

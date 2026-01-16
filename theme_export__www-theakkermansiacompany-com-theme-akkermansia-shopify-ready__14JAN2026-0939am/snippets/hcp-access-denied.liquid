@@ -1,0 +1,33 @@
+{%- comment -%}
+  Displays access denied message for HCP-only products
+  Usage: {% render 'hcp-access-denied' %}
+{%- endcomment -%}
+
+<div class="hcp-access-denied page-width" style="padding: 4rem 2rem; text-align: center;">
+  <h2 style="margin-bottom: 1.5rem; font-size: 2.4rem;">Healthcare Professional Products</h2>
+  <p style="margin-bottom: 2rem; font-size: 1.6rem; color: #666;">
+    This product is exclusively available to licensed healthcare professionals.
+  </p>
+  {%- unless customer -%}
+    <div style="display: flex; flex-direction: column; gap: 1rem; align-items: center; max-width: 400px; margin: 0 auto;">
+      <a href="{{ routes.account_login_url }}?return_to={{ request.path | url_encode }}" class="button button--primary" style="width: 100%;">
+        Sign in to Access
+      </a>
+      <p style="font-size: 1.4rem; margin: 0;">
+        <a href="{{ routes.account_register_url }}?return_to={{ request.path | url_encode }}" style="color: #031834; text-decoration: underline;">
+          Need an account? Register here
+        </a>
+      </p>
+    </div>
+  {%- else -%}
+    <div style="max-width: 500px; margin: 0 auto;">
+      <p style="font-size: 1.4rem; margin-bottom: 1.5rem;">
+        If you are a licensed healthcare professional, please contact us to verify your account.
+      </p>
+      <a href="/pages/for-healthcare-professionals" class="button button--secondary">
+        Learn More About HCP Program
+      </a>
+    </div>
+  {%- endunless -%}
+</div>
+

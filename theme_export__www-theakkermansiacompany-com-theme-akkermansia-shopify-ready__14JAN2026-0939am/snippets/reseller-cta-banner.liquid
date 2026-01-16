@@ -1,0 +1,67 @@
+{%- comment -%}
+Shows a banner prompting reseller-pending customers to upload their certificate.
+Conditions:
+- Logged in
+- Has tag 'reseller-pending' OR note contains 'Reseller: Yes'
+- NOT already approved (metafield custom.reseller == true OR tag 'reseller-approved')
+- Not on the upload page or in checkout
+{%- endcomment -%}
+
+{% if customer %}
+  {% assign has_pending_tag = customer.tags contains 'reseller-pending' %}
+  {% assign has_approved_tag = customer.tags contains 'reseller-approved' %}
+  {% assign said_reseller = customer.note and customer.note contains 'Reseller: Yes' %}
+  {% assign is_approved_meta = false %}
+  {% if customer.metafields.custom and customer.metafields.custom.reseller == true %}
+    {% assign is_approved_meta = true %}
+  {% endif %}
+
+  {% assign on_upload_page = request.path contains '/pages/reseller-certificate' %}
+  {% assign in_checkout = request.path contains '/checkout' or template.name == 'cart' %}
+
+  {% assign needs_banner = (has_pending_tag or said_reseller) and (is_approved_meta == false) and (has_approved_tag == false) %}
+
+  {% if needs_banner and on_upload_page == false and in_checkout == false %}
+    <div id="reseller-cta" style="position:relative;margin:12px auto;max-width:1100px;border:1px solid #e2e2e2;border-radius:10px;padding:12px 16px;background:#fafafa;display:flex;gap:12px;align-items:center;">
+      <div style="flex:1 1 auto;">
+        <strong>Reseller verification needed</strong>
+        <div style="font-size:0.95rem;line-height:1.4;">
+          Please upload your reseller certificate so we can mark your account tax-exempt.
+          Once approved, your <em>next order</em> will reflect your tax-exempt status.
+        </div>
+      </div>
+      <a id="reseller-cta-btn" href="{{ shop.url }}/pages/reseller-certificate?src=banner"
+         style="white-space:nowrap;display:inline-block;padding:10px 14px;border-radius:8px;background:#0a1a3d;color:#fff;text-decoration:none;">
+        Upload certificate
+      </a>
+      <button id="reseller-cta-close" type="button" aria-label="Dismiss"
+              style="border:none;background:transparent;font-size:18px;line-height:1;cursor:pointer;">×</button>
+    </div>
+
+    <script>
+      (function(){
+        try{
+          // If they already uploaded (we set this on the thank-you page), hide the banner
+          if(localStorage.getItem('reseller_upload_done') === '1'){
+            var el = document.getElementById('reseller-cta'); if(el) el.remove();
+            return;
+          }
+          // Dismiss button
+          var closeBtn = document.getElementById('reseller-cta-close');
+          if(closeBtn){ closeBtn.addEventListener('click', function(){ var el = document.getElementById('reseller-cta'); if(el) el.remove(); }); }
+
+          // OPTIONAL: one-time auto-redirect right after account creation
+          // Uncomment to enable:
+          /*
+          var alreadyRedirected = sessionStorage.getItem('reseller_upload_redirected') === '1';
+          var onUploadPage = /\/pages\/reseller-certificate/i.test(location.pathname);
+          if(!alreadyRedirected && !onUploadPage){
+            sessionStorage.setItem('reseller_upload_redirected','1');
+            window.location.href = '{{ shop.url }}/pages/reseller-certificate?src=auto';
+          }
+          */
+        }catch(e){}
+      })();
+    </script>
+  {% endif %}
+{% endif %}
