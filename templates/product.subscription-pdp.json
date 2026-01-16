@@ -96,13 +96,6 @@
           "disabled": true,
           "settings": {}
         },
-        "buy_buttons_RV9rDm": {
-          "type": "buy_buttons",
-          "settings": {
-            "show_dynamic_checkout": false,
-            "show_gift_card_recipient": false
-          }
-        },
         "collapsible_tab_m6CyXF": {
           "type": "collapsible_tab",
           "settings": {
@@ -150,7 +143,6 @@
         "variant_picker_XqLDdf",
         "loop_subscription_widget_R3jgzG",
         "loop_subscriptions_loop_widget_QMBMHf",
-        "buy_buttons_RV9rDm",
         "collapsible_tab_m6CyXF",
         "collapsible_tab_7gHXq6",
         "collapsible_tab_jzCwkb",
