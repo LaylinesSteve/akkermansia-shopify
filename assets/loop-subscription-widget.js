@@ -102,6 +102,11 @@ if (!customElements.get('loop-subscription-widget')) {
         try {
           this.showLoading();
           
+          console.log('Loading selling plans for product:', this.productId);
+          if (this.threeMonthProductId) {
+            console.log('Loading selling plans for 3-month product:', this.threeMonthProductId);
+          }
+          
           const promises = [this.fetchSellingPlansForProduct(this.productId)];
           
           if (this.threeMonthProductId) {
@@ -111,11 +116,14 @@ if (!customElements.get('loop-subscription-widget')) {
           const results = await Promise.all(promises);
           const allPlans = results.flat();
           
+          console.log('Total selling plans found:', allPlans.length);
+          
           this.sellingPlans = allPlans;
           
           if (this.sellingPlans.length > 0) {
             this.renderSellingPlans();
           } else {
+            console.warn('No selling plans found. Showing no subscriptions message.');
             this.showNoSubscriptions();
           }
         } catch (error) {
@@ -125,51 +133,54 @@ if (!customElements.get('loop-subscription-widget')) {
       }
 
       async fetchSellingPlansForProduct(productId) {
-        const query = `
-          query getProduct($id: ID!) {
-            product(id: $id) {
-              id
-              variants(first: 1) {
-                edges {
-                  node {
-                    id
-                    price {
-                      amount
-                      currencyCode
-                    }
-                  }
-                }
-              }
-              sellingPlanGroups(first: 10) {
-                edges {
-                  node {
-                    id
-                    name
-                    options {
+        try {
+          // First try to get product data from JSON endpoint
+          const productResponse = await fetch(`/products/${productId}.js`);
+          if (!productResponse.ok) {
+            console.warn(`Failed to fetch product ${productId} from JSON endpoint`);
+            return [];
+          }
+          
+          const productData = await productResponse.json();
+          const variant = productData.variants?.[0];
+          const variantPrice = variant ? variant.price : 0;
+          
+          // Try GraphQL API for selling plans
+          const query = `
+            query getProduct($id: ID!) {
+              product(id: $id) {
+                id
+                sellingPlanGroups(first: 10) {
+                  edges {
+                    node {
+                      id
                       name
-                      values
-                    }
-                    sellingPlans(first: 10) {
-                      edges {
-                        node {
-                          id
-                          name
-                          description
-                          billingPolicy {
-                            interval
-                            intervalCount
-                          }
-                          pricingPolicies {
-                            ... on SellingPlanFixedPricingPolicy {
-                              adjustmentType
-                              adjustmentValue {
-                                ... on SellingPlanPricingPolicyPercentageValue {
-                                  percentage
-                                }
-                                ... on SellingPlanPricingPolicyFixedValue {
-                                  fixedValue {
-                                    amount
-                                    currencyCode
+                      options {
+                        name
+                        values
+                      }
+                      sellingPlans(first: 10) {
+                        edges {
+                          node {
+                            id
+                            name
+                            description
+                            billingPolicy {
+                              interval
+                              intervalCount
+                            }
+                            pricingPolicies {
+                              ... on SellingPlanFixedPricingPolicy {
+                                adjustmentType
+                                adjustmentValue {
+                                  ... on SellingPlanPricingPolicyPercentageValue {
+                                    percentage
+                                  }
+                                  ... on SellingPlanPricingPolicyFixedValue {
+                                    fixedValue {
+                                      amount
+                                      currencyCode
+                                    }
                                   }
                                 }
                               }
@@ -182,59 +193,64 @@ if (!customElements.get('loop-subscription-widget')) {
                 }
               }
             }
+          `;
+
+          const response = await fetch('/api/2024-01/graphql.json', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              query: query,
+              variables: {
+                id: `gid://shopify/Product/${productId}`
+              }
+            })
+          });
+
+          if (!response.ok) {
+            console.warn(`GraphQL API not available or requires authentication for product ${productId}`);
+            return [];
           }
-        `;
 
-        const response = await fetch('/api/2024-01/graphql.json', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            query: query,
-            variables: {
-              id: `gid://shopify/Product/${productId}`
-            }
-          })
-        });
+          const data = await response.json();
+          
+          if (data.errors) {
+            console.error('GraphQL errors:', data.errors);
+            return [];
+          }
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch selling plans');
-        }
+          const product = data.data?.product;
+          if (!product) {
+            console.warn(`No product data returned for product ${productId}`);
+            return [];
+          }
 
-        const data = await response.json();
-        
-        if (data.errors) {
-          console.error('GraphQL errors:', data.errors);
-          throw new Error('GraphQL query failed');
-        }
-
-        const product = data.data?.product;
-        if (!product) return [];
-
-        const sellingPlanGroups = product.sellingPlanGroups?.edges || [];
-        const plans = [];
-        const variant = product.variants?.edges?.[0]?.node;
-        const variantPrice = variant ? parseFloat(variant.price.amount) * 100 : 0;
-        
-        sellingPlanGroups.forEach(group => {
-          const sellingPlans = group.node.sellingPlans.edges || [];
-          sellingPlans.forEach(planEdge => {
-            plans.push({
-              id: planEdge.node.id.split('/').pop(),
-              gid: planEdge.node.id,
-              name: planEdge.node.name,
-              description: planEdge.node.description,
-              billingPolicy: planEdge.node.billingPolicy,
-              pricingPolicies: planEdge.node.pricingPolicies,
-              productId: productId,
-              variantId: variant?.id?.split('/').pop() || null,
-              variantPrice: variantPrice
+          const sellingPlanGroups = product.sellingPlanGroups?.edges || [];
+          const plans = [];
+          
+          sellingPlanGroups.forEach(group => {
+            const sellingPlans = group.node.sellingPlans.edges || [];
+            sellingPlans.forEach(planEdge => {
+              plans.push({
+                id: planEdge.node.id.split('/').pop(),
+                gid: planEdge.node.id,
+                name: planEdge.node.name,
+                description: planEdge.node.description,
+                billingPolicy: planEdge.node.billingPolicy,
+                pricingPolicies: planEdge.node.pricingPolicies,
+                productId: productId,
+                variantId: variant?.id || null,
+                variantPrice: variantPrice
+              });
             });
           });
-        });
-        
-        return plans;
+          
+          return plans;
+        } catch (error) {
+          console.error(`Error fetching selling plans for product ${productId}:`, error);
+          return [];
+        }
       }
 
       renderSellingPlans() {
