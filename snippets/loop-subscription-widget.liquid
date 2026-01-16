@@ -25,6 +25,85 @@
 >
   {%- assign current_variant = product.selected_or_first_available_variant -%}
   {%- assign one_time_price = current_variant.price | money -%}
+  
+  {%- comment -%} Pass selling plans data from Liquid to JavaScript {%- endcomment -%}
+  <script type="application/json" data-selling-plans-data>
+  {
+    "productId": {{ product.id | json }},
+    "variantId": {{ current_variant.id | json }},
+    "variantPrice": {{ current_variant.price | json }},
+    "sellingPlans": [
+      {%- for group in product.selling_plan_groups -%}
+        {%- for plan in group.selling_plans -%}
+          {
+            "id": {{ plan.id | json }},
+            "name": {{ plan.name | json }},
+            "description": {{ plan.description | default: '' | json }},
+            "billingInterval": "{{ plan.options[0].name }}",
+            "billingIntervalCount": {{ plan.options[0].values[0] | json }},
+            "pricingPolicies": [
+              {%- for policy in plan.price_adjustments -%}
+                {
+                  "adjustmentType": "{{ policy.value_type }}",
+                  "adjustmentValue": {
+                    {%- if policy.value_type == 'percentage' -%}
+                      "percentage": {{ policy.value | json }}
+                    {%- else -%}
+                      "fixedValue": {
+                        "amount": {{ policy.value | json }},
+                        "currencyCode": "USD"
+                      }
+                    {%- endif -%}
+                  }
+                }{%- unless forloop.last -%},{%- endunless -%}
+              {%- endfor -%}
+            ]
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      {%- endfor -%}
+    ]
+  }
+  </script>
+  
+  {%- if three_month_product -%}
+    <script type="application/json" data-three-month-selling-plans-data>
+    {
+      "productId": {{ three_month_product.id | json }},
+      "variantId": {{ three_month_product.selected_or_first_available_variant.id | json }},
+      "variantPrice": {{ three_month_product.selected_or_first_available_variant.price | json }},
+      "sellingPlans": [
+        {%- for group in three_month_product.selling_plan_groups -%}
+          {%- for plan in group.selling_plans -%}
+            {
+              "id": {{ plan.id | json }},
+              "name": {{ plan.name | json }},
+              "description": {{ plan.description | default: '' | json }},
+              "billingInterval": "{{ plan.options[0].name }}",
+              "billingIntervalCount": {{ plan.options[0].values[0] | json }},
+              "pricingPolicies": [
+                {%- for policy in plan.price_adjustments -%}
+                  {
+                    "adjustmentType": "{{ policy.value_type }}",
+                    "adjustmentValue": {
+                      {%- if policy.value_type == 'percentage' -%}
+                        "percentage": {{ policy.value | json }}
+                      {%- else -%}
+                        "fixedValue": {
+                          "amount": {{ policy.value | json }},
+                          "currencyCode": "USD"
+                        }
+                      {%- endif -%}
+                    }
+                  }{%- unless forloop.last -%},{%- endunless -%}
+                {%- endfor -%}
+              ]
+            }{%- unless forloop.last -%},{%- endunless -%}
+          {%- endfor -%}
+        {%- endfor -%}
+      ]
+    }
+    </script>
+  {%- endif -%}
 
   <div class="loop-subscription-widget__tabs">
     <button 
