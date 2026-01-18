@@ -566,17 +566,16 @@ if (!customElements.get('loop-subscription-widget')) {
         const intervalCount = plan.billingPolicy?.intervalCount || 1;
         const intervalUnit = plan.billingPolicy?.interval || 'MONTH';
         const unit = intervalUnit.toLowerCase();
-        const formattedPrice = this.formatPrice(price);
         
-        if (intervalCount === 1) {
-          return `Billed ${unit === 'month' ? 'monthly' : unit === 'week' ? 'weekly' : unit + 'ly'}.`;
+        // Convert to days for display
+        let days = intervalCount;
+        if (unit === 'month' || unit === 'months') {
+          days = intervalCount * 30;
+        } else if (unit === 'week' || unit === 'weeks') {
+          days = intervalCount * 7;
         }
         
-        if (intervalCount === 3 && unit === 'month') {
-          return `${formattedPrice} billed every 90 days.`;
-        }
-        
-        return `${formattedPrice} billed every ${intervalCount} ${unit}${intervalCount > 1 ? 's' : ''}.`;
+        return `Billed every ${days} days.`;
       }
 
       formatPrice(priceInCents) {
