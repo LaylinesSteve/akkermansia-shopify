@@ -204,7 +204,7 @@ if (!customElements.get('loop-subscription-widget')) {
                           pricingPolicies: pricingPolicies,
                           productId: product.id.toString(),
                           variantId: variant?.id?.toString() || null,
-                          variantPrice: variant ? variant.price * 100 : 0
+                          variantPrice: variant ? variant.price : 0 // Product JSON prices are already in cents
                         });
                       });
                     }
@@ -272,7 +272,7 @@ if (!customElements.get('loop-subscription-widget')) {
                           pricingPolicies: pricingPolicies,
                           productId: product.id.toString(),
                           variantId: variant?.id?.toString() || null,
-                          variantPrice: variant ? variant.price * 100 : 0
+                          variantPrice: variant ? variant.price : 0 // Product JSON prices are already in cents
                         });
                       });
                     }
@@ -439,11 +439,24 @@ if (!customElements.get('loop-subscription-widget')) {
         option.dataset.productId = plan.productId;
         option.dataset.variantId = plan.variantId;
 
-        const basePrice = plan.variantPrice || 0; // Already in cents
-        let subscriptionPrice = basePrice;
+        // Shopify product JSON prices are in cents (e.g., 6500 = $65)
+        // But we need to verify this - let's log it
+        const basePrice = plan.variantPrice || 0;
+        console.log('Creating selling plan option:', plan.name);
+        console.log('Raw variantPrice from JSON:', basePrice, '(If this shows 65, prices are in dollars. If 6500, prices are in cents)');
+        
+        // Convert to cents if price appears to be in dollars (less than 1000 suggests dollars)
+        let basePriceCents = basePrice;
+        if (basePrice > 0 && basePrice < 1000) {
+          // Likely in dollars, convert to cents
+          basePriceCents = basePrice * 100;
+          console.log('Price appears to be in dollars, converted to cents:', basePriceCents);
+        }
+        
+        let subscriptionPrice = basePriceCents;
         let savings = 0;
         
-        console.log('Creating selling plan option:', plan.name, 'Base price (cents):', basePrice, 'Policies:', plan.pricingPolicies);
+        console.log('Base price (cents):', basePriceCents, 'Policies:', plan.pricingPolicies);
         
         if (plan.pricingPolicies && plan.pricingPolicies.length > 0) {
           const policy = plan.pricingPolicies[0];
@@ -452,15 +465,15 @@ if (!customElements.get('loop-subscription-widget')) {
           
           if (adjustmentType === 'PERCENTAGE' && adjustmentValue.percentage !== undefined) {
             const percentage = parseFloat(adjustmentValue.percentage);
-            const discount = Math.round((basePrice * percentage) / 100);
-            subscriptionPrice = basePrice - discount;
+            const discount = Math.round((basePriceCents * percentage) / 100);
+            subscriptionPrice = basePriceCents - discount;
             savings = Math.round(percentage);
             console.log('Percentage discount:', percentage + '%', 'Discount (cents):', discount, 'Final price (cents):', subscriptionPrice);
           } else if (adjustmentType === 'FIXED_AMOUNT' && adjustmentValue.fixedValue) {
             // Fixed amount is stored in dollars, convert to cents
             const discountAmountCents = Math.round(parseFloat(adjustmentValue.fixedValue.amount) * 100);
-            subscriptionPrice = basePrice - discountAmountCents;
-            savings = Math.round((discountAmountCents / basePrice) * 100);
+            subscriptionPrice = basePriceCents - discountAmountCents;
+            savings = Math.round((discountAmountCents / basePriceCents) * 100);
             console.log('Fixed discount (dollars):', adjustmentValue.fixedValue.amount, 'Discount (cents):', discountAmountCents, 'Final price (cents):', subscriptionPrice);
           }
         }
@@ -631,9 +644,15 @@ if (!customElements.get('loop-subscription-widget')) {
         
         if (this.purchaseType === 'subscribe' && this.selectedSellingPlan) {
             const pricingPolicies = this.selectedSellingPlan.pricingPolicies || [];
+          let variantPriceCents = this.selectedSellingPlan.variantPrice || 0;
+          // Convert to cents if price appears to be in dollars
+          if (variantPriceCents > 0 && variantPriceCents < 1000) {
+            variantPriceCents = variantPriceCents * 100;
+          }
+          
             if (pricingPolicies.length > 0) {
               const policy = pricingPolicies[0];
-            let subscriptionPrice = this.selectedSellingPlan.variantPrice || 0;
+            let subscriptionPrice = variantPriceCents;
             const adjustmentType = policy.adjustmentType || '';
             const adjustmentValue = policy.adjustmentValue || {};
             
@@ -646,7 +665,7 @@ if (!customElements.get('loop-subscription-widget')) {
             }
             price = this.formatPrice(subscriptionPrice);
           } else {
-            price = this.formatPrice(this.selectedSellingPlan.variantPrice || 0);
+            price = this.formatPrice(variantPriceCents);
           }
         } else {
           const onetimePriceElement = this.querySelector('[data-onetime-price]');
