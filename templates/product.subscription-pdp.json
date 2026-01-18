@@ -16,17 +16,6 @@
           "type": "title",
           "settings": {}
         },
-        "custom_liquid_zWzRdm": {
-          "type": "custom_liquid",
-          "settings": {
-            "custom_liquid": "<hr>"
-          }
-        },
-        "price_cWggME": {
-          "type": "price",
-          "disabled": true,
-          "settings": {}
-        },
         "description": {
           "type": "description",
           "settings": {}
@@ -61,28 +50,7 @@
             "heading_3": ""
           }
         },
-        "custom_liquid_zWzRdm_2": {
-          "type": "custom_liquid",
-          "settings": {
-            "custom_liquid": "{% if customer %}\n  <h2 style=\"display: flex; align-items: center;\">\n    {{ product.price | money }}\n    <small style=\"padding-left: 8px; display: inline-flex; text-decoration: line-through; color: gray;\">\n      $65\n    </small>\n    <small style=\"padding-left: 8px; display: inline-flex;\">\n      per bottle\n    </small>\n  </h2>\n{% endif %}"
-          }
-        },
-        "custom_liquid_GKtqDp": {
-          "type": "custom_liquid",
-          "disabled": true,
-          "settings": {
-            "custom_liquid": "{% if customer %}\n  <div class=\"amazon-button-container\" style=\"margin-top:12px;margin-bottom:32px;\">\n    <a class=\"button button--primary\" href=\"/cart/add?id={{ product.variants.first.id }}\">Buy Now</a>\n  </div>\n{% else %}\n  <div class=\"amazon-button-container\" style=\"margin-top:12px;margin-bottom:40px;\">\n    <div style=\"text-align:center;font-size:90%;padding-bottom:8px;\">Healthcare Practitioners</div>\n    <a class=\"button button--primary\" href=\"{{ routes.account_login_url }}?return_to={{ request.path | url_encode }}\">\n      Sign in to See Pricing\n    </a>\n\n    <div style=\"text-align:center;font-size:90%;padding-top:4px;\">\n\n      <a href=\"{{ routes.account_register_url }}?return_to={{ request.path | url_encode }}\" style=\"color:#081832;\">\n        Need an account? Register here\n      </a>\n    </div>\n  </div>\n{% endif %}"
-          }
-        },
-        "variant_picker_XqLDdf": {
-          "type": "variant_picker",
-          "disabled": true,
-          "settings": {
-            "picker_type": "button",
-            "swatch_shape": "circle"
-          }
-        },
-        "loop_subscriptions_loop_widget_7eRgYp": {
+        "loop_subscriptions_loop_widget_CHHQTK": {
           "type": "shopify://apps/loop-subscriptions/blocks/loop_widget/267a7c64-5cb3-4552-b817-5485165f0a0b",
           "settings": {}
         },
@@ -123,15 +91,10 @@
       },
       "block_order": [
         "title",
-        "custom_liquid_zWzRdm",
-        "price_cWggME",
         "description",
         "icon_with_text_azrGcG",
         "icon_with_text_hi64gC",
-        "custom_liquid_zWzRdm_2",
-        "custom_liquid_GKtqDp",
-        "variant_picker_XqLDdf",
-        "loop_subscriptions_loop_widget_7eRgYp",
+        "loop_subscriptions_loop_widget_CHHQTK",
         "collapsible_tab_m6CyXF",
         "collapsible_tab_7gHXq6",
         "collapsible_tab_jzCwkb",
