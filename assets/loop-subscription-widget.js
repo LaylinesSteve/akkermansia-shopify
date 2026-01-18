@@ -487,7 +487,7 @@ if (!customElements.get('loop-subscription-widget')) {
                 ${savings > 0 ? `<span class="loop-subscription-widget__savings-badge">Save ${savings}%</span>` : ''}
               </div>
               <div class="loop-subscription-widget__option-pricing">
-                ${basePrice > subscriptionPrice ? `<span class="loop-subscription-widget__option-price-original">${this.formatPrice(basePrice)}</span>` : ''}
+                ${basePriceCents > subscriptionPrice ? `<span class="loop-subscription-widget__option-price-original">${this.formatPrice(basePriceCents)}</span>` : ''}
                 <span class="loop-subscription-widget__option-price">${this.formatPrice(subscriptionPrice)}</span>
               </div>
               <div class="loop-subscription-widget__option-billing">${billingText}</div>
@@ -630,10 +630,10 @@ if (!customElements.get('loop-subscription-widget')) {
         let price = '';
         
         if (this.purchaseType === 'subscribe' && this.selectedSellingPlan) {
-          const pricingPolicies = this.selectedSellingPlan.pricingPolicies || [];
+            const pricingPolicies = this.selectedSellingPlan.pricingPolicies || [];
           const variantPriceCents = this.selectedSellingPlan.variantPrice || 0; // Already in cents from JSON
           
-          if (pricingPolicies.length > 0) {
+            if (pricingPolicies.length > 0) {
               const policy = pricingPolicies[0];
             let subscriptionPrice = variantPriceCents;
             const adjustmentType = policy.adjustmentType || '';
