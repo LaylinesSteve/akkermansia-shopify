@@ -469,19 +469,28 @@ if (!customElements.get('loop-subscription-widget')) {
           const adjustmentType = policy.adjustmentType;
           const adjustmentValue = policy.adjustmentValue || {};
           
+          console.log('Pricing policy:', { adjustmentType, adjustmentValue, basePriceCents });
+          
           if (adjustmentType === 'PERCENTAGE' && adjustmentValue.percentage !== undefined) {
             const percentage = parseFloat(adjustmentValue.percentage);
-            const discount = Math.round((basePriceCents * percentage) / 100);
-            subscriptionPrice = basePriceCents - discount;
-            savings = Math.round(percentage);
-            console.log('Percentage discount:', percentage + '%', 'Discount (cents):', discount, 'Final price (cents):', subscriptionPrice);
+            // Ensure percentage is reasonable (0-100%)
+            if (percentage >= 0 && percentage <= 100) {
+              const discount = Math.round((basePriceCents * percentage) / 100);
+              subscriptionPrice = Math.max(0, basePriceCents - discount); // Ensure no negative prices
+              savings = Math.min(100, Math.round(percentage)); // Cap savings at 100%
+            } else {
+              console.warn('Invalid percentage discount:', percentage, 'for plan:', plan.name);
+            }
           } else if (adjustmentType === 'FIXED_AMOUNT' && adjustmentValue.fixedValue) {
             // Fixed amount is stored in dollars, convert to cents
-            const discountAmountCents = Math.round(parseFloat(adjustmentValue.fixedValue.amount) * 100);
-            subscriptionPrice = basePriceCents - discountAmountCents;
-            savings = Math.round((discountAmountCents / basePriceCents) * 100);
-            console.log('Fixed discount (dollars):', adjustmentValue.fixedValue.amount, 'Discount (cents):', discountAmountCents, 'Final price (cents):', subscriptionPrice);
+            const fixedAmountDollars = parseFloat(adjustmentValue.fixedValue.amount);
+            const discountAmountCents = Math.round(fixedAmountDollars * 100);
+            subscriptionPrice = Math.max(0, basePriceCents - discountAmountCents); // Ensure no negative prices
+            savings = Math.min(100, Math.round((discountAmountCents / basePriceCents) * 100)); // Cap savings at 100%
+            console.log('Fixed discount (dollars):', fixedAmountDollars, 'Discount (cents):', discountAmountCents, 'Final price (cents):', subscriptionPrice);
           }
+          
+          console.log('Final subscription price:', subscriptionPrice, 'cents ($' + (subscriptionPrice / 100).toFixed(2) + ')');
         }
 
         const frequencyText = this.getFrequencyText(plan);
@@ -532,10 +541,25 @@ if (!customElements.get('loop-subscription-widget')) {
         const intervalUnit = plan.billingPolicy?.interval || 'MONTH';
         const unit = intervalUnit.toLowerCase();
         
-        if (intervalCount === 1) {
-          return `1-${unit.charAt(0).toUpperCase() + unit.slice(1)} supply`;
+        // Convert months to days for display
+        let days = intervalCount;
+        if (unit === 'month' || unit === 'months') {
+          days = intervalCount * 30; // Approximate 30 days per month
+        } else if (unit === 'week' || unit === 'weeks') {
+          days = intervalCount * 7;
         }
-        return `${intervalCount}-${unit.charAt(0).toUpperCase() + unit.slice(1)} supply`;
+        
+        // Check if this is the 3-unit plan (90 days typically)
+        const planName = (plan.name || '').toLowerCase();
+        const planDesc = (plan.description || '').toLowerCase();
+        const isThreeUnitPlan = days >= 90 || planName.includes('3') || planName.includes('90') || planDesc.includes('3 unit');
+        
+        let text = `Delivery Every ${days} Days`;
+        if (isThreeUnitPlan) {
+          text += ` (3 units)`;
+        }
+        
+        return text;
       }
 
       getBillingText(plan, price) {
