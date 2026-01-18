@@ -439,24 +439,11 @@ if (!customElements.get('loop-subscription-widget')) {
         option.dataset.productId = plan.productId;
         option.dataset.variantId = plan.variantId;
 
-        // Shopify product JSON prices are in cents (e.g., 6500 = $65)
-        // But we need to verify this - let's log it
-        const basePrice = plan.variantPrice || 0;
-        console.log('Creating selling plan option:', plan.name);
-        console.log('Raw variantPrice from JSON:', basePrice, '(If this shows 65, prices are in dollars. If 6500, prices are in cents)');
-        
-        // Convert to cents if price appears to be in dollars (less than 1000 suggests dollars)
-        let basePriceCents = basePrice;
-        if (basePrice > 0 && basePrice < 1000) {
-          // Likely in dollars, convert to cents
-          basePriceCents = basePrice * 100;
-          console.log('Price appears to be in dollars, converted to cents:', basePriceCents);
-        }
-        
+        // Shopify product JSON prices from /products/[handle].js are in CENTS
+        // e.g., 6500 = $65.00
+        const basePriceCents = plan.variantPrice || 0;
         let subscriptionPrice = basePriceCents;
         let savings = 0;
-        
-        console.log('Base price (cents):', basePriceCents, 'Policies:', plan.pricingPolicies);
         
         if (plan.pricingPolicies && plan.pricingPolicies.length > 0) {
           const policy = plan.pricingPolicies[0];
@@ -643,14 +630,10 @@ if (!customElements.get('loop-subscription-widget')) {
         let price = '';
         
         if (this.purchaseType === 'subscribe' && this.selectedSellingPlan) {
-            const pricingPolicies = this.selectedSellingPlan.pricingPolicies || [];
-          let variantPriceCents = this.selectedSellingPlan.variantPrice || 0;
-          // Convert to cents if price appears to be in dollars
-          if (variantPriceCents > 0 && variantPriceCents < 1000) {
-            variantPriceCents = variantPriceCents * 100;
-          }
+          const pricingPolicies = this.selectedSellingPlan.pricingPolicies || [];
+          const variantPriceCents = this.selectedSellingPlan.variantPrice || 0; // Already in cents from JSON
           
-            if (pricingPolicies.length > 0) {
+          if (pricingPolicies.length > 0) {
               const policy = pricingPolicies[0];
             let subscriptionPrice = variantPriceCents;
             const adjustmentType = policy.adjustmentType || '';
