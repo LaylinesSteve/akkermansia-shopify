@@ -171,12 +171,24 @@ if (!customElements.get('loop-subscription-widget')) {
                         const pricingPolicies = [];
                         if (plan.price_adjustments && plan.price_adjustments.length > 0) {
                           plan.price_adjustments.forEach(adjustment => {
-                            pricingPolicies.push({
-                              adjustmentType: adjustment.value_type === 'percentage' ? 'PERCENTAGE' : 'FIXED_AMOUNT',
-                              adjustmentValue: adjustment.value_type === 'percentage' 
-                                ? { percentage: adjustment.value }
-                                : { fixedValue: { amount: adjustment.value, currencyCode: 'USD' } }
-                            });
+                            if (adjustment.value_type === 'percentage') {
+                              pricingPolicies.push({
+                                adjustmentType: 'PERCENTAGE',
+                                adjustmentValue: { percentage: parseFloat(adjustment.value) || 0 }
+                              });
+                            } else {
+                              // Fixed amount - value is typically in cents in Shopify JSON
+                              const fixedAmount = parseFloat(adjustment.value) || 0;
+                              pricingPolicies.push({
+                                adjustmentType: 'FIXED_AMOUNT',
+                                adjustmentValue: { 
+                                  fixedValue: { 
+                                    amount: fixedAmount / 100, // Convert cents to dollars for display
+                                    currencyCode: 'USD' 
+                                  } 
+                                }
+                              });
+                            }
                           });
                         }
                         
@@ -227,12 +239,24 @@ if (!customElements.get('loop-subscription-widget')) {
                         const pricingPolicies = [];
                         if (plan.price_adjustments && plan.price_adjustments.length > 0) {
                           plan.price_adjustments.forEach(adjustment => {
-                            pricingPolicies.push({
-                              adjustmentType: adjustment.value_type === 'percentage' ? 'PERCENTAGE' : 'FIXED_AMOUNT',
-                              adjustmentValue: adjustment.value_type === 'percentage' 
-                                ? { percentage: adjustment.value }
-                                : { fixedValue: { amount: adjustment.value, currencyCode: 'USD' } }
-                            });
+                            if (adjustment.value_type === 'percentage') {
+                              pricingPolicies.push({
+                                adjustmentType: 'PERCENTAGE',
+                                adjustmentValue: { percentage: parseFloat(adjustment.value) || 0 }
+                              });
+                            } else {
+                              // Fixed amount - value is typically in cents in Shopify JSON
+                              const fixedAmount = parseFloat(adjustment.value) || 0;
+                              pricingPolicies.push({
+                                adjustmentType: 'FIXED_AMOUNT',
+                                adjustmentValue: { 
+                                  fixedValue: { 
+                                    amount: fixedAmount / 100, // Convert cents to dollars for display
+                                    currencyCode: 'USD' 
+                                  } 
+                                }
+                              });
+                            }
                           });
                         }
                         
@@ -415,29 +439,29 @@ if (!customElements.get('loop-subscription-widget')) {
         option.dataset.productId = plan.productId;
         option.dataset.variantId = plan.variantId;
 
-        const basePrice = plan.variantPrice || 0;
+        const basePrice = plan.variantPrice || 0; // Already in cents
         let subscriptionPrice = basePrice;
         let savings = 0;
         
+        console.log('Creating selling plan option:', plan.name, 'Base price (cents):', basePrice, 'Policies:', plan.pricingPolicies);
+        
         if (plan.pricingPolicies && plan.pricingPolicies.length > 0) {
           const policy = plan.pricingPolicies[0];
-          // Handle both API format and Liquid format
-          const adjustmentType = policy.adjustmentType || policy.adjustmentType;
+          const adjustmentType = policy.adjustmentType;
           const adjustmentValue = policy.adjustmentValue || {};
           
-          if ((adjustmentType === 'PERCENTAGE' || adjustmentType === 'percentage') && adjustmentValue.percentage) {
-            const discount = (basePrice * adjustmentValue.percentage) / 100;
+          if (adjustmentType === 'PERCENTAGE' && adjustmentValue.percentage !== undefined) {
+            const percentage = parseFloat(adjustmentValue.percentage);
+            const discount = Math.round((basePrice * percentage) / 100);
             subscriptionPrice = basePrice - discount;
-            savings = Math.round(adjustmentValue.percentage);
-          } else if ((adjustmentType === 'FIXED_AMOUNT' || adjustmentType === 'fixed_amount') && adjustmentValue.fixedValue) {
-            const discountAmount = adjustmentValue.fixedValue.amount * 100;
-            subscriptionPrice = basePrice - discountAmount;
-            savings = Math.round((discountAmount / basePrice) * 100);
-          } else if (adjustmentValue.percentage !== undefined) {
-            // Direct percentage value
-            const discount = (basePrice * adjustmentValue.percentage) / 100;
-            subscriptionPrice = basePrice - discount;
-            savings = Math.round(adjustmentValue.percentage);
+            savings = Math.round(percentage);
+            console.log('Percentage discount:', percentage + '%', 'Discount (cents):', discount, 'Final price (cents):', subscriptionPrice);
+          } else if (adjustmentType === 'FIXED_AMOUNT' && adjustmentValue.fixedValue) {
+            // Fixed amount is stored in dollars, convert to cents
+            const discountAmountCents = Math.round(parseFloat(adjustmentValue.fixedValue.amount) * 100);
+            subscriptionPrice = basePrice - discountAmountCents;
+            savings = Math.round((discountAmountCents / basePrice) * 100);
+            console.log('Fixed discount (dollars):', adjustmentValue.fixedValue.amount, 'Discount (cents):', discountAmountCents, 'Final price (cents):', subscriptionPrice);
           }
         }
 
@@ -606,9 +630,9 @@ if (!customElements.get('loop-subscription-widget')) {
         let price = '';
         
         if (this.purchaseType === 'subscribe' && this.selectedSellingPlan) {
-          const pricingPolicies = this.selectedSellingPlan.pricingPolicies || [];
-          if (pricingPolicies.length > 0) {
-            const policy = pricingPolicies[0];
+            const pricingPolicies = this.selectedSellingPlan.pricingPolicies || [];
+            if (pricingPolicies.length > 0) {
+              const policy = pricingPolicies[0];
             let subscriptionPrice = this.selectedSellingPlan.variantPrice || 0;
             const adjustmentType = policy.adjustmentType || '';
             const adjustmentValue = policy.adjustmentValue || {};
