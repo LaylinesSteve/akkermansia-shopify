@@ -156,6 +156,10 @@ if (!customElements.get('loop-subscription-widget')) {
                 const product = await response.json();
                 const variant = product.variants?.[0];
                 
+                console.log('Product JSON response:', product);
+                console.log('Product has selling_plan_groups?', !!product.selling_plan_groups);
+                console.log('selling_plan_groups:', product.selling_plan_groups);
+                
                 // Extract selling plans from product JSON
                 // Shopify product JSON includes selling_plan_groups
                 if (product.selling_plan_groups && product.selling_plan_groups.length > 0) {
@@ -209,12 +213,20 @@ if (!customElements.get('loop-subscription-widget')) {
                       });
                     }
                   });
+                } else {
+                  console.warn('No selling_plan_groups found in product JSON for:', productHandle);
                 }
+              } else {
+                console.error('Failed to fetch product JSON for:', productHandle, 'Status:', response.status);
               }
             } catch (error) {
               console.error('Error fetching main product selling plans:', error);
             }
+          } else {
+            console.warn('No product handle found in [data-selling-plans-data] element');
           }
+        } else {
+          console.warn('No [data-selling-plans-data] element found');
         }
         
         // Get 3-month product selling plans from JSON endpoint
@@ -277,14 +289,21 @@ if (!customElements.get('loop-subscription-widget')) {
                       });
                     }
                   });
+                } else {
+                  console.warn('No selling_plan_groups found in 3-month product JSON');
                 }
+              } else {
+                console.error('Failed to fetch 3-month product JSON. Status:', response.status);
               }
             } catch (error) {
               console.error('Error fetching 3-month product selling plans:', error);
             }
+          } else {
+            console.warn('No product handle found in [data-three-month-selling-plans-data] element');
           }
         }
         
+        console.log('Total plans found from Liquid/JSON:', plans.length);
         return plans;
       }
 
