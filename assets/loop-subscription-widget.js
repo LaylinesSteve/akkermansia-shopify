@@ -438,25 +438,23 @@ if (!customElements.get('loop-subscription-widget')) {
         const intervalUnit = plan.billingPolicy?.interval || 'MONTH';
         const unit = intervalUnit.toLowerCase();
         
-        // Convert months to days for display
-        let days = intervalCount;
-        if (unit === 'month' || unit === 'months') {
-          days = intervalCount * 30; // Approximate 30 days per month
-        } else if (unit === 'week' || unit === 'weeks') {
-          days = intervalCount * 7;
-        }
-        
         // Check if this is the 3-unit plan (90 days typically)
         const planName = (plan.name || '').toLowerCase();
         const planDesc = (plan.description || '').toLowerCase();
-        const isThreeUnitPlan = days >= 90 || planName.includes('3') || planName.includes('90') || planDesc.includes('3 unit');
+        const isThreeUnitPlan = (intervalCount === 3 && unit === 'month') || 
+                                 planName.includes('3') || 
+                                 planName.includes('90') || 
+                                 planDesc.includes('3 unit');
         
-        let text = `Delivery Every ${days} Days`;
-        if (isThreeUnitPlan) {
-          text += ` (3 units)`;
+        if (intervalCount === 1 && unit === 'month') {
+          return 'Monthly';
+        } else if (intervalCount === 3 && unit === 'month') {
+          return isThreeUnitPlan ? 'Every 3 Months (3 units)' : 'Every 3 Months';
+        } else if (intervalCount === 1) {
+          return `Every ${unit.charAt(0).toUpperCase() + unit.slice(1)}`;
+        } else {
+          return `Every ${intervalCount} ${unit}${intervalCount > 1 ? 's' : ''}`;
         }
-        
-        return text;
       }
 
       getBillingText(plan, price) {
@@ -481,8 +479,8 @@ if (!customElements.get('loop-subscription-widget')) {
         return new Intl.NumberFormat('en-US', {
           style: 'currency',
           currency: 'USD',
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
         }).format(priceInDollars);
       }
 
