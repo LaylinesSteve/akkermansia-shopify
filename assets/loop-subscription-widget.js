@@ -600,25 +600,38 @@ if (!customElements.get('loop-subscription-widget')) {
         }
         
         // Determine quantity based on the selling plan
-        // 90-day plans should have quantity 3
+        // Plan ID 38624 is the 3-month plan - needs quantity 3
+        const planId = sellingPlan.id ? sellingPlan.id.toString() : '';
         const intervalCount = sellingPlan.billingPolicy?.intervalCount || 1;
         const intervalUnit = sellingPlan.billingPolicy?.interval || 'MONTH';
         const planName = (sellingPlan.name || '').toLowerCase();
         const planDesc = (sellingPlan.description || '').toLowerCase();
         
-        // Check if this is the 3-unit plan (90 days typically)
-        const isThreeUnitPlan = sellingPlan.id === '38624' ||
-                                 intervalCount >= 3 || 
-                                 (intervalUnit === 'MONTH' && intervalCount === 3) ||
-                                 planName.includes('3') || 
-                                 planName.includes('90') || 
+        // Check if this is the 3-unit plan (plan ID 38624 or 3-month interval)
+        const isThreeUnitPlan = planId === '38624' ||
+                                 planId === 38624 ||
+                                 (intervalCount === 3 && (intervalUnit === 'MONTH' || intervalUnit === 'month')) ||
+                                 planName.includes('3 month') ||
+                                 planName.includes('90') ||
                                  planDesc.includes('3 unit');
         
         const quantity = isThreeUnitPlan ? 3 : 1;
         
+        console.log('selectSellingPlan:', {
+          planId,
+          planName: sellingPlan.name,
+          isThreeUnitPlan,
+          quantity,
+          intervalCount,
+          intervalUnit
+        });
+        
         const quantityInput = this.querySelector('[data-loop-quantity]');
         if (quantityInput) {
           quantityInput.value = quantity;
+          console.log('Quantity set to:', quantity, 'in input:', quantityInput);
+        } else {
+          console.warn('Quantity input not found!');
         }
         
         // Remove fulfillment quantity property since we're using actual quantity now
@@ -627,6 +640,14 @@ if (!customElements.get('loop-subscription-widget')) {
           if (fulfillmentProp) {
             fulfillmentProp.remove();
           }
+          
+          // Verify form has correct inputs
+          console.log('Form inputs:', {
+            variantId: this.variantInput?.value,
+            sellingPlanId: this.sellingPlanInput?.value,
+            quantity: quantityInput?.value,
+            formAction: this.form.action
+          });
         }
         
         this.updateButtonPrice();
