@@ -415,26 +415,37 @@ if (!customElements.get('loop-subscription-widget')) {
         
         // Calculate price display
         let priceDisplay = this.formatPrice(subscriptionPrice);
-        // For 3-month plan, show the per-month price (not total)
+        let showOriginalPrice = basePriceCents > subscriptionPrice;
+        let originalPriceDisplay = '';
+        
+        // For 3-month plan, show the per-month price with original price
         if (isThreeMonthPlan) {
           // Show per-month price: $44.99
           const perMonthPrice = 4499; // $44.99 in cents
-          priceDisplay = this.formatPrice(perMonthPrice);
+          priceDisplay = this.formatPrice(perMonthPrice) + ' per month';
+          // Show original $65 price struck through
+          originalPriceDisplay = `<span class="loop-subscription-widget__option-price-original" style="text-decoration: line-through; color: #999; margin-right: 8px; font-size: 16px;">${this.formatPrice(basePriceCents)}</span>`;
+          showOriginalPrice = true;
+        } else {
+          // For 1-month, show original price if there's a discount
+          if (showOriginalPrice) {
+            originalPriceDisplay = `<span class="loop-subscription-widget__option-price-original" style="text-decoration: line-through; color: #999; margin-right: 8px; font-size: 16px;">${this.formatPrice(basePriceCents)}</span>`;
+          }
         }
         
-        // Create badges - hardcode discount percentages
+        // Create badges - hardcode discount percentages (on single line)
         const badges = [];
         const isOneMonthPlan = (intervalCount === 1 && (unit === 'month' || unit === 'months')) ||
                                (!isThreeMonthPlan && intervalCount === 1);
         
         if (isThreeMonthPlan) {
           // 3-month plan: Save 31%
-          badges.push(`<span class="loop-subscription-widget__badge loop-subscription-widget__badge--discount" style="background-color: #FFD700; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-right: 8px;">Save 31%</span>`);
+          badges.push(`<span class="loop-subscription-widget__badge loop-subscription-widget__badge--discount" style="background-color: #FFD700; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-right: 8px; display: inline-block;">Save 31%</span>`);
         } else if (isOneMonthPlan) {
           // 1-month plan: Save 15%
-          badges.push(`<span class="loop-subscription-widget__badge loop-subscription-widget__badge--discount" style="background-color: #FFD700; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-right: 8px;">Save 15%</span>`);
+          badges.push(`<span class="loop-subscription-widget__badge loop-subscription-widget__badge--discount" style="background-color: #FFD700; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-right: 8px; display: inline-block;">Save 15%</span>`);
         }
-        badges.push(`<span class="loop-subscription-widget__badge loop-subscription-widget__badge--shipping" style="background-color: #FFD700; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">Free Shipping</span>`);
+        badges.push(`<span class="loop-subscription-widget__badge loop-subscription-widget__badge--shipping" style="background-color: #FFD700; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; display: inline-block;">Free Shipping</span>`);
 
         // Get billing text for display
         const billingText = this.getBillingText(plan, subscriptionPrice);
@@ -464,7 +475,7 @@ if (!customElements.get('loop-subscription-widget')) {
                 <div class="loop-subscription-widget__option-billing" style="font-size: 14px; color: #666; margin-left: 0;">${billingText}</div>
               </div>
               <div class="loop-subscription-widget__option-pricing" style="text-align: right; margin-left: 16px;">
-                ${basePriceCents > subscriptionPrice ? `<span class="loop-subscription-widget__option-price-original" style="text-decoration: line-through; color: #999; margin-right: 8px; font-size: 16px;">${this.formatPrice(basePriceCents)}</span>` : ''}
+                ${originalPriceDisplay}
                 <span class="loop-subscription-widget__option-price" style="font-weight: 600; font-size: 18px;">${priceDisplay}</span>
               </div>
             </div>
@@ -517,21 +528,18 @@ if (!customElements.get('loop-subscription-widget')) {
         const intervalCount = plan.billingPolicy?.intervalCount || 1;
         const intervalUnit = plan.billingPolicy?.interval || 'MONTH';
         const unit = intervalUnit.toLowerCase();
-        const formattedPrice = this.formatPrice(price);
         
         if (intervalCount === 1 && (unit === 'month' || unit === 'months')) {
-          return 'Billed monthly.';
+          return 'Billed every 1 month.';
         } else if (intervalCount === 3 && (unit === 'month' || unit === 'months')) {
-          // For 3-month, show total price billed every 90 days
-          const totalPrice = price * 3; // Total for 3 months
-          return `${this.formatPrice(totalPrice)} billed every 90 days.`;
+          return 'Billed every 3 months.';
         } else if (intervalCount === 1) {
           if (unit === 'week') {
-            return 'Billed weekly.';
+            return 'Billed every 1 week.';
           } else if (unit === 'day') {
-            return 'Billed daily.';
+            return 'Billed every 1 day.';
           } else {
-            return `Billed every ${unit}.`;
+            return `Billed every 1 ${unit}.`;
           }
         } else {
           return `Billed every ${intervalCount} ${unit}${intervalCount > 1 ? 's' : ''}.`;
@@ -620,12 +628,17 @@ if (!customElements.get('loop-subscription-widget')) {
         let price = '';
         
         if (this.purchaseType === 'subscribe' && this.selectedSellingPlan) {
-            const pricingPolicies = this.selectedSellingPlan.pricingPolicies || [];
+          const pricingPolicies = this.selectedSellingPlan.pricingPolicies || [];
           const variantPriceCents = this.selectedSellingPlan.variantPrice || 0; // Already in cents from JSON
+          const intervalCount = this.selectedSellingPlan.billingPolicy?.intervalCount || 1;
+          const intervalUnit = this.selectedSellingPlan.billingPolicy?.interval || 'MONTH';
+          const unit = intervalUnit.toLowerCase();
+          const isThreeMonthPlan = (intervalCount === 3 && (unit === 'month' || unit === 'months'));
           
-            if (pricingPolicies.length > 0) {
-              const policy = pricingPolicies[0];
-            let subscriptionPrice = variantPriceCents;
+          let subscriptionPrice = variantPriceCents;
+          
+          if (pricingPolicies.length > 0) {
+            const policy = pricingPolicies[0];
             const adjustmentType = policy.adjustmentType || '';
             const adjustmentValue = policy.adjustmentValue || {};
             
@@ -636,9 +649,15 @@ if (!customElements.get('loop-subscription-widget')) {
             } else if (adjustmentValue.percentage !== undefined) {
               subscriptionPrice = subscriptionPrice - (subscriptionPrice * adjustmentValue.percentage / 100);
             }
-            price = this.formatPrice(subscriptionPrice);
+          }
+          
+          // For 3-month plan, show total price ($134.97 = $44.99 * 3)
+          if (isThreeMonthPlan) {
+            const perMonthPrice = 4499; // $44.99 in cents
+            const totalPrice = perMonthPrice * 3; // $134.97
+            price = this.formatPrice(totalPrice);
           } else {
-            price = this.formatPrice(variantPriceCents);
+            price = this.formatPrice(subscriptionPrice);
           }
         } else {
           const onetimePriceElement = this.querySelector('[data-onetime-price]');
