@@ -461,17 +461,22 @@ if (!customElements.get('loop-subscription-widget')) {
         const intervalCount = plan.billingPolicy?.intervalCount || 1;
         const intervalUnit = plan.billingPolicy?.interval || 'MONTH';
         const unit = intervalUnit.toLowerCase();
-        const formattedPrice = this.formatPrice(price);
         
-        if (intervalCount === 1) {
-          return `Billed ${unit === 'month' ? 'monthly' : unit === 'week' ? 'weekly' : unit + 'ly'}.`;
+        if (intervalCount === 1 && unit === 'month') {
+          return 'Billed monthly.';
+        } else if (intervalCount === 3 && unit === 'month') {
+          return 'Billed every 3 months.';
+        } else if (intervalCount === 1) {
+          if (unit === 'week') {
+            return 'Billed weekly.';
+          } else if (unit === 'day') {
+            return 'Billed daily.';
+          } else {
+            return `Billed every ${unit}.`;
+          }
+        } else {
+          return `Billed every ${intervalCount} ${unit}${intervalCount > 1 ? 's' : ''}.`;
         }
-        
-        if (intervalCount === 3 && unit === 'month') {
-          return `${formattedPrice} billed every 90 days.`;
-        }
-        
-        return `${formattedPrice} billed every ${intervalCount} ${unit}${intervalCount > 1 ? 's' : ''}.`;
       }
 
       formatPrice(priceInCents) {
