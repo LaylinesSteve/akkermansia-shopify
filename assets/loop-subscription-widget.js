@@ -395,7 +395,23 @@ if (!customElements.get('loop-subscription-widget')) {
         const intervalCount = plan.billingPolicy?.intervalCount || 1;
         const intervalUnit = plan.billingPolicy?.interval || 'MONTH';
         const unit = intervalUnit.toLowerCase();
-        const isThreeMonthPlan = intervalCount === 3 && unit === 'month';
+        
+        // Debug logging
+        console.log('Creating plan option:', {
+          planName: plan.name,
+          intervalCount,
+          intervalUnit,
+          unit,
+          billingPolicy: plan.billingPolicy
+        });
+        
+        // Check if this is the 3-month plan - be more flexible with detection
+        const planName = (plan.name || '').toLowerCase();
+        const planDesc = (plan.description || '').toLowerCase();
+        const isThreeMonthPlan = (intervalCount === 3 && (unit === 'month' || unit === 'months')) ||
+                                 planName.includes('3 month') ||
+                                 planName.includes('90') ||
+                                 planDesc.includes('3 month');
         
         // Calculate per-month price for 3-month plan
         let priceDisplay = this.formatPrice(subscriptionPrice);
@@ -463,9 +479,22 @@ if (!customElements.get('loop-subscription-widget')) {
         const intervalUnit = plan.billingPolicy?.interval || 'MONTH';
         const unit = intervalUnit.toLowerCase();
         
-        if (intervalCount === 1 && (unit === 'month' || unit === 'months')) {
+        // Debug logging
+        console.log('getFrequencyText:', { intervalCount, intervalUnit, unit, planName: plan.name });
+        
+        // Check plan name/description as fallback
+        const planName = (plan.name || '').toLowerCase();
+        const planDesc = (plan.description || '').toLowerCase();
+        const isThreeMonth = (intervalCount === 3 && (unit === 'month' || unit === 'months')) ||
+                             planName.includes('3 month') ||
+                             planName.includes('90') ||
+                             planDesc.includes('3 month');
+        const isOneMonth = (intervalCount === 1 && (unit === 'month' || unit === 'months')) ||
+                           (!isThreeMonth && intervalCount === 1);
+        
+        if (isOneMonth) {
           return 'Delivery Every Month';
-        } else if (intervalCount === 3 && (unit === 'month' || unit === 'months')) {
+        } else if (isThreeMonth) {
           return 'Delivery Every 3 Months';
         } else if (intervalCount === 1) {
           return `Delivery Every ${unit.charAt(0).toUpperCase() + unit.slice(1)}`;
