@@ -413,11 +413,13 @@ if (!customElements.get('loop-subscription-widget')) {
                                  planName.includes('90') ||
                                  planDesc.includes('3 month');
         
-        // Calculate per-month price for 3-month plan
+        // Calculate price display
         let priceDisplay = this.formatPrice(subscriptionPrice);
+        // For 3-month plan, show the per-month price (not total)
         if (isThreeMonthPlan) {
-          // Hardcode to $44.99 per month for 3-month plan
-          priceDisplay = '$44.99 per month';
+          // Show per-month price: $44.99
+          const perMonthPrice = 4499; // $44.99 in cents
+          priceDisplay = this.formatPrice(perMonthPrice);
         }
         
         // Create badges - hardcode discount percentages
@@ -434,8 +436,11 @@ if (!customElements.get('loop-subscription-widget')) {
         }
         badges.push(`<span class="loop-subscription-widget__badge loop-subscription-widget__badge--shipping" style="background-color: #FFD700; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">Free Shipping</span>`);
 
+        // Get billing text for display
+        const billingText = this.getBillingText(plan, subscriptionPrice);
+        
         option.innerHTML = `
-          <label class="loop-subscription-widget__radio-label">
+          <label class="loop-subscription-widget__radio-label" style="display: flex; align-items: flex-start; padding: 16px; border-bottom: 1px solid #e0e0e0;">
             <input 
               type="radio" 
               name="loop-selling-plan-${this.sectionId}" 
@@ -445,18 +450,22 @@ if (!customElements.get('loop-subscription-widget')) {
               data-selling-plan-id="${plan.id}"
               data-product-id="${plan.productId}"
               data-variant-id="${plan.variantId}"
+              style="margin-right: 12px; margin-top: 4px;"
             >
             <span class="loop-subscription-widget__radio-custom"></span>
-            <div class="loop-subscription-widget__option-content">
-              <div class="loop-subscription-widget__option-header">
-                <span class="loop-subscription-widget__option-title">${frequencyText}</span>
+            <div class="loop-subscription-widget__option-content" style="flex: 1; display: flex; justify-content: space-between; align-items: flex-start;">
+              <div style="flex: 1;">
+                <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                  <span class="loop-subscription-widget__option-title" style="font-weight: 600; font-size: 16px; margin-right: 8px;">${frequencyText}</span>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    ${badges.join('')}
+                  </div>
+                </div>
+                <div class="loop-subscription-widget__option-billing" style="font-size: 14px; color: #666; margin-left: 0;">${billingText}</div>
               </div>
-              <div class="loop-subscription-widget__option-badges" style="display: flex; align-items: center; margin: 8px 0;">
-                ${badges.join('')}
-              </div>
-              <div class="loop-subscription-widget__option-pricing">
-                ${basePriceCents > subscriptionPrice ? `<span class="loop-subscription-widget__option-price-original">${this.formatPrice(basePriceCents)}</span>` : ''}
-                <span class="loop-subscription-widget__option-price">${priceDisplay}</span>
+              <div class="loop-subscription-widget__option-pricing" style="text-align: right; margin-left: 16px;">
+                ${basePriceCents > subscriptionPrice ? `<span class="loop-subscription-widget__option-price-original" style="text-decoration: line-through; color: #999; margin-right: 8px; font-size: 16px;">${this.formatPrice(basePriceCents)}</span>` : ''}
+                <span class="loop-subscription-widget__option-price" style="font-weight: 600; font-size: 18px;">${priceDisplay}</span>
               </div>
             </div>
           </label>
@@ -508,11 +517,14 @@ if (!customElements.get('loop-subscription-widget')) {
         const intervalCount = plan.billingPolicy?.intervalCount || 1;
         const intervalUnit = plan.billingPolicy?.interval || 'MONTH';
         const unit = intervalUnit.toLowerCase();
+        const formattedPrice = this.formatPrice(price);
         
-        if (intervalCount === 1 && unit === 'month') {
+        if (intervalCount === 1 && (unit === 'month' || unit === 'months')) {
           return 'Billed monthly.';
-        } else if (intervalCount === 3 && unit === 'month') {
-          return 'Billed every 3 months.';
+        } else if (intervalCount === 3 && (unit === 'month' || unit === 'months')) {
+          // For 3-month, show total price billed every 90 days
+          const totalPrice = price * 3; // Total for 3 months
+          return `${this.formatPrice(totalPrice)} billed every 90 days.`;
         } else if (intervalCount === 1) {
           if (unit === 'week') {
             return 'Billed weekly.';
