@@ -99,6 +99,7 @@
             <input
               class="quantity__input"
               type="number"
+              name="quantity"
               id="RestrictedQuantity-{{ section_id }}"
               value="12"
               min="12"
@@ -106,7 +107,6 @@
               data-min="12"
               form="{{ product_form_id }}"
               aria-label="{{ 'products.product.quantity.input_label' | t: product: product.title | escape }}"
-              data-restricted-quantity-display
             >
             <button class="quantity__button" name="plus" type="button">
               <span class="visually-hidden">
@@ -157,14 +157,15 @@
         const form = document.getElementById('{{ product_form_id }}');
         if (form) {
           form.addEventListener('submit', function(e) {
+            // Force quantity to 12 on form submit
+            const quantityInput = document.getElementById('RestrictedQuantity-{{ section_id }}');
+            if (quantityInput) {
+              quantityInput.value = '12';
+            }
+            // Also update hidden input if it exists
             const hiddenQuantityInput = document.getElementById('RestrictedQuantityHidden-{{ section_id }}');
             if (hiddenQuantityInput) {
               hiddenQuantityInput.value = '12';
-            }
-            // Also ensure any visible quantity input is set to 12
-            const visibleQuantityInput = document.getElementById('RestrictedQuantity-{{ section_id }}');
-            if (visibleQuantityInput) {
-              visibleQuantityInput.value = '12';
             }
           });
         }
