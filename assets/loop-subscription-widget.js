@@ -567,42 +567,6 @@ if (!customElements.get('loop-subscription-widget')) {
         this.updateButtonPrice();
       }
 
-      async switchToProduct(productId, variantId = null) {
-        if (this.currentProductId === productId && this.currentVariantId === variantId) {
-          return;
-        }
-
-        this.currentProductId = productId;
-        
-        if (!variantId) {
-          try {
-            const response = await fetch(`/products/${productId.split('/').pop()}.js`);
-            const product = await response.json();
-            variantId = product.variants[0].id;
-          } catch (error) {
-            console.error('Error fetching product:', error);
-            return;
-          }
-        }
-        
-        this.currentVariantId = variantId;
-        
-        if (this.form) {
-          this.form.action = `/cart/add`;
-          
-          if (this.variantInput) {
-            this.variantInput.value = variantId;
-          }
-        }
-        
-        if (window.Shopify && Shopify.PaymentButton) {
-          const paymentButtonContainer = this.querySelector('.shopify-payment-button');
-          if (paymentButtonContainer) {
-            paymentButtonContainer.innerHTML = '';
-            Shopify.PaymentButton.init();
-          }
-        }
-      }
 
       updateButtonPrice() {
         if (!this.buttonPriceElement) return;
