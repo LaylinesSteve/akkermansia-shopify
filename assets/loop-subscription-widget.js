@@ -406,9 +406,14 @@ if (!customElements.get('loop-subscription-widget')) {
         
         // Create badges
         const badges = [];
-        // Always show discount badge for 3-month plan
+        // Always show discount badge for 3-month plan (calculate discount from base price vs subscription price)
         if (isThreeMonthPlan) {
-          badges.push(`<span class="loop-subscription-widget__badge loop-subscription-widget__badge--discount" style="background-color: #FFD700; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-right: 8px;">Save ${savings}%</span>`);
+          // Calculate discount: base price is $65, subscription is $44.99 per month * 3 = $134.97 total
+          // But we're showing per month, so discount is from $65 to $44.99 = ~31% off
+          const discountPercent = savings > 0 ? savings : Math.round(((basePriceCents - subscriptionPrice) / basePriceCents) * 100);
+          if (discountPercent > 0) {
+            badges.push(`<span class="loop-subscription-widget__badge loop-subscription-widget__badge--discount" style="background-color: #FFD700; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-right: 8px;">Save ${discountPercent}%</span>`);
+          }
         }
         badges.push(`<span class="loop-subscription-widget__badge loop-subscription-widget__badge--shipping" style="background-color: #FFD700; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">Free Shipping</span>`);
 
