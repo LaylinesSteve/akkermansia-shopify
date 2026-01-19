@@ -531,25 +531,28 @@ if (!customElements.get('loop-subscription-widget')) {
       }
 
       getBillingText(plan, price) {
+        const planId = plan.id ? plan.id.toString() : '';
         const intervalCount = plan.billingPolicy?.intervalCount || 1;
         const intervalUnit = plan.billingPolicy?.interval || 'MONTH';
         const unit = intervalUnit.toLowerCase();
-        const planId = plan.id;
         
         // Check if this is the 3-month plan (plan ID 38624)
         const isThreeMonthPlan = planId === '38624' ||
+                                 planId === 38624 ||
                                  (intervalCount === 3 && (unit === 'month' || unit === 'months'));
         
         // Check if this is the 1-month plan
         const isOneMonthPlan = (intervalCount === 1 && (unit === 'month' || unit === 'months')) &&
                                !isThreeMonthPlan;
         
-        if (isOneMonthPlan) {
-          return 'Billed every month';
-        } else if (isThreeMonthPlan) {
+        console.log('getBillingText:', { planId, intervalCount, intervalUnit, unit, isThreeMonthPlan, isOneMonthPlan });
+        
+        if (isThreeMonthPlan) {
           // For 3-month, show total price: $134.97 billed every 3 months
           const totalPrice = 13497; // $134.97 in cents
           return `${this.formatPrice(totalPrice)} billed every 3 months`;
+        } else if (isOneMonthPlan) {
+          return 'Billed every month';
         } else if (intervalCount === 1) {
           if (unit === 'week') {
             return 'Billed every week';
