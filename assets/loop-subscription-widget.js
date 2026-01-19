@@ -7,12 +7,9 @@ if (!customElements.get('loop-subscription-widget')) {
         this.productId = this.dataset.productId;
         this.variantId = this.dataset.variantId;
         this.sectionId = this.dataset.sectionId;
-        this.threeMonthProductId = this.dataset.threeMonthProductId || null;
         this.selectedSellingPlan = null;
         this.purchaseType = 'onetime';
         this.sellingPlans = [];
-        this.currentProductId = this.productId;
-        this.currentVariantId = this.variantId;
         this.variantChangeUnsubscriber = undefined;
       }
 
@@ -92,7 +89,7 @@ if (!customElements.get('loop-subscription-widget')) {
           if (this.sellingPlanInput) {
             this.sellingPlanInput.value = '';
           }
-          this.switchToProduct(this.productId);
+          // No need to switch products - always using the same product
         }
         
         this.updateButtonPrice();
@@ -113,18 +110,8 @@ if (!customElements.get('loop-subscription-widget')) {
           
           // Fallback to API if Liquid data not available
           console.log('Loading selling plans from API for product:', this.productId);
-          if (this.threeMonthProductId) {
-            console.log('Loading selling plans for 3-month product:', this.threeMonthProductId);
-          }
           
-          const promises = [this.fetchSellingPlansForProduct(this.productId)];
-          
-          if (this.threeMonthProductId) {
-            promises.push(this.fetchSellingPlansForProduct(this.threeMonthProductId));
-          }
-          
-          const results = await Promise.all(promises);
-          const allPlans = results.flat();
+          const allPlans = await this.fetchSellingPlansForProduct(this.productId);
           
           console.log('Total selling plans found:', allPlans.length);
           
@@ -227,80 +214,6 @@ if (!customElements.get('loop-subscription-widget')) {
           }
         } else {
           console.warn('No [data-selling-plans-data] element found');
-        }
-        
-        // Get 3-month product selling plans from JSON endpoint
-        const threeMonthData = this.querySelector('[data-three-month-selling-plans-data]');
-        if (threeMonthData) {
-          const productHandle = threeMonthData.dataset.productHandle;
-          if (productHandle) {
-            try {
-              const response = await fetch(`/products/${productHandle}.js`);
-              if (response.ok) {
-                const product = await response.json();
-                const variant = product.variants?.[0];
-                
-                if (product.selling_plan_groups && product.selling_plan_groups.length > 0) {
-                  product.selling_plan_groups.forEach(group => {
-                    if (group.selling_plans && group.selling_plans.length > 0) {
-                      group.selling_plans.forEach(plan => {
-                        const billingOption = plan.options?.[0];
-                        const interval = billingOption?.name || 'MONTH';
-                        const intervalCount = parseInt(billingOption?.values?.[0]) || 1;
-                        
-                        const pricingPolicies = [];
-                        if (plan.price_adjustments && plan.price_adjustments.length > 0) {
-                          plan.price_adjustments.forEach(adjustment => {
-                            if (adjustment.value_type === 'percentage') {
-                              pricingPolicies.push({
-                                adjustmentType: 'PERCENTAGE',
-                                adjustmentValue: { percentage: parseFloat(adjustment.value) || 0 }
-                              });
-                            } else {
-                              // Fixed amount - value is typically in cents in Shopify JSON
-                              const fixedAmount = parseFloat(adjustment.value) || 0;
-                              pricingPolicies.push({
-                                adjustmentType: 'FIXED_AMOUNT',
-                                adjustmentValue: { 
-                                  fixedValue: { 
-                                    amount: fixedAmount / 100, // Convert cents to dollars for display
-                                    currencyCode: 'USD' 
-                                  } 
-                                }
-                              });
-                            }
-                          });
-                        }
-                        
-                        plans.push({
-                          id: plan.id.toString(),
-                          gid: `gid://shopify/SellingPlan/${plan.id}`,
-                          name: plan.name,
-                          description: plan.description || '',
-                          billingPolicy: {
-                            interval: interval.toUpperCase(),
-                            intervalCount: intervalCount
-                          },
-                          pricingPolicies: pricingPolicies,
-                          productId: product.id.toString(),
-                          variantId: variant?.id?.toString() || null,
-                          variantPrice: variant ? variant.price : 0 // Product JSON prices are already in cents
-                        });
-                      });
-                    }
-                  });
-                } else {
-                  console.warn('No selling_plan_groups found in 3-month product JSON');
-                }
-              } else {
-                console.error('Failed to fetch 3-month product JSON. Status:', response.status);
-              }
-            } catch (error) {
-              console.error('Error fetching 3-month product selling plans:', error);
-            }
-          } else {
-            console.warn('No product handle found in [data-three-month-selling-plans-data] element');
-          }
         }
         
         console.log('Total plans found from Liquid/JSON:', plans.length);
@@ -593,14 +506,18 @@ if (!customElements.get('loop-subscription-widget')) {
         if (radio.dataset.sellingPlanId) {
           const sellingPlan = this.sellingPlans.find(sp => sp.id === radio.dataset.sellingPlanId);
           if (sellingPlan) {
-            this.selectSellingPlan(sellingPlan, radio.dataset.productId, radio.dataset.variantId);
+            this.selectSellingPlan(sellingPlan, this.productId, this.variantId);
           }
         } else if (radio.dataset.purchaseType === 'onetime') {
           this.selectedSellingPlan = null;
           if (this.sellingPlanInput) {
             this.sellingPlanInput.value = '';
           }
-          this.switchToProduct(this.productId);
+          // Reset quantity to 1 for one-time purchase
+          const quantityInput = this.querySelector('[data-loop-quantity]');
+          if (quantityInput) {
+            quantityInput.value = 1;
+          }
           this.updateButtonPrice();
         }
 
@@ -618,13 +535,33 @@ if (!customElements.get('loop-subscription-widget')) {
           this.sellingPlanInput.value = sellingPlan.id;
         }
         
-        if (productId && variantId) {
-          this.switchToProduct(productId, variantId);
-        }
+        // Determine quantity based on the selling plan
+        // 90-day plans should have quantity 3
+        const intervalCount = sellingPlan.billingPolicy?.intervalCount || 1;
+        const intervalUnit = sellingPlan.billingPolicy?.interval || 'MONTH';
+        const planName = (sellingPlan.name || '').toLowerCase();
+        const planDesc = (sellingPlan.description || '').toLowerCase();
+        
+        // Check if this is the 3-unit plan (90 days typically)
+        const isThreeUnitPlan = intervalCount >= 3 || 
+                                 (intervalUnit === 'MONTH' && intervalCount === 3) ||
+                                 planName.includes('3') || 
+                                 planName.includes('90') || 
+                                 planDesc.includes('3 unit');
+        
+        const quantity = isThreeUnitPlan ? 3 : 1;
         
         const quantityInput = this.querySelector('[data-loop-quantity]');
         if (quantityInput) {
-          quantityInput.value = 1;
+          quantityInput.value = quantity;
+        }
+        
+        // Remove fulfillment quantity property since we're using actual quantity now
+        if (this.form) {
+          const fulfillmentProp = this.form.querySelector('[name="properties[_fulfillment_quantity]"]');
+          if (fulfillmentProp) {
+            fulfillmentProp.remove();
+          }
         }
         
         this.updateButtonPrice();

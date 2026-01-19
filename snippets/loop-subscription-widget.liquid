@@ -10,17 +10,11 @@
   {% render 'loop-subscription-widget', product: product, block: block, product_form_id: product_form_id, section_id: section.id %}
 {% endcomment %}
 
-{%- liquid
-  assign three_month_product = block.settings.three_month_product
-  assign three_month_product_id = three_month_product.id | default: null
--%}
-
 <loop-subscription-widget
   class="loop-subscription-widget" 
   data-product-id="{{ product.id }}"
   data-variant-id="{{ product.selected_or_first_available_variant.id }}"
   data-section-id="{{ section_id }}"
-  data-three-month-product-id="{{ three_month_product_id }}"
   {{ block.shopify_attributes }}
 >
   {%- assign current_variant = product.selected_or_first_available_variant -%}
@@ -29,11 +23,6 @@
   {%- comment -%} Pass selling plans data from Liquid to JavaScript using product JSON endpoint {%- endcomment -%}
   <script type="application/json" data-selling-plans-data data-product-handle="{{ product.handle }}">
   </script>
-  
-  {%- if three_month_product -%}
-    <script type="application/json" data-three-month-selling-plans-data data-product-handle="{{ three_month_product.handle }}">
-    </script>
-  {%- endif -%}
 
   <div class="loop-subscription-widget__tabs">
     <button 
