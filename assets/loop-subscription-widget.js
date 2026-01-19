@@ -8,7 +8,7 @@ if (!customElements.get('loop-subscription-widget')) {
         this.variantId = this.dataset.variantId;
         this.sectionId = this.dataset.sectionId;
         this.selectedSellingPlan = null;
-        this.purchaseType = 'onetime';
+        this.purchaseType = 'subscribe'; // Default to subscribe tab
         this.sellingPlans = [];
         this.variantChangeUnsubscriber = undefined;
       }
@@ -332,10 +332,11 @@ if (!customElements.get('loop-subscription-widget')) {
 
         this.optionsContainer.innerHTML = '';
 
+        // Sort plans: 1-month first, then 3-month (reverse order)
         const sortedPlans = [...this.sellingPlans].sort((a, b) => {
           const intervalA = a.billingPolicy?.intervalCount || 0;
           const intervalB = b.billingPolicy?.intervalCount || 0;
-          return intervalA - intervalB;
+          return intervalA - intervalB; // 1-month (1) comes before 3-month (3)
         });
 
         sortedPlans.forEach((plan, index) => {
@@ -391,7 +392,24 @@ if (!customElements.get('loop-subscription-widget')) {
         }
 
         const frequencyText = this.getFrequencyText(plan);
-        const billingText = this.getBillingText(plan, subscriptionPrice);
+        const intervalCount = plan.billingPolicy?.intervalCount || 1;
+        const intervalUnit = plan.billingPolicy?.interval || 'MONTH';
+        const unit = intervalUnit.toLowerCase();
+        const isThreeMonthPlan = intervalCount === 3 && unit === 'month';
+        
+        // Calculate per-month price for 3-month plan
+        let priceDisplay = this.formatPrice(subscriptionPrice);
+        if (isThreeMonthPlan) {
+          const perMonthPrice = subscriptionPrice / 3;
+          priceDisplay = `${this.formatPrice(perMonthPrice)} per month`;
+        }
+        
+        // Create badges
+        const badges = [];
+        if (savings > 0 && isThreeMonthPlan) {
+          badges.push(`<span class="loop-subscription-widget__badge loop-subscription-widget__badge--discount" style="background-color: #FFD700; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-right: 8px;">Save ${savings}%</span>`);
+        }
+        badges.push(`<span class="loop-subscription-widget__badge loop-subscription-widget__badge--shipping" style="background-color: #FFD700; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">Free Shipping</span>`);
 
         option.innerHTML = `
           <label class="loop-subscription-widget__radio-label">
@@ -409,13 +427,14 @@ if (!customElements.get('loop-subscription-widget')) {
             <div class="loop-subscription-widget__option-content">
               <div class="loop-subscription-widget__option-header">
                 <span class="loop-subscription-widget__option-title">${frequencyText}</span>
-                ${savings > 0 ? `<span class="loop-subscription-widget__savings-badge">Save ${savings}%</span>` : ''}
+              </div>
+              <div class="loop-subscription-widget__option-badges" style="display: flex; align-items: center; margin: 8px 0;">
+                ${badges.join('')}
               </div>
               <div class="loop-subscription-widget__option-pricing">
                 ${basePriceCents > subscriptionPrice ? `<span class="loop-subscription-widget__option-price-original">${this.formatPrice(basePriceCents)}</span>` : ''}
-                <span class="loop-subscription-widget__option-price">${this.formatPrice(subscriptionPrice)}</span>
+                <span class="loop-subscription-widget__option-price">${priceDisplay}</span>
               </div>
-              <div class="loop-subscription-widget__option-billing">${billingText}</div>
             </div>
           </label>
         `;
@@ -438,22 +457,14 @@ if (!customElements.get('loop-subscription-widget')) {
         const intervalUnit = plan.billingPolicy?.interval || 'MONTH';
         const unit = intervalUnit.toLowerCase();
         
-        // Check if this is the 3-unit plan (90 days typically)
-        const planName = (plan.name || '').toLowerCase();
-        const planDesc = (plan.description || '').toLowerCase();
-        const isThreeUnitPlan = (intervalCount === 3 && unit === 'month') || 
-                                 planName.includes('3') || 
-                                 planName.includes('90') || 
-                                 planDesc.includes('3 unit');
-        
         if (intervalCount === 1 && unit === 'month') {
-          return 'Monthly';
+          return 'Every Frequency > Delivery Every Month';
         } else if (intervalCount === 3 && unit === 'month') {
-          return isThreeUnitPlan ? 'Every 3 Months (3 units)' : 'Every 3 Months';
+          return 'Every Frequency > Delivery Every 3 Months';
         } else if (intervalCount === 1) {
-          return `Every ${unit.charAt(0).toUpperCase() + unit.slice(1)}`;
+          return `Every Frequency > Delivery Every ${unit.charAt(0).toUpperCase() + unit.slice(1)}`;
         } else {
-          return `Every ${intervalCount} ${unit}${intervalCount > 1 ? 's' : ''}`;
+          return `Every Frequency > Delivery Every ${intervalCount} ${unit}${intervalCount > 1 ? 's' : ''}`;
         }
       }
 
