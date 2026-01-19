@@ -471,9 +471,9 @@ if (!customElements.get('loop-subscription-widget')) {
             <span class="loop-subscription-widget__radio-custom"></span>
             <div class="loop-subscription-widget__option-content" style="flex: 1; display: flex; justify-content: space-between; align-items: flex-start;">
               <div style="flex: 1; min-width: 0;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 12px; flex-wrap: wrap;">
+                <div class="loop-subscription-widget__title-price-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 12px; flex-wrap: nowrap;">
                   <span class="loop-subscription-widget__option-title" style="font-weight: 600; font-size: 16px; white-space: nowrap; flex-shrink: 0;">${frequencyText}</span>
-                  <div class="loop-subscription-widget__option-pricing" style="text-align: right; white-space: nowrap; flex-shrink: 0; width: 100%; margin-top: 8px; order: 2;">
+                  <div class="loop-subscription-widget__option-pricing" style="text-align: right; white-space: nowrap; flex-shrink: 0;">
                     ${originalPriceDisplay}
                     <span class="loop-subscription-widget__option-price" style="font-weight: 600; font-size: 18px;">${priceDisplay}</span>
                   </div>
@@ -487,17 +487,16 @@ if (!customElements.get('loop-subscription-widget')) {
           </label>
           <style>
             @media (max-width: 768px) {
-              .loop-subscription-widget__option-content > div:first-child > div:first-child {
+              .loop-subscription-widget__title-price-row {
                 flex-wrap: wrap !important;
               }
               .loop-subscription-widget__option-pricing {
                 width: 100% !important;
                 margin-top: 8px !important;
-                order: 2 !important;
+                text-align: left !important;
               }
               .loop-subscription-widget__option-title {
                 width: 100% !important;
-                order: 1 !important;
               }
             }
           </style>
