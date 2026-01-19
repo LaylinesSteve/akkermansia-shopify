@@ -23,6 +23,29 @@
       </svg>
       {{ 'customer.log_out' | t }}
     </a>
+
+{% comment %} LOOP Customer Potal Link {% endcomment %}
+    {% assign locale = shop_locale.iso_code %}
+    {% if locale == null %}
+        {% assign locale = localization.language.iso_code %}
+    {% endif %}
+    {% if locale == null %}
+        {% assign locale = request.locale.iso_code %}
+    {% endif %}
+    {% if routes.root_url == '/' %}
+        {% assign locale = null %}
+    {% endif %}
+    <div>
+        <a
+            href="/a/loop_subscriptions/auth?customer_id={{customer.id}}&myshopify_domain={{shop.permanent_domain}}&locale={{ locale }}&rootUrl={{ routes.root_url }}"
+            id="loop-subscriptions-customer-portal-link"
+        >
+            <button class="btn" style="padding: 10px 20px; margin:0 0 20px 0;">My Subscriptions</button>
+        </a>
+    </div>
+{% comment %} LOOP Customer Potal Link {% endcomment %}
+
+
   </div>
 
   <div>
