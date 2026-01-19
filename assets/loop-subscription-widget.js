@@ -408,7 +408,8 @@ if (!customElements.get('loop-subscription-widget')) {
         // Check if this is the 3-month plan - be more flexible with detection
         const planName = (plan.name || '').toLowerCase();
         const planDesc = (plan.description || '').toLowerCase();
-        const isThreeMonthPlan = (intervalCount === 3 && (unit === 'month' || unit === 'months')) ||
+        const isThreeMonthPlan = plan.id === '38624' ||
+                                 (intervalCount === 3 && (unit === 'month' || unit === 'months')) ||
                                  planName.includes('3 month') ||
                                  planName.includes('90') ||
                                  planDesc.includes('3 month');
@@ -506,7 +507,8 @@ if (!customElements.get('loop-subscription-widget')) {
         // Check plan name/description as fallback
         const planName = (plan.name || '').toLowerCase();
         const planDesc = (plan.description || '').toLowerCase();
-        const isThreeMonth = (intervalCount === 3 && (unit === 'month' || unit === 'months')) ||
+        const isThreeMonth = plan.id === '38624' ||
+                             (intervalCount === 3 && (unit === 'month' || unit === 'months')) ||
                              planName.includes('3 month') ||
                              planName.includes('90') ||
                              planDesc.includes('3 month');
@@ -541,7 +543,7 @@ if (!customElements.get('loop-subscription-widget')) {
           } else if (unit === 'day') {
             return 'Billed daily.';
           } else {
-            return `Billed every ${unit}.`;
+            return `Billed every months.`;
           }
         } else {
           return `Billed every ${intervalCount} ${unit}${intervalCount > 1 ? 's' : ''}.`;
@@ -599,7 +601,8 @@ if (!customElements.get('loop-subscription-widget')) {
         const planDesc = (sellingPlan.description || '').toLowerCase();
         
         // Check if this is the 3-unit plan (90 days typically)
-        const isThreeUnitPlan = intervalCount >= 3 || 
+        const isThreeUnitPlan = sellingPlan.id === '38624' ||
+                                 intervalCount >= 3 || 
                                  (intervalUnit === 'MONTH' && intervalCount === 3) ||
                                  planName.includes('3') || 
                                  planName.includes('90') || 
@@ -635,7 +638,8 @@ if (!customElements.get('loop-subscription-widget')) {
           const intervalCount = this.selectedSellingPlan.billingPolicy?.intervalCount || 1;
           const intervalUnit = this.selectedSellingPlan.billingPolicy?.interval || 'MONTH';
           const unit = intervalUnit.toLowerCase();
-          const isThreeMonthPlan = (intervalCount === 3 && (unit === 'month' || unit === 'months'));
+          const isThreeMonthPlan = this.selectedSellingPlan.id === '38624' ||
+                                   (intervalCount === 3 && (unit === 'month' || unit === 'months'));
           
           let subscriptionPrice = variantPriceCents;
           
