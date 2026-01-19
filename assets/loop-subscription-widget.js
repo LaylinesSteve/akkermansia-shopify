@@ -471,9 +471,9 @@ if (!customElements.get('loop-subscription-widget')) {
             <span class="loop-subscription-widget__radio-custom"></span>
             <div class="loop-subscription-widget__option-content" style="flex: 1; display: flex; justify-content: space-between; align-items: flex-start;">
               <div style="flex: 1; min-width: 0;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 12px; flex-wrap: nowrap;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 12px; flex-wrap: wrap;">
                   <span class="loop-subscription-widget__option-title" style="font-weight: 600; font-size: 16px; white-space: nowrap; flex-shrink: 0;">${frequencyText}</span>
-                  <div class="loop-subscription-widget__option-pricing" style="text-align: right; white-space: nowrap; flex-shrink: 0;">
+                  <div class="loop-subscription-widget__option-pricing" style="text-align: right; white-space: nowrap; flex-shrink: 0; width: 100%; margin-top: 8px; order: 2;">
                     ${originalPriceDisplay}
                     <span class="loop-subscription-widget__option-price" style="font-weight: 600; font-size: 18px;">${priceDisplay}</span>
                   </div>
@@ -532,37 +532,13 @@ if (!customElements.get('loop-subscription-widget')) {
 
       getBillingText(plan, price) {
         const planId = plan.id ? plan.id.toString() : '';
-        const intervalCount = plan.billingPolicy?.intervalCount || 1;
-        const intervalUnit = plan.billingPolicy?.interval || 'MONTH';
-        const unit = intervalUnit.toLowerCase();
         
-        // Check if this is the 3-month plan (plan ID 38624)
-        const isThreeMonthPlan = planId === '38624' ||
-                                 planId === 38624 ||
-                                 (intervalCount === 3 && (unit === 'month' || unit === 'months'));
-        
-        // Check if this is the 1-month plan
-        const isOneMonthPlan = (intervalCount === 1 && (unit === 'month' || unit === 'months')) &&
-                               !isThreeMonthPlan;
-        
-        console.log('getBillingText:', { planId, intervalCount, intervalUnit, unit, isThreeMonthPlan, isOneMonthPlan });
-        
-        if (isThreeMonthPlan) {
-          // For 3-month, show total price: $134.97 billed every 3 months
-          const totalPrice = 13497; // $134.97 in cents
-          return `${this.formatPrice(totalPrice)} billed every 3 months`;
-        } else if (isOneMonthPlan) {
-          return 'Billed every month';
-        } else if (intervalCount === 1) {
-          if (unit === 'week') {
-            return 'Billed every week';
-          } else if (unit === 'day') {
-            return 'Billed every day';
-          } else {
-            return `Billed every ${unit}`;
-          }
+        // Simple logic: Check if this is the 3-month plan (plan ID 38624)
+        if (planId === '38624' || planId === '38624') {
+          return '$134.97 billed every 3 months';
         } else {
-          return `Billed every ${intervalCount} ${unit}${intervalCount > 1 ? 's' : ''}`;
+          // All other plans are 1-month
+          return 'Billed every month';
         }
       }
 
