@@ -95,9 +95,6 @@
           <p>No subscription options available for this product.</p>
         </div>
       </div>
-      <div class="loop-subscription-widget__shipping-info">
-        <p>Free shipping on subscription orders. Money-back guarantee.</p>
-      </div>
     </div>
 
     {%- comment -%} One-time Purchase Tab Content {%- endcomment -%}
@@ -183,7 +180,11 @@
         {{ form | payment_button }}
 
         <div class="loop-subscription-widget__fsa-badge">
-          FSA/HSA Eligible with float
+          FSA/HSA Eligible
+        </div>
+        
+        <div class="loop-subscription-widget__shipping-info" style="margin-top: 16px;">
+          <p>Free shipping on subscription orders. Money-back guarantee.</p>
         </div>
       </div>
     {%- endform -%}
