@@ -466,10 +466,10 @@ if (!customElements.get('loop-subscription-widget')) {
             >
             <span class="loop-subscription-widget__radio-custom"></span>
             <div class="loop-subscription-widget__option-content" style="flex: 1; display: flex; justify-content: space-between; align-items: flex-start;">
-              <div style="flex: 1;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                  <span class="loop-subscription-widget__option-title" style="font-weight: 600; font-size: 16px; padding-right: 16px;">${frequencyText}</span>
-                  <div class="loop-subscription-widget__option-pricing" style="text-align: right;">
+              <div style="flex: 1; min-width: 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 12px; flex-wrap: nowrap;">
+                  <span class="loop-subscription-widget__option-title" style="font-weight: 600; font-size: 16px; white-space: nowrap; flex-shrink: 0;">${frequencyText}</span>
+                  <div class="loop-subscription-widget__option-pricing" style="text-align: right; white-space: nowrap; flex-shrink: 0;">
                     ${originalPriceDisplay}
                     <span class="loop-subscription-widget__option-price" style="font-weight: 600; font-size: 18px;">${priceDisplay}</span>
                   </div>
