@@ -71,6 +71,12 @@
           {% endif %}
           class="product-variant-id"
         >
+        <input
+          type="hidden"
+          name="quantity"
+          value="12"
+          id="RestrictedQuantityHidden-{{ section_id }}"
+        >
 
         <div class="restricted-buy-button__pricing">
           {% render 'price', product: product, use_variant: true, price_class: 'restricted-buy-button__price' %}
@@ -93,7 +99,6 @@
             <input
               class="quantity__input"
               type="number"
-              name="quantity"
               id="RestrictedQuantity-{{ section_id }}"
               value="12"
               min="12"
@@ -101,6 +106,7 @@
               data-min="12"
               form="{{ product_form_id }}"
               aria-label="{{ 'products.product.quantity.input_label' | t: product: product.title | escape }}"
+              data-restricted-quantity-display
             >
             <button class="quantity__button" name="plus" type="button">
               <span class="visually-hidden">
@@ -146,6 +152,24 @@
         </div>
       {%- endform -%}
     </product-form>
+    <script>
+      (function() {
+        const form = document.getElementById('{{ product_form_id }}');
+        if (form) {
+          form.addEventListener('submit', function(e) {
+            const hiddenQuantityInput = document.getElementById('RestrictedQuantityHidden-{{ section_id }}');
+            if (hiddenQuantityInput) {
+              hiddenQuantityInput.value = '12';
+            }
+            // Also ensure any visible quantity input is set to 12
+            const visibleQuantityInput = document.getElementById('RestrictedQuantity-{{ section_id }}');
+            if (visibleQuantityInput) {
+              visibleQuantityInput.value = '12';
+            }
+          });
+        }
+      })();
+    </script>
   {%- else -%}
     {%- comment -%} Show restricted access message {%- endcomment -%}
     <div class="restricted-buy-button__restricted">
