@@ -466,17 +466,17 @@ if (!customElements.get('loop-subscription-widget')) {
             <span class="loop-subscription-widget__radio-custom"></span>
             <div class="loop-subscription-widget__option-content" style="flex: 1; display: flex; justify-content: space-between; align-items: flex-start;">
               <div style="flex: 1;">
-                <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                  <span class="loop-subscription-widget__option-title" style="font-weight: 600; font-size: 16px; margin-right: 8px;">${frequencyText}</span>
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    ${badges.join('')}
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                  <span class="loop-subscription-widget__option-title" style="font-weight: 600; font-size: 16px;">${frequencyText}</span>
+                  <div class="loop-subscription-widget__option-pricing" style="text-align: right;">
+                    ${originalPriceDisplay}
+                    <span class="loop-subscription-widget__option-price" style="font-weight: 600; font-size: 18px;">${priceDisplay}</span>
                   </div>
                 </div>
+                <div style="display: flex; align-items: center; flex-wrap: nowrap; margin-bottom: 8px;">
+                  ${badges.join('')}
+                </div>
                 <div class="loop-subscription-widget__option-billing" style="font-size: 14px; color: #666; margin-left: 0;">${billingText}</div>
-              </div>
-              <div class="loop-subscription-widget__option-pricing" style="text-align: right; margin-left: 16px;">
-                ${originalPriceDisplay}
-                <span class="loop-subscription-widget__option-price" style="font-weight: 600; font-size: 18px;">${priceDisplay}</span>
               </div>
             </div>
           </label>
@@ -514,13 +514,13 @@ if (!customElements.get('loop-subscription-widget')) {
                            (!isThreeMonth && intervalCount === 1);
         
         if (isOneMonth) {
-          return 'Delivery Every Month';
+          return '1 Month Supply';
         } else if (isThreeMonth) {
-          return 'Delivery Every 3 Months';
+          return '3 Month Supply';
         } else if (intervalCount === 1) {
-          return `Delivery Every ${unit.charAt(0).toUpperCase() + unit.slice(1)}`;
+          return `1 ${unit.charAt(0).toUpperCase() + unit.slice(1)} Supply`;
         } else {
-          return `Delivery Every ${intervalCount} ${unit}${intervalCount > 1 ? 's' : ''}`;
+          return `${intervalCount} ${unit.charAt(0).toUpperCase() + unit.slice(1)}${intervalCount > 1 ? 's' : ''} Supply`;
         }
       }
 
@@ -530,16 +530,16 @@ if (!customElements.get('loop-subscription-widget')) {
         const unit = intervalUnit.toLowerCase();
         
         if (intervalCount === 1 && (unit === 'month' || unit === 'months')) {
-          return 'Billed every 1 month.';
+          return 'Billed every month.';
         } else if (intervalCount === 3 && (unit === 'month' || unit === 'months')) {
           return 'Billed every 3 months.';
         } else if (intervalCount === 1) {
           if (unit === 'week') {
-            return 'Billed every 1 week.';
+            return 'Billed every week.';
           } else if (unit === 'day') {
-            return 'Billed every 1 day.';
+            return 'Billed every day.';
           } else {
-            return `Billed every 1 ${unit}.`;
+            return `Billed every ${unit}.`;
           }
         } else {
           return `Billed every ${intervalCount} ${unit}${intervalCount > 1 ? 's' : ''}.`;
