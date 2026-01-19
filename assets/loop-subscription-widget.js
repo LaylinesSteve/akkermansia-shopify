@@ -423,7 +423,7 @@ if (!customElements.get('loop-subscription-widget')) {
         if (isThreeMonthPlan) {
           // Show per-month price: $44.99
           const perMonthPrice = 4499; // $44.99 in cents
-          priceDisplay = this.formatPrice(perMonthPrice) + ' per month';
+          priceDisplay = this.formatPrice(perMonthPrice);
           // Show original $65 price struck through
           originalPriceDisplay = `<span class="loop-subscription-widget__option-price-original" style="text-decoration: line-through; color: #999; margin-right: 8px; font-size: 16px;">${this.formatPrice(basePriceCents)}</span>`;
           showOriginalPrice = true;
@@ -433,6 +433,9 @@ if (!customElements.get('loop-subscription-widget')) {
             originalPriceDisplay = `<span class="loop-subscription-widget__option-price-original" style="text-decoration: line-through; color: #999; margin-right: 8px; font-size: 16px;">${this.formatPrice(basePriceCents)}</span>`;
           }
         }
+        
+        // Add "per month" to all prices in smaller text
+        priceDisplay = `${priceDisplay} <span style="font-size: 14px; font-weight: normal;">per month</span>`;
         
         // Create badges - hardcode discount percentages (on single line)
         const badges = [];
