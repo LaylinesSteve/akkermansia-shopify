@@ -349,7 +349,7 @@ if (!customElements.get('loop-subscription-widget')) {
         }
       }
 
-      createSellingPlanOption(plan, isDefault = false) {
+      createSellingPlanOption(plan, isDefault = false, index = 0) {
         const option = document.createElement('div');
         option.className = `loop-subscription-widget__option${isDefault ? ' selected' : ''}`;
         option.dataset.sellingPlanId = plan.id;
