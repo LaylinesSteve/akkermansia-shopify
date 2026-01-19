@@ -485,6 +485,22 @@ if (!customElements.get('loop-subscription-widget')) {
               </div>
             </div>
           </label>
+          <style>
+            @media (max-width: 768px) {
+              .loop-subscription-widget__option-content > div:first-child > div:first-child {
+                flex-wrap: wrap !important;
+              }
+              .loop-subscription-widget__option-pricing {
+                width: 100% !important;
+                margin-top: 8px !important;
+                order: 2 !important;
+              }
+              .loop-subscription-widget__option-title {
+                width: 100% !important;
+                order: 1 !important;
+              }
+            }
+          </style>
         `;
 
         option.addEventListener('click', (e) => {
