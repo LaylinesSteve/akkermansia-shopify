@@ -400,13 +400,14 @@ if (!customElements.get('loop-subscription-widget')) {
         // Calculate per-month price for 3-month plan
         let priceDisplay = this.formatPrice(subscriptionPrice);
         if (isThreeMonthPlan) {
-          const perMonthPrice = subscriptionPrice / 3;
-          priceDisplay = `${this.formatPrice(perMonthPrice)} per month`;
+          // Hardcode to $44.99 per month for 3-month plan
+          priceDisplay = '$44.99 per month';
         }
         
         // Create badges
         const badges = [];
-        if (savings > 0 && isThreeMonthPlan) {
+        // Always show discount badge for 3-month plan
+        if (isThreeMonthPlan) {
           badges.push(`<span class="loop-subscription-widget__badge loop-subscription-widget__badge--discount" style="background-color: #FFD700; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-right: 8px;">Save ${savings}%</span>`);
         }
         badges.push(`<span class="loop-subscription-widget__badge loop-subscription-widget__badge--shipping" style="background-color: #FFD700; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">Free Shipping</span>`);
@@ -457,14 +458,14 @@ if (!customElements.get('loop-subscription-widget')) {
         const intervalUnit = plan.billingPolicy?.interval || 'MONTH';
         const unit = intervalUnit.toLowerCase();
         
-        if (intervalCount === 1 && unit === 'month') {
-          return 'Every Frequency > Delivery Every Month';
-        } else if (intervalCount === 3 && unit === 'month') {
-          return 'Every Frequency > Delivery Every 3 Months';
+        if (intervalCount === 1 && (unit === 'month' || unit === 'months')) {
+          return 'Delivery Every Month';
+        } else if (intervalCount === 3 && (unit === 'month' || unit === 'months')) {
+          return 'Delivery Every 3 Months';
         } else if (intervalCount === 1) {
-          return `Every Frequency > Delivery Every ${unit.charAt(0).toUpperCase() + unit.slice(1)}`;
+          return `Delivery Every ${unit.charAt(0).toUpperCase() + unit.slice(1)}`;
         } else {
-          return `Every Frequency > Delivery Every ${intervalCount} ${unit}${intervalCount > 1 ? 's' : ''}`;
+          return `Delivery Every ${intervalCount} ${unit}${intervalCount > 1 ? 's' : ''}`;
         }
       }
 
