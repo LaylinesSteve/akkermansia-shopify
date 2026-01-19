@@ -340,7 +340,7 @@ if (!customElements.get('loop-subscription-widget')) {
         });
 
         sortedPlans.forEach((plan, index) => {
-          const option = this.createSellingPlanOption(plan, index === 0);
+          const option = this.createSellingPlanOption(plan, index === 0, index);
           this.optionsContainer.appendChild(option);
         });
 
@@ -452,8 +452,8 @@ if (!customElements.get('loop-subscription-widget')) {
         }
         badges.push(`<span class="loop-subscription-widget__badge loop-subscription-widget__badge--shipping" style="background-color: #FFD700; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; display: inline-block;">Free Shipping</span>`);
 
-        // Get billing text for display
-        const billingText = this.getBillingText(plan, subscriptionPrice);
+        // Get billing text for display - use index to determine text
+        const billingText = this.getBillingText(index);
         
         option.innerHTML = `
           <label class="loop-subscription-widget__radio-label" style="display: flex; align-items: flex-start; padding: 16px;">
@@ -545,14 +545,11 @@ if (!customElements.get('loop-subscription-widget')) {
         }
       }
 
-      getBillingText(plan, price) {
-        const planId = plan.id ? plan.id.toString() : '';
-        
-        // Simple logic: Check if this is the 3-month plan (plan ID 38624)
-        if (planId === '38624' || planId === '38624') {
+      getBillingText(index) {
+        // Simple logic: First box (index 0) = 3-month, Second box (index 1) = 1-month
+        if (index === 0) {
           return '$134.97 billed every 3 months';
         } else {
-          // All other plans are 1-month
           return 'Billed every month';
         }
       }
