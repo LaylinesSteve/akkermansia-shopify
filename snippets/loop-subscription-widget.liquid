@@ -156,7 +156,7 @@
         data-variant-input
         class="product-variant-id"
       >
-      <input type="hidden" name="quantity" value="1" data-quantity-input data-loop-quantity>
+      <input type="hidden" name="quantity" value="1" data-quantity-input data-loop-quantity min="1" step="1">
       <input type="hidden" name="selling_plan" value="" data-selling-plan-input>
 
       <div class="loop-subscription-widget__actions product-form__buttons" style="--loop-button-color: {{ button_color }}; --loop-button-radius: {{ button_border_radius }}px; --loop-button-font-size: {{ button_font_size }}px;">
@@ -169,7 +169,7 @@
         >
           <span class="loop-subscription-widget__button-text">
             {%- if current_variant.available -%}
-              Add to cart - <span data-button-price>{{ one_time_price }}</span>
+              Add to cart
             {%- else -%}
               {{ 'products.product.sold_out' | t }}
             {%- endif -%}
