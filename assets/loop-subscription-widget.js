@@ -88,7 +88,22 @@ if (!customElements.get('loop-subscription-widget')) {
           if (this.sellingPlanInput) {
             this.sellingPlanInput.value = '';
           }
-          // No need to switch products - always using the same product
+          // Check the one-time purchase radio button
+          const onetimeRadio = this.querySelector('[data-purchase-type="onetime"]');
+          if (onetimeRadio) {
+            onetimeRadio.checked = true;
+          }
+          // Reset quantity to 1 for one-time purchase
+          const quantityInput = this.querySelector('[data-loop-quantity]');
+          if (quantityInput) {
+            quantityInput.value = 1;
+          }
+        } else if (tabType === 'subscribe') {
+          // Uncheck the one-time purchase radio button when switching to subscribe
+          const onetimeRadio = this.querySelector('[data-purchase-type="onetime"]');
+          if (onetimeRadio) {
+            onetimeRadio.checked = false;
+          }
         }
       }
 
