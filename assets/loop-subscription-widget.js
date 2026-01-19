@@ -40,7 +40,6 @@ if (!customElements.get('loop-subscription-widget')) {
         this.loadingElement = this.querySelector('.loop-subscription-widget__loading');
         this.noSubscriptionsElement = this.querySelector('.loop-subscription-widget__no-subscriptions');
         this.addToCartButton = this.querySelector('.loop-subscription-widget__add-to-cart');
-        this.buttonPriceElement = this.querySelector('[data-button-price]');
         this.form = this.querySelector('[data-loop-form]') || this.querySelector('form.loop-subscription-widget__form');
         this.variantInput = this.querySelector('[data-variant-input]');
         this.sellingPlanInput = this.querySelector('[data-selling-plan-input]');
@@ -91,8 +90,6 @@ if (!customElements.get('loop-subscription-widget')) {
           }
           // No need to switch products - always using the same product
         }
-        
-        this.updateButtonPrice();
       }
 
       async loadSellingPlans() {
@@ -582,7 +579,6 @@ if (!customElements.get('loop-subscription-widget')) {
           if (quantityInput) {
             quantityInput.value = 1;
           }
-          this.updateButtonPrice();
         }
 
         this.querySelectorAll('.loop-subscription-widget__option').forEach(opt => {
@@ -649,58 +645,6 @@ if (!customElements.get('loop-subscription-widget')) {
             formAction: this.form.action
           });
         }
-        
-        this.updateButtonPrice();
-      }
-
-
-      updateButtonPrice() {
-        if (!this.buttonPriceElement) return;
-
-        let price = '';
-        
-        if (this.purchaseType === 'subscribe' && this.selectedSellingPlan) {
-          const pricingPolicies = this.selectedSellingPlan.pricingPolicies || [];
-          const variantPriceCents = this.selectedSellingPlan.variantPrice || 0; // Already in cents from JSON
-          const intervalCount = this.selectedSellingPlan.billingPolicy?.intervalCount || 1;
-          const intervalUnit = this.selectedSellingPlan.billingPolicy?.interval || 'MONTH';
-          const unit = intervalUnit.toLowerCase();
-          const isThreeMonthPlan = this.selectedSellingPlan.id === '38624' ||
-                                   (intervalCount === 3 && (unit === 'month' || unit === 'months'));
-          
-          let subscriptionPrice = variantPriceCents;
-          
-          if (pricingPolicies.length > 0) {
-            const policy = pricingPolicies[0];
-            const adjustmentType = policy.adjustmentType || '';
-            const adjustmentValue = policy.adjustmentValue || {};
-            
-            if ((adjustmentType === 'PERCENTAGE' || adjustmentType === 'percentage') && adjustmentValue.percentage) {
-              subscriptionPrice = subscriptionPrice - (subscriptionPrice * adjustmentValue.percentage / 100);
-            } else if ((adjustmentType === 'FIXED_AMOUNT' || adjustmentType === 'fixed_amount') && adjustmentValue.fixedValue) {
-              subscriptionPrice = subscriptionPrice - (adjustmentValue.fixedValue.amount * 100);
-            } else if (adjustmentValue.percentage !== undefined) {
-              subscriptionPrice = subscriptionPrice - (subscriptionPrice * adjustmentValue.percentage / 100);
-            }
-          }
-          
-          // For 3-month plan, show fixed total price ($137.97)
-          if (isThreeMonthPlan) {
-            const totalPrice = 13797; // $137.97 in cents (fixed price, not calculated)
-            price = this.formatPrice(totalPrice);
-          } else {
-            price = this.formatPrice(subscriptionPrice);
-          }
-        } else {
-          const onetimePriceElement = this.querySelector('[data-onetime-price]');
-          if (onetimePriceElement) {
-            price = onetimePriceElement.dataset.onetimePrice;
-          }
-        }
-
-        if (price) {
-          this.buttonPriceElement.textContent = price;
-        }
       }
 
       handleVariantChange(event) {
@@ -712,7 +656,6 @@ if (!customElements.get('loop-subscription-widget')) {
               this.variantInput.value = newVariantId;
             }
             this.loadSellingPlans();
-            this.updateButtonPrice();
           }
         }
       }
