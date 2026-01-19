@@ -456,7 +456,7 @@ if (!customElements.get('loop-subscription-widget')) {
         const billingText = this.getBillingText(plan, subscriptionPrice);
         
         option.innerHTML = `
-          <label class="loop-subscription-widget__radio-label" style="display: flex; align-items: flex-start; padding: 16px; border-bottom: 1px solid #e0e0e0;">
+          <label class="loop-subscription-widget__radio-label" style="display: flex; align-items: flex-start; padding: 16px;">
             <input 
               type="radio" 
               name="loop-selling-plan-${this.sectionId}" 
