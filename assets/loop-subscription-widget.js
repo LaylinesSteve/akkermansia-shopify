@@ -132,91 +132,75 @@ if (!customElements.get('loop-subscription-widget')) {
       async getSellingPlansFromLiquid() {
         const plans = [];
         
-        // Get main product selling plans from JSON endpoint
+        // Get selling plans from Liquid JSON data
         const mainProductData = this.querySelector('[data-selling-plans-data]');
         if (mainProductData) {
-          const productHandle = mainProductData.dataset.productHandle;
-          if (productHandle) {
-            try {
-              const response = await fetch(`/products/${productHandle}.js`);
-              if (response.ok) {
-                const product = await response.json();
-                const variant = product.variants?.[0];
-                
-                console.log('Product JSON response:', product);
-                console.log('Product has selling_plan_groups?', !!product.selling_plan_groups);
-                console.log('selling_plan_groups:', product.selling_plan_groups);
-                
-                // Extract selling plans from product JSON
-                // Shopify product JSON includes selling_plan_groups
-                if (product.selling_plan_groups && product.selling_plan_groups.length > 0) {
-                  product.selling_plan_groups.forEach(group => {
-                    if (group.selling_plans && group.selling_plans.length > 0) {
-                      group.selling_plans.forEach(plan => {
-                        // Parse billing policy from plan options
-                        const billingOption = plan.options?.[0];
-                        const interval = billingOption?.name || 'MONTH';
-                        const intervalCount = parseInt(billingOption?.values?.[0]) || 1;
-                        
-                        // Parse pricing policies
-                        const pricingPolicies = [];
-                        if (plan.price_adjustments && plan.price_adjustments.length > 0) {
-                          plan.price_adjustments.forEach(adjustment => {
-                            if (adjustment.value_type === 'percentage') {
-                              pricingPolicies.push({
-                                adjustmentType: 'PERCENTAGE',
-                                adjustmentValue: { percentage: parseFloat(adjustment.value) || 0 }
-                              });
-                            } else {
-                              // Fixed amount - value is typically in cents in Shopify JSON
-                              const fixedAmount = parseFloat(adjustment.value) || 0;
-                              pricingPolicies.push({
-                                adjustmentType: 'FIXED_AMOUNT',
-                                adjustmentValue: { 
-                                  fixedValue: { 
-                                    amount: fixedAmount / 100, // Convert cents to dollars for display
-                                    currencyCode: 'USD' 
-                                  } 
-                                }
-                              });
+          try {
+            const liquidData = JSON.parse(mainProductData.textContent);
+            console.log('Liquid selling plans data:', liquidData);
+            
+            if (liquidData.sellingPlanGroups && liquidData.sellingPlanGroups.length > 0) {
+              liquidData.sellingPlanGroups.forEach(group => {
+                if (group.sellingPlans && group.sellingPlans.length > 0) {
+                  group.sellingPlans.forEach(plan => {
+                    // Parse billing policy from plan options
+                    const billingOption = plan.options?.[0];
+                    const interval = billingOption?.name || 'MONTH';
+                    const intervalCount = parseInt(billingOption?.values?.[0]) || 1;
+                    
+                    // Parse pricing policies
+                    const pricingPolicies = [];
+                    if (plan.priceAdjustments && plan.priceAdjustments.length > 0) {
+                      plan.priceAdjustments.forEach(adjustment => {
+                        if (adjustment.valueType === 'percentage') {
+                          pricingPolicies.push({
+                            adjustmentType: 'PERCENTAGE',
+                            adjustmentValue: { percentage: parseFloat(adjustment.value) || 0 }
+                          });
+                        } else {
+                          // Fixed amount - value is typically in cents
+                          const fixedAmount = parseFloat(adjustment.value) || 0;
+                          pricingPolicies.push({
+                            adjustmentType: 'FIXED_AMOUNT',
+                            adjustmentValue: { 
+                              fixedValue: { 
+                                amount: fixedAmount / 100, // Convert cents to dollars for display
+                                currencyCode: 'USD' 
+                              } 
                             }
                           });
                         }
-                        
-                        plans.push({
-                          id: plan.id.toString(),
-                          gid: `gid://shopify/SellingPlan/${plan.id}`,
-                          name: plan.name,
-                          description: plan.description || '',
-                          billingPolicy: {
-                            interval: interval.toUpperCase(),
-                            intervalCount: intervalCount
-                          },
-                          pricingPolicies: pricingPolicies,
-                          productId: product.id.toString(),
-                          variantId: variant?.id?.toString() || null,
-                          variantPrice: variant ? variant.price : 0 // Product JSON prices are already in cents
-                        });
                       });
                     }
+                    
+                    plans.push({
+                      id: plan.id.toString(),
+                      gid: `gid://shopify/SellingPlan/${plan.id}`,
+                      name: plan.name,
+                      description: plan.description || '',
+                      billingPolicy: {
+                        interval: interval.toUpperCase(),
+                        intervalCount: intervalCount
+                      },
+                      pricingPolicies: pricingPolicies,
+                      productId: liquidData.productId.toString(),
+                      variantId: liquidData.variantId?.toString() || null,
+                      variantPrice: liquidData.variantPrice || 0 // Already in cents
+                    });
                   });
-                } else {
-                  console.warn('No selling_plan_groups found in product JSON for:', productHandle);
                 }
-              } else {
-                console.error('Failed to fetch product JSON for:', productHandle, 'Status:', response.status);
-              }
-            } catch (error) {
-              console.error('Error fetching main product selling plans:', error);
+              });
+            } else {
+              console.warn('No sellingPlanGroups found in Liquid data');
             }
-          } else {
-            console.warn('No product handle found in [data-selling-plans-data] element');
+          } catch (error) {
+            console.error('Error parsing Liquid selling plans data:', error);
           }
         } else {
           console.warn('No [data-selling-plans-data] element found');
         }
         
-        console.log('Total plans found from Liquid/JSON:', plans.length);
+        console.log('Total plans found from Liquid:', plans.length);
         return plans;
       }
 
