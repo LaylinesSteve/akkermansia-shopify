@@ -434,8 +434,9 @@ if (!customElements.get('loop-subscription-widget')) {
           }
         }
         
-        // Add "per month" to all prices in smaller text
-        priceDisplay = `${priceDisplay} <span style="font-size: 14px; font-weight: normal;">per month</span>`;
+        // Add "per month" to all subscription prices in smaller text
+        // Ensure it's added for both 1-month and 3-month plans
+        priceDisplay = `${priceDisplay} <span style="font-size: 14px; font-weight: normal; color: inherit;">per month</span>`;
         
         // Create badges - hardcode discount percentages (on single line)
         const badges = [];
