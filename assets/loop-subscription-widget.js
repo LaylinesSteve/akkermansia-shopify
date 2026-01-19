@@ -684,10 +684,9 @@ if (!customElements.get('loop-subscription-widget')) {
             }
           }
           
-          // For 3-month plan, show total price ($134.97 = $44.99 * 3)
+          // For 3-month plan, show fixed total price ($137.97)
           if (isThreeMonthPlan) {
-            const perMonthPrice = 4499; // $44.99 in cents
-            const totalPrice = perMonthPrice * 3; // $134.97
+            const totalPrice = 13797; // $137.97 in cents (fixed price, not calculated)
             price = this.formatPrice(totalPrice);
           } else {
             price = this.formatPrice(subscriptionPrice);
