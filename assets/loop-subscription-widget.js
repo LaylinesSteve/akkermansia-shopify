@@ -467,7 +467,7 @@ if (!customElements.get('loop-subscription-widget')) {
             <div class="loop-subscription-widget__option-content" style="flex: 1; display: flex; justify-content: space-between; align-items: flex-start;">
               <div style="flex: 1;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                  <span class="loop-subscription-widget__option-title" style="font-weight: 600; font-size: 16px;">${frequencyText}</span>
+                  <span class="loop-subscription-widget__option-title" style="font-weight: 600; font-size: 16px; padding-right: 16px;">${frequencyText}</span>
                   <div class="loop-subscription-widget__option-pricing" style="text-align: right;">
                     ${originalPriceDisplay}
                     <span class="loop-subscription-widget__option-price" style="font-weight: 600; font-size: 18px;">${priceDisplay}</span>
@@ -530,14 +530,16 @@ if (!customElements.get('loop-subscription-widget')) {
         const unit = intervalUnit.toLowerCase();
         
         if (intervalCount === 1 && (unit === 'month' || unit === 'months')) {
-          return 'Billed every month.';
+          return 'Billed Monthly';
         } else if (intervalCount === 3 && (unit === 'month' || unit === 'months')) {
-          return 'Billed every 3 months.';
+          // For 3-month, show total price: $134.97 billed every three months
+          const totalPrice = 13497; // $134.97 in cents
+          return `${this.formatPrice(totalPrice)} billed every three months`;
         } else if (intervalCount === 1) {
           if (unit === 'week') {
-            return 'Billed every week.';
+            return 'Billed weekly.';
           } else if (unit === 'day') {
-            return 'Billed every day.';
+            return 'Billed daily.';
           } else {
             return `Billed every ${unit}.`;
           }
