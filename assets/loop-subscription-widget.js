@@ -340,7 +340,7 @@ if (!customElements.get('loop-subscription-widget')) {
         });
 
         sortedPlans.forEach((plan, index) => {
-          const option = this.createSellingPlanOption(plan, index === 0, index);
+          const option = this.createSellingPlanOption(plan, index === 0);
           this.optionsContainer.appendChild(option);
         });
 
@@ -452,8 +452,8 @@ if (!customElements.get('loop-subscription-widget')) {
         }
         badges.push(`<span class="loop-subscription-widget__badge loop-subscription-widget__badge--shipping" style="background-color: #FFD700; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; display: inline-block;">Free Shipping</span>`);
 
-        // Get billing text for display - use index to determine text
-        const billingText = this.getBillingText(index);
+        // Get billing text for display
+        const billingText = this.getBillingText(plan, subscriptionPrice);
         
         option.innerHTML = `
           <label class="loop-subscription-widget__radio-label" style="display: flex; align-items: flex-start; padding: 16px;">
@@ -545,12 +545,37 @@ if (!customElements.get('loop-subscription-widget')) {
         }
       }
 
-      getBillingText(index) {
-        // Simple logic: First box (index 0) = 3-month, Second box (index 1) = 1-month
-        if (index === 0) {
-          return '$134.97 billed every 3 months';
-        } else {
+      getBillingText(plan, price) {
+        const planId = plan.id ? plan.id.toString() : '';
+        const intervalCount = plan.billingPolicy?.intervalCount || 1;
+        const intervalUnit = plan.billingPolicy?.interval || 'MONTH';
+        const unit = intervalUnit.toLowerCase();
+        
+        // Check if this is the 3-month plan (plan ID 38624)
+        const isThreeMonthPlan = planId === '38624' ||
+                                 planId === 38624 ||
+                                 (intervalCount === 3 && (unit === 'month' || unit === 'months'));
+        
+        // Check if this is the 1-month plan
+        const isOneMonthPlan = (intervalCount === 1 && (unit === 'month' || unit === 'months')) &&
+                               !isThreeMonthPlan;
+        
+        if (isThreeMonthPlan) {
+          // For 3-month, show total price: $134.97 billed every 3 months
+          const totalPrice = 13497; // $134.97 in cents
+          return `${this.formatPrice(totalPrice)} billed every 3 months`;
+        } else if (isOneMonthPlan) {
           return 'Billed every month';
+        } else if (intervalCount === 1) {
+          if (unit === 'week') {
+            return 'Billed every week';
+          } else if (unit === 'day') {
+            return 'Billed every day';
+          } else {
+            return `Billed every ${unit}`;
+          }
+        } else {
+          return `Billed every ${intervalCount} ${unit}${intervalCount > 1 ? 's' : ''}`;
         }
       }
 
