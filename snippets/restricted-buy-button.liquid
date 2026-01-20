@@ -71,12 +71,6 @@
           {% endif %}
           class="product-variant-id"
         >
-        <input
-          type="hidden"
-          name="quantity"
-          value="12"
-          id="RestrictedQuantityHidden-{{ section_id }}"
-        >
 
         <div class="restricted-buy-button__pricing">
           {% render 'price', product: product, use_variant: true, price_class: 'restricted-buy-button__price' %}
@@ -152,24 +146,19 @@
         </div>
       {%- endform -%}
     </product-form>
+
     <script>
-      (function() {
-        const form = document.getElementById('{{ product_form_id }}');
-        if (form) {
+      document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('#{{ product_form_id }}');
+        const quantityInput = document.getElementById('RestrictedQuantity-{{ section_id }}');
+
+        if (form && quantityInput) {
           form.addEventListener('submit', function(e) {
-            // Force quantity to 12 on form submit
-            const quantityInput = document.getElementById('RestrictedQuantity-{{ section_id }}');
-            if (quantityInput) {
-              quantityInput.value = '12';
-            }
-            // Also update hidden input if it exists
-            const hiddenQuantityInput = document.getElementById('RestrictedQuantityHidden-{{ section_id }}');
-            if (hiddenQuantityInput) {
-              hiddenQuantityInput.value = '12';
-            }
+            // Ensure quantity is always 12 when user is signed in
+            quantityInput.value = 12;
           });
         }
-      })();
+      });
     </script>
   {%- else -%}
     {%- comment -%} Show restricted access message {%- endcomment -%}
