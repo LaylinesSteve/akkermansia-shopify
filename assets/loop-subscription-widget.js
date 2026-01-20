@@ -433,8 +433,8 @@ if (!customElements.get('loop-subscription-widget')) {
         
         // For 3-month plan, show the per-month price with original price
         if (isThreeMonthPlan) {
-          // Show per-month price: $44.99
-          const perMonthPrice = 4499; // $44.99 in cents
+          // Show per-month price: $44.85
+          const perMonthPrice = 4485; // $44.85 in cents
           priceDisplay = this.formatPrice(perMonthPrice);
           // Show original $65 price struck through
           originalPriceDisplay = `<span class="loop-subscription-widget__option-price-original" style="text-decoration: line-through; color: #999; margin-right: 8px; font-size: 16px;">${this.formatPrice(basePriceCents)}</span>`;
@@ -559,10 +559,10 @@ if (!customElements.get('loop-subscription-widget')) {
 
       getBillingText(boxIndex) {
         // Simple logic based on box order:
-        // First box (index 0) = 3-month: "$134.97 billed every 3 months"
+        // First box (index 0) = 3-month: "$134.55 billed every 3 months"
         // Second box (index 1) = 1-month: "Billed every month"
         if (boxIndex === 0) {
-          return '$134.97 billed every 3 months';
+          return '$134.55 billed every 3 months';
         } else {
           return 'Billed every month';
         }
