@@ -54,6 +54,13 @@
           "type": "shopify://apps/loop-subscriptions/blocks/loop_widget/267a7c64-5cb3-4552-b817-5485165f0a0b",
           "settings": {}
         },
+        "buy_buttons_bGALVp": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_dynamic_checkout": true,
+            "show_gift_card_recipient": true
+          }
+        },
         "collapsible_tab_m6CyXF": {
           "type": "collapsible_tab",
           "settings": {
@@ -95,6 +102,7 @@
         "icon_with_text_azrGcG",
         "icon_with_text_hi64gC",
         "loop_subscriptions_loop_widget_MUEQAQ",
+        "buy_buttons_bGALVp",
         "collapsible_tab_m6CyXF",
         "collapsible_tab_7gHXq6",
         "collapsible_tab_jzCwkb",
