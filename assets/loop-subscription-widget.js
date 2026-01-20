@@ -8,7 +8,7 @@ if (!customElements.get('loop-subscription-widget')) {
         this.variantId = this.dataset.variantId;
         this.sectionId = this.dataset.sectionId;
         this.selectedSellingPlan = null;
-        this.purchaseType = 'subscribe'; // 'onetime' or 'subscribe' - default to subscribe to match HTML
+        this.purchaseType = 'subscribe'; // Default to subscribe tab
         this.sellingPlans = [];
         this.variantChangeUnsubscriber = undefined;
       }
@@ -18,7 +18,6 @@ if (!customElements.get('loop-subscription-widget')) {
         this.setupEventListeners();
         this.loadSellingPlans();
         
-        // Subscribe to variant changes
         if (typeof PUB_SUB_EVENTS !== 'undefined' || (window.PUB_SUB_EVENTS)) {
           const events = typeof PUB_SUB_EVENTS !== 'undefined' ? PUB_SUB_EVENTS : window.PUB_SUB_EVENTS;
           this.variantChangeUnsubscriber = subscribe(
@@ -35,24 +34,20 @@ if (!customElements.get('loop-subscription-widget')) {
       }
 
       init() {
-        // Initialize tab switching
         this.tabs = this.querySelectorAll('.loop-subscription-widget__tab');
         this.panels = this.querySelectorAll('.loop-subscription-widget__panel');
         this.optionsContainer = this.querySelector('.loop-subscription-widget__options');
         this.loadingElement = this.querySelector('.loop-subscription-widget__loading');
         this.noSubscriptionsElement = this.querySelector('.loop-subscription-widget__no-subscriptions');
         this.addToCartButton = this.querySelector('.loop-subscription-widget__add-to-cart');
-        this.buttonPriceElement = this.querySelector('[data-button-price]');
         this.form = this.querySelector('[data-loop-form]') || this.querySelector('form.loop-subscription-widget__form');
         this.variantInput = this.querySelector('[data-variant-input]');
         this.sellingPlanInput = this.querySelector('[data-selling-plan-input]');
         
-        // Set initial tab
         this.switchTab(this.purchaseType);
       }
 
       setupEventListeners() {
-        // Tab switching
         this.tabs.forEach(tab => {
           tab.addEventListener('click', (e) => {
             const tabType = e.currentTarget.dataset.tab;
@@ -60,7 +55,6 @@ if (!customElements.get('loop-subscription-widget')) {
           });
         });
 
-        // Switch to subscribe button
         const switchToSubscribeBtn = this.querySelector('[data-action="switch-to-subscribe"]');
         if (switchToSubscribeBtn) {
           switchToSubscribeBtn.addEventListener('click', () => {
@@ -68,7 +62,6 @@ if (!customElements.get('loop-subscription-widget')) {
           });
         }
 
-        // Radio button changes
         this.addEventListener('change', (e) => {
           if (e.target.classList.contains('loop-subscription-widget__radio')) {
             this.handleOptionChange(e.target);
@@ -77,14 +70,12 @@ if (!customElements.get('loop-subscription-widget')) {
       }
 
       switchTab(tabType) {
-        // Update tabs
         this.tabs.forEach(tab => {
           const isActive = tab.dataset.tab === tabType;
           tab.classList.toggle('active', isActive);
           tab.setAttribute('aria-selected', isActive);
         });
 
-        // Update panels
         this.panels.forEach(panel => {
           const isActive = panel.dataset.panel === tabType;
           panel.classList.toggle('active', isActive);
@@ -92,25 +83,157 @@ if (!customElements.get('loop-subscription-widget')) {
 
         this.purchaseType = tabType;
         
-        // Clear selling plan selection when switching to one-time
         if (tabType === 'onetime') {
           this.selectedSellingPlan = null;
           if (this.sellingPlanInput) {
             this.sellingPlanInput.value = '';
           }
+          // Check the one-time purchase radio button
+          const onetimeRadio = this.querySelector('[data-purchase-type="onetime"]');
+          if (onetimeRadio) {
+            onetimeRadio.checked = true;
+          }
+          // Reset quantity to 1 for one-time purchase
+          const quantityInput = this.querySelector('[data-loop-quantity]');
+          if (quantityInput) {
+            quantityInput.value = 1;
+          }
+        } else if (tabType === 'subscribe') {
+          // Uncheck the one-time purchase radio button when switching to subscribe
+          const onetimeRadio = this.querySelector('[data-purchase-type="onetime"]');
+          if (onetimeRadio) {
+            onetimeRadio.checked = false;
+          }
         }
-        
-        this.updateButtonPrice();
       }
 
       async loadSellingPlans() {
         try {
           this.showLoading();
           
-          // Fetch selling plans using Shopify's Storefront API (GraphQL)
+          // First try to get selling plans from product JSON endpoint (most reliable)
+          const plansFromJSON = await this.getSellingPlansFromLiquid();
+          
+          if (plansFromJSON.length > 0) {
+            this.sellingPlans = plansFromJSON;
+            this.renderSellingPlans();
+            return;
+          }
+          
+          // Fallback to API if Liquid data not available
+          console.log('Loading selling plans from API for product:', this.productId);
+          
+          const allPlans = await this.fetchSellingPlansForProduct(this.productId);
+          
+          console.log('Total selling plans found:', allPlans.length);
+          
+          this.sellingPlans = allPlans;
+          
+          if (this.sellingPlans.length > 0) {
+            this.renderSellingPlans();
+          } else {
+            console.warn('No selling plans found. Showing no subscriptions message.');
+            this.showNoSubscriptions();
+          }
+        } catch (error) {
+          console.error('Error loading selling plans:', error);
+          this.showNoSubscriptions();
+        }
+      }
+
+      async getSellingPlansFromLiquid() {
+        const plans = [];
+        
+        // Get selling plans from Liquid JSON data
+        const mainProductData = this.querySelector('[data-selling-plans-data]');
+        if (mainProductData) {
+          try {
+            const liquidData = JSON.parse(mainProductData.textContent);
+            console.log('Liquid selling plans data:', liquidData);
+            
+            if (liquidData.sellingPlanGroups && liquidData.sellingPlanGroups.length > 0) {
+              liquidData.sellingPlanGroups.forEach(group => {
+                if (group.sellingPlans && group.sellingPlans.length > 0) {
+                  group.sellingPlans.forEach(plan => {
+                    // Parse billing policy from plan options
+                    const billingOption = plan.options?.[0];
+                    const interval = billingOption?.name || 'MONTH';
+                    const intervalCount = parseInt(billingOption?.values?.[0]) || 1;
+                    
+                    // Parse pricing policies
+                    const pricingPolicies = [];
+                    if (plan.priceAdjustments && plan.priceAdjustments.length > 0) {
+                      plan.priceAdjustments.forEach(adjustment => {
+                        if (adjustment.valueType === 'percentage') {
+                          pricingPolicies.push({
+                            adjustmentType: 'PERCENTAGE',
+                            adjustmentValue: { percentage: parseFloat(adjustment.value) || 0 }
+                          });
+                        } else {
+                          // Fixed amount - value is typically in cents
+                          const fixedAmount = parseFloat(adjustment.value) || 0;
+                          pricingPolicies.push({
+                            adjustmentType: 'FIXED_AMOUNT',
+                            adjustmentValue: { 
+                              fixedValue: { 
+                                amount: fixedAmount / 100, // Convert cents to dollars for display
+                                currencyCode: 'USD' 
+                              } 
+                            }
+                          });
+                        }
+                      });
+                    }
+                    
+                    plans.push({
+                      id: plan.id.toString(),
+                      gid: `gid://shopify/SellingPlan/${plan.id}`,
+                      name: plan.name,
+                      description: plan.description || '',
+                      billingPolicy: {
+                        interval: interval.toUpperCase(),
+                        intervalCount: intervalCount
+                      },
+                      pricingPolicies: pricingPolicies,
+                      productId: liquidData.productId.toString(),
+                      variantId: liquidData.variantId?.toString() || null,
+                      variantPrice: liquidData.variantPrice || 0 // Already in cents
+                    });
+                  });
+                }
+              });
+            } else {
+              console.warn('No sellingPlanGroups found in Liquid data');
+            }
+          } catch (error) {
+            console.error('Error parsing Liquid selling plans data:', error);
+          }
+        } else {
+          console.warn('No [data-selling-plans-data] element found');
+        }
+        
+        console.log('Total plans found from Liquid:', plans.length);
+        return plans;
+      }
+
+      async fetchSellingPlansForProduct(productId) {
+        try {
+          // First try to get product data from JSON endpoint
+          const productResponse = await fetch(`/products/${productId}.js`);
+          if (!productResponse.ok) {
+            console.warn(`Failed to fetch product ${productId} from JSON endpoint`);
+            return [];
+          }
+          
+          const productData = await productResponse.json();
+          const variant = productData.variants?.[0];
+          const variantPrice = variant ? variant.price : 0;
+          
+          // Try GraphQL API for selling plans
           const query = `
             query getProduct($id: ID!) {
               product(id: $id) {
+                id
                 sellingPlanGroups(first: 10) {
                   edges {
                     node {
@@ -156,7 +279,6 @@ if (!customElements.get('loop-subscription-widget')) {
             }
           `;
 
-          // Use Shopify's Storefront API endpoint
           const response = await fetch('/api/2024-01/graphql.json', {
             method: 'POST',
             headers: {
@@ -165,50 +287,53 @@ if (!customElements.get('loop-subscription-widget')) {
             body: JSON.stringify({
               query: query,
               variables: {
-                id: `gid://shopify/Product/${this.productId}`
+                id: `gid://shopify/Product/${productId}`
               }
             })
           });
 
           if (!response.ok) {
-            throw new Error('Failed to fetch selling plans');
+            console.warn(`GraphQL API not available or requires authentication for product ${productId}`);
+            return [];
           }
 
           const data = await response.json();
           
           if (data.errors) {
             console.error('GraphQL errors:', data.errors);
-            throw new Error('GraphQL query failed');
+            return [];
           }
 
-          // Extract selling plans
-          const sellingPlanGroups = data.data?.product?.sellingPlanGroups?.edges || [];
-          const allSellingPlans = [];
+          const product = data.data?.product;
+          if (!product) {
+            console.warn(`No product data returned for product ${productId}`);
+            return [];
+          }
+
+          const sellingPlanGroups = product.sellingPlanGroups?.edges || [];
+          const plans = [];
           
           sellingPlanGroups.forEach(group => {
             const sellingPlans = group.node.sellingPlans.edges || [];
             sellingPlans.forEach(planEdge => {
-              allSellingPlans.push({
-                id: planEdge.node.id.split('/').pop(), // Extract numeric ID
+              plans.push({
+                id: planEdge.node.id.split('/').pop(),
                 gid: planEdge.node.id,
                 name: planEdge.node.name,
                 description: planEdge.node.description,
                 billingPolicy: planEdge.node.billingPolicy,
-                pricingPolicies: planEdge.node.pricingPolicies
+                pricingPolicies: planEdge.node.pricingPolicies,
+                productId: productId,
+                variantId: variant?.id || null,
+                variantPrice: variantPrice
               });
             });
           });
           
-          this.sellingPlans = allSellingPlans;
-          
-          if (this.sellingPlans.length > 0) {
-            this.renderSellingPlans();
-          } else {
-            this.showNoSubscriptions();
-          }
+          return plans;
         } catch (error) {
-          console.error('Error loading selling plans:', error);
-          this.showNoSubscriptions();
+          console.error(`Error fetching selling plans for product ${productId}:`, error);
+          return [];
         }
       }
 
@@ -217,72 +342,133 @@ if (!customElements.get('loop-subscription-widget')) {
         
         if (!this.optionsContainer) return;
 
-        // Clear existing options
         this.optionsContainer.innerHTML = '';
 
-        // Sort selling plans by interval count
+        // Sort plans: 1-month first, then 3-month (reverse order)
         const sortedPlans = [...this.sellingPlans].sort((a, b) => {
           const intervalA = a.billingPolicy?.intervalCount || 0;
           const intervalB = b.billingPolicy?.intervalCount || 0;
-          return intervalA - intervalB;
+          return intervalA - intervalB; // 1-month (1) comes before 3-month (3)
         });
 
         sortedPlans.forEach((plan, index) => {
-          const option = this.createSellingPlanOption(plan, index === 0);
+          const option = this.createSellingPlanOption(plan, index === 0, index);
           this.optionsContainer.appendChild(option);
         });
 
-        // Select first plan by default
         if (sortedPlans.length > 0) {
-          this.selectSellingPlan(sortedPlans[0]);
+          this.selectSellingPlan(sortedPlans[0], sortedPlans[0].productId, sortedPlans[0].variantId);
         }
       }
 
-      createSellingPlanOption(plan, isDefault = false) {
+      createSellingPlanOption(plan, isDefault = false, boxIndex = 0) {
         const option = document.createElement('div');
         option.className = `loop-subscription-widget__option${isDefault ? ' selected' : ''}`;
         option.dataset.sellingPlanId = plan.id;
+        option.dataset.productId = plan.productId;
+        option.dataset.variantId = plan.variantId;
 
-        // Get variant price from DOM
-        const variantPriceElement = this.querySelector('[data-variant-price]');
-        const basePrice = variantPriceElement ? parseInt(variantPriceElement.dataset.variantPrice) : 0;
-        
-        // Calculate subscription price from pricing policies
-        let subscriptionPrice = basePrice;
+        // Shopify product JSON prices from /products/[handle].js are in CENTS
+        // e.g., 6500 = $65.00
+        const basePriceCents = plan.variantPrice || 0;
+        let subscriptionPrice = basePriceCents;
         let savings = 0;
         
         if (plan.pricingPolicies && plan.pricingPolicies.length > 0) {
           const policy = plan.pricingPolicies[0];
-          if (policy.adjustmentType === 'PERCENTAGE' && policy.adjustmentValue.percentage) {
-            const discount = (basePrice * policy.adjustmentValue.percentage) / 100;
-            subscriptionPrice = basePrice - discount;
-            savings = Math.round(policy.adjustmentValue.percentage);
-          } else if (policy.adjustmentType === 'FIXED_AMOUNT' && policy.adjustmentValue.fixedValue) {
-            const discountAmount = policy.adjustmentValue.fixedValue.amount * 100; // Convert to cents
-            subscriptionPrice = basePrice - discountAmount;
-            savings = Math.round((discountAmount / basePrice) * 100);
+          const adjustmentType = policy.adjustmentType;
+          const adjustmentValue = policy.adjustmentValue || {};
+          
+          console.log('Pricing policy:', { adjustmentType, adjustmentValue, basePriceCents });
+          
+          if (adjustmentType === 'PERCENTAGE' && adjustmentValue.percentage !== undefined) {
+            const percentage = parseFloat(adjustmentValue.percentage);
+            // Ensure percentage is reasonable (0-100%)
+            if (percentage >= 0 && percentage <= 100) {
+              const discount = Math.round((basePriceCents * percentage) / 100);
+              subscriptionPrice = Math.max(0, basePriceCents - discount); // Ensure no negative prices
+              savings = Math.min(100, Math.round(percentage)); // Cap savings at 100%
+            } else {
+              console.warn('Invalid percentage discount:', percentage, 'for plan:', plan.name);
+            }
+          } else if (adjustmentType === 'FIXED_AMOUNT' && adjustmentValue.fixedValue) {
+            // Fixed amount is stored in dollars, convert to cents
+            const fixedAmountDollars = parseFloat(adjustmentValue.fixedValue.amount);
+            const discountAmountCents = Math.round(fixedAmountDollars * 100);
+            subscriptionPrice = Math.max(0, basePriceCents - discountAmountCents); // Ensure no negative prices
+            savings = Math.min(100, Math.round((discountAmountCents / basePriceCents) * 100)); // Cap savings at 100%
+            console.log('Fixed discount (dollars):', fixedAmountDollars, 'Discount (cents):', discountAmountCents, 'Final price (cents):', subscriptionPrice);
           }
+          
+          console.log('Final subscription price:', subscriptionPrice, 'cents ($' + (subscriptionPrice / 100).toFixed(2) + ')');
         }
 
         const frequencyText = this.getFrequencyText(plan);
+        const intervalCount = plan.billingPolicy?.intervalCount || 1;
+        const intervalUnit = plan.billingPolicy?.interval || 'MONTH';
+        const unit = intervalUnit.toLowerCase();
         
-        // Check if this is the 3-month plan and use hardcoded prices
-        const isThreeMonthPlan = plan.billingPolicy?.intervalCount === 3 && 
-                                 (plan.billingPolicy?.interval === 'MONTH' || plan.billingPolicy?.interval === 'month') ||
-                                 plan.id === '38624' || 
-                                 String(plan.id) === '38624';
+        // Debug logging
+        console.log('Creating plan option:', {
+          planName: plan.name,
+          intervalCount,
+          intervalUnit,
+          unit,
+          billingPolicy: plan.billingPolicy
+        });
         
+        // Check if this is the 3-month plan - be more flexible with detection
+        const planName = (plan.name || '').toLowerCase();
+        const planDesc = (plan.description || '').toLowerCase();
+        const isThreeMonthPlan = plan.id === '38624' ||
+                                 (intervalCount === 3 && (unit === 'month' || unit === 'months')) ||
+                                 planName.includes('3 month') ||
+                                 planName.includes('90') ||
+                                 planDesc.includes('3 month');
+        
+        // Calculate price display
         let priceDisplay = this.formatPrice(subscriptionPrice);
-        let billingText = this.getBillingText(plan, subscriptionPrice);
+        let showOriginalPrice = basePriceCents > subscriptionPrice;
+        let originalPriceDisplay = '';
+        
+        // For 3-month plan, show the per-month price with original price
+        if (isThreeMonthPlan) {
+          // Show per-month price: $44.99
+          const perMonthPrice = 4499; // $44.99 in cents
+          priceDisplay = this.formatPrice(perMonthPrice);
+          // Show original $65 price struck through
+          originalPriceDisplay = `<span class="loop-subscription-widget__option-price-original" style="text-decoration: line-through; color: #999; margin-right: 8px; font-size: 16px;">${this.formatPrice(basePriceCents)}</span>`;
+          showOriginalPrice = true;
+        } else {
+          // For 1-month, show original price if there's a discount
+          if (showOriginalPrice) {
+            originalPriceDisplay = `<span class="loop-subscription-widget__option-price-original" style="text-decoration: line-through; color: #999; margin-right: 8px; font-size: 16px;">${this.formatPrice(basePriceCents)}</span>`;
+          }
+        }
+        
+        // Add "per month" to all subscription prices in smaller text
+        // Ensure it's added for both 1-month and 3-month plans
+        priceDisplay = `${priceDisplay} <span style="font-size: 14px; font-weight: normal; color: inherit;">per month</span>`;
+        
+        // Create badges - hardcode discount percentages (on single line)
+        const badges = [];
+        const isOneMonthPlan = (intervalCount === 1 && (unit === 'month' || unit === 'months')) ||
+                               (!isThreeMonthPlan && intervalCount === 1);
         
         if (isThreeMonthPlan) {
-          // Hardcoded prices for 3-month plan
-          priceDisplay = '$44.85 per month';
-          billingText = '$134.55 billed every 3 months';
+          // 3-month plan: Save 31%
+          badges.push(`<span class="loop-subscription-widget__badge loop-subscription-widget__badge--discount" style="background-color: #FFD700; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-right: 8px; display: inline-block;">Save 31%</span>`);
+        } else if (isOneMonthPlan) {
+          // 1-month plan: Save 15%
+          badges.push(`<span class="loop-subscription-widget__badge loop-subscription-widget__badge--discount" style="background-color: #FFD700; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-right: 8px; display: inline-block;">Save 15%</span>`);
         }
+        badges.push(`<span class="loop-subscription-widget__badge loop-subscription-widget__badge--shipping" style="background-color: #FFD700; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; display: inline-block;">Free Shipping</span>`);
 
+        // Get billing text for display - use box order (first box = 3-month, second box = 1-month)
+        const billingText = this.getBillingText(boxIndex);
+        
         option.innerHTML = `
-          <label class="loop-subscription-widget__radio-label">
+          <label class="loop-subscription-widget__radio-label" style="display: flex; align-items: flex-start; padding: 16px;">
             <input 
               type="radio" 
               name="loop-selling-plan-${this.sectionId}" 
@@ -290,23 +476,44 @@ if (!customElements.get('loop-subscription-widget')) {
               class="loop-subscription-widget__radio"
               ${isDefault ? 'checked' : ''}
               data-selling-plan-id="${plan.id}"
+              data-product-id="${plan.productId}"
+              data-variant-id="${plan.variantId}"
+              style="margin-right: 12px; margin-top: 4px;"
             >
             <span class="loop-subscription-widget__radio-custom"></span>
-            <div class="loop-subscription-widget__option-content">
-              <div class="loop-subscription-widget__option-header">
-                <span class="loop-subscription-widget__option-title">${frequencyText}</span>
-                ${savings > 0 ? `<span class="loop-subscription-widget__savings-badge">Save ${savings}%</span>` : ''}
+            <div class="loop-subscription-widget__option-content" style="flex: 1; display: flex; justify-content: space-between; align-items: flex-start;">
+              <div style="flex: 1; min-width: 0;">
+                <div class="loop-subscription-widget__title-price-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 12px; flex-wrap: nowrap;">
+                  <span class="loop-subscription-widget__option-title" style="font-weight: 600; font-size: 16px; white-space: nowrap; flex-shrink: 0;">${frequencyText}</span>
+                  <div class="loop-subscription-widget__option-pricing" style="text-align: right; white-space: nowrap; flex-shrink: 0;">
+                    ${originalPriceDisplay}
+                    <span class="loop-subscription-widget__option-price" style="font-weight: 600; font-size: 18px;">${priceDisplay}</span>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center; flex-wrap: nowrap; margin-bottom: 8px;">
+                  ${badges.join('')}
+                </div>
+                <div class="loop-subscription-widget__option-billing" style="font-size: 14px; color: #666; margin-left: 0;">${billingText}</div>
               </div>
-              <div class="loop-subscription-widget__option-pricing">
-                ${basePrice > subscriptionPrice ? `<span class="loop-subscription-widget__option-price-original">${this.formatPrice(basePrice)}</span>` : ''}
-                <span class="loop-subscription-widget__option-price">${priceDisplay}</span>
-              </div>
-              <div class="loop-subscription-widget__option-billing">${billingText}</div>
             </div>
           </label>
+          <style>
+            @media (max-width: 768px) {
+              .loop-subscription-widget__title-price-row {
+                flex-wrap: wrap !important;
+              }
+              .loop-subscription-widget__option-pricing {
+                width: 100% !important;
+                margin-top: 8px !important;
+                text-align: left !important;
+              }
+              .loop-subscription-widget__option-title {
+                width: 100% !important;
+              }
+            }
+          </style>
         `;
 
-        // Add click handler to select option
         option.addEventListener('click', (e) => {
           if (!e.target.closest('input')) {
             const radio = option.querySelector('input[type="radio"]');
@@ -325,33 +532,49 @@ if (!customElements.get('loop-subscription-widget')) {
         const intervalUnit = plan.billingPolicy?.interval || 'MONTH';
         const unit = intervalUnit.toLowerCase();
         
-        if (intervalCount === 1) {
-          return `1-${unit.charAt(0).toUpperCase() + unit.slice(1)} supply`;
+        // Debug logging
+        console.log('getFrequencyText:', { intervalCount, intervalUnit, unit, planName: plan.name });
+        
+        // Check plan name/description as fallback
+        const planName = (plan.name || '').toLowerCase();
+        const planDesc = (plan.description || '').toLowerCase();
+        const isThreeMonth = plan.id === '38624' ||
+                             (intervalCount === 3 && (unit === 'month' || unit === 'months')) ||
+                             planName.includes('3 month') ||
+                             planName.includes('90') ||
+                             planDesc.includes('3 month');
+        const isOneMonth = (intervalCount === 1 && (unit === 'month' || unit === 'months')) ||
+                           (!isThreeMonth && intervalCount === 1);
+        
+        if (isOneMonth) {
+          return '1 Month Supply';
+        } else if (isThreeMonth) {
+          return '3 Month Supply';
+        } else if (intervalCount === 1) {
+          return `1 ${unit.charAt(0).toUpperCase() + unit.slice(1)} Supply`;
+        } else {
+          return `${intervalCount} ${unit.charAt(0).toUpperCase() + unit.slice(1)}${intervalCount > 1 ? 's' : ''} Supply`;
         }
-        return `${intervalCount}-${unit.charAt(0).toUpperCase() + unit.slice(1)} supply`;
       }
 
-      getBillingText(plan, price) {
-        const intervalCount = plan.billingPolicy?.intervalCount || 1;
-        const intervalUnit = plan.billingPolicy?.interval || 'MONTH';
-        const unit = intervalUnit.toLowerCase();
-        const formattedPrice = this.formatPrice(price);
-        
-        if (intervalCount === 1) {
-          return `Billed ${unit === 'month' ? 'monthly' : unit === 'week' ? 'weekly' : unit + 'ly'}.`;
+      getBillingText(boxIndex) {
+        // Simple logic based on box order:
+        // First box (index 0) = 3-month: "$134.97 billed every 3 months"
+        // Second box (index 1) = 1-month: "Billed every month"
+        if (boxIndex === 0) {
+          return '$134.97 billed every 3 months';
+        } else {
+          return 'Billed every month';
         }
-        
-        return `${formattedPrice} billed every ${intervalCount} ${unit}${intervalCount > 1 ? 's' : ''}.`;
       }
 
       formatPrice(priceInCents) {
-        // Convert cents to dollars
         const priceInDollars = priceInCents / 100;
         return new Intl.NumberFormat('en-US', {
           style: 'currency',
           currency: 'USD',
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
         }).format(priceInDollars);
       }
 
@@ -359,17 +582,20 @@ if (!customElements.get('loop-subscription-widget')) {
         if (radio.dataset.sellingPlanId) {
           const sellingPlan = this.sellingPlans.find(sp => sp.id === radio.dataset.sellingPlanId);
           if (sellingPlan) {
-            this.selectSellingPlan(sellingPlan);
+            this.selectSellingPlan(sellingPlan, this.productId, this.variantId);
           }
         } else if (radio.dataset.purchaseType === 'onetime') {
           this.selectedSellingPlan = null;
           if (this.sellingPlanInput) {
             this.sellingPlanInput.value = '';
           }
-          this.updateButtonPrice();
+          // Reset quantity to 1 for one-time purchase
+          const quantityInput = this.querySelector('[data-loop-quantity]');
+          if (quantityInput) {
+            quantityInput.value = 1;
+          }
         }
 
-        // Update visual selection
         this.querySelectorAll('.loop-subscription-widget__option').forEach(opt => {
           opt.classList.remove('selected');
         });
@@ -378,57 +604,61 @@ if (!customElements.get('loop-subscription-widget')) {
         }
       }
 
-      selectSellingPlan(sellingPlan) {
+      selectSellingPlan(sellingPlan, productId, variantId) {
         this.selectedSellingPlan = sellingPlan;
         if (this.sellingPlanInput) {
           this.sellingPlanInput.value = sellingPlan.id;
         }
-        this.updateButtonPrice();
-      }
-
-      updateButtonPrice() {
-        if (!this.buttonPriceElement) return;
-
-        let price = '';
         
-        if (this.purchaseType === 'subscribe' && this.selectedSellingPlan) {
-          // Check if this is the 3-month plan and use hardcoded total price
-          const isThreeMonthPlan = this.selectedSellingPlan.billingPolicy?.intervalCount === 3 && 
-                                   (this.selectedSellingPlan.billingPolicy?.interval === 'MONTH' || this.selectedSellingPlan.billingPolicy?.interval === 'month') ||
-                                   this.selectedSellingPlan.id === '38624' || 
-                                   String(this.selectedSellingPlan.id) === '38624';
-          
-          if (isThreeMonthPlan) {
-            // Hardcoded total price for 3-month plan
-            price = '$134.55';
-          } else {
-            // Calculate subscription price for other plans
-            const variantPriceElement = this.querySelector('[data-variant-price]');
-            if (variantPriceElement) {
-              const basePrice = parseInt(variantPriceElement.dataset.variantPrice);
-              const pricingPolicies = this.selectedSellingPlan.pricingPolicies || [];
-              if (pricingPolicies.length > 0) {
-                const policy = pricingPolicies[0];
-                let subscriptionPrice = basePrice;
-                if (policy.adjustmentType === 'PERCENTAGE' && policy.adjustmentValue.percentage) {
-                  subscriptionPrice = basePrice - (basePrice * policy.adjustmentValue.percentage / 100);
-                } else if (policy.adjustmentType === 'FIXED_AMOUNT' && policy.adjustmentValue.fixedValue) {
-                  subscriptionPrice = basePrice - (policy.adjustmentValue.fixedValue.amount * 100);
-                }
-                price = this.formatPrice(subscriptionPrice);
-              }
-            }
-          }
+        // Determine quantity based on the selling plan
+        // Plan ID 38624 is the 3-month plan - needs quantity 3
+        const planId = sellingPlan.id ? sellingPlan.id.toString() : '';
+        const intervalCount = sellingPlan.billingPolicy?.intervalCount || 1;
+        const intervalUnit = sellingPlan.billingPolicy?.interval || 'MONTH';
+        const planName = (sellingPlan.name || '').toLowerCase();
+        const planDesc = (sellingPlan.description || '').toLowerCase();
+        
+        // Check if this is the 3-unit plan (plan ID 38624 or 3-month interval)
+        const isThreeUnitPlan = planId === '38624' ||
+                                 planId === 38624 ||
+                                 (intervalCount === 3 && (intervalUnit === 'MONTH' || intervalUnit === 'month')) ||
+                                 planName.includes('3 month') ||
+                                 planName.includes('90') ||
+                                 planDesc.includes('3 unit');
+        
+        const quantity = isThreeUnitPlan ? 3 : 1;
+        
+        console.log('selectSellingPlan:', {
+          planId,
+          planName: sellingPlan.name,
+          isThreeUnitPlan,
+          quantity,
+          intervalCount,
+          intervalUnit
+        });
+        
+        const quantityInput = this.querySelector('[data-loop-quantity]');
+        if (quantityInput) {
+          quantityInput.value = quantity;
+          console.log('Quantity set to:', quantity, 'in input:', quantityInput);
         } else {
-          // Get one-time price from variant
-          const onetimePriceElement = this.querySelector('[data-onetime-price]');
-          if (onetimePriceElement) {
-            price = onetimePriceElement.dataset.onetimePrice;
-          }
+          console.warn('Quantity input not found!');
         }
-
-        if (price) {
-          this.buttonPriceElement.textContent = price;
+        
+        // Remove fulfillment quantity property since we're using actual quantity now
+        if (this.form) {
+          const fulfillmentProp = this.form.querySelector('[name="properties[_fulfillment_quantity]"]');
+          if (fulfillmentProp) {
+            fulfillmentProp.remove();
+          }
+          
+          // Verify form has correct inputs
+          console.log('Form inputs:', {
+            variantId: this.variantInput?.value,
+            sellingPlanId: this.sellingPlanInput?.value,
+            quantity: quantityInput?.value,
+            formAction: this.form.action
+          });
         }
       }
 
@@ -441,7 +671,6 @@ if (!customElements.get('loop-subscription-widget')) {
               this.variantInput.value = newVariantId;
             }
             this.loadSellingPlans();
-            this.updateButtonPrice();
           }
         }
       }
