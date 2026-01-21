@@ -84,6 +84,16 @@
                     <li>
                       {%- comment -%} Get image from metafield or object {%- endcomment -%}
                       {%- assign menu_item_image = null -%}
+                      
+                      {%- comment -%} Try to get product from URL if type is not detected {%- endcomment -%}
+                      {%- assign menu_product = null -%}
+                      {%- if childlink.type == 'product' -%}
+                        {%- assign menu_product = childlink.object -%}
+                      {%- elsif childlink.url contains '/products/' -%}
+                        {%- assign product_handle = childlink.url | split: '/products/' | last | split: '?' | first -%}
+                        {%- assign menu_product = all_products[product_handle] -%}
+                      {%- endif -%}
+                      
                       {%- if childlink.type == 'collection' -%}
                         {%- if childlink.object.metafields.custom.menu_image != blank -%}
                           {%- assign menu_item_image = childlink.object.metafields.custom.menu_image -%}
@@ -92,16 +102,16 @@
                         {%- elsif childlink.object.featured_image != blank -%}
                           {%- assign menu_item_image = childlink.object.featured_image -%}
                         {%- endif -%}
-                      {%- elsif childlink.type == 'product' -%}
-                        {%- comment -%} Check for menu_image metafield in common namespaces {%- endcomment -%}
-                        {%- if childlink.object.metafields.custom.menu_image != blank -%}
-                          {%- assign menu_item_image = childlink.object.metafields.custom.menu_image -%}
-                        {%- elsif childlink.object.metafields.theme.menu_image != blank -%}
-                          {%- assign menu_item_image = childlink.object.metafields.theme.menu_image -%}
-                        {%- elsif childlink.object.metafields.shopify.menu_image != blank -%}
-                          {%- assign menu_item_image = childlink.object.metafields.shopify.menu_image -%}
-                        {%- elsif childlink.object.featured_media != blank -%}
-                          {%- assign menu_item_image = childlink.object.featured_media -%}
+                      {%- elsif menu_product != null -%}
+                        {%- comment -%} Check for menu_image metafield on product {%- endcomment -%}
+                        {%- if menu_product.metafields.custom.menu_image != blank -%}
+                          {%- assign menu_item_image = menu_product.metafields.custom.menu_image -%}
+                        {%- elsif menu_product.metafields.theme.menu_image != blank -%}
+                          {%- assign menu_item_image = menu_product.metafields.theme.menu_image -%}
+                        {%- elsif menu_product.metafields.shopify.menu_image != blank -%}
+                          {%- assign menu_item_image = menu_product.metafields.shopify.menu_image -%}
+                        {%- elsif menu_product.featured_media != blank -%}
+                          {%- assign menu_item_image = menu_product.featured_media -%}
                         {%- endif -%}
                       {%- elsif childlink.type == 'page' -%}
                         {%- if childlink.object.metafields.custom.menu_image != blank -%}
@@ -121,8 +131,19 @@
                       >
                         {%- if menu_item_image != null -%}
                           <span class="mega-menu__image-wrapper">
-                            {%- if menu_item_image contains 'http' or menu_item_image contains '//' -%}
-                              {%- comment -%} External URL image {%- endcomment -%}
+                            {%- comment -%} Handle different image types: file metafield, URL string, or image object {%- endcomment -%}
+                            {%- if menu_item_image.url != blank -%}
+                              {%- comment -%} File metafield object with .url property {%- endcomment -%}
+                              <img 
+                                src="{{ menu_item_image.url }}"
+                                alt="{{ menu_item_image.alt | default: childlink.title | escape }}"
+                                class="mega-menu__item-image"
+                                loading="lazy"
+                                width="150"
+                                height="150"
+                              >
+                            {%- elsif menu_item_image contains 'http' or menu_item_image contains '//' -%}
+                              {%- comment -%} External URL string {%- endcomment -%}
                               <img 
                                 src="{{ menu_item_image }}"
                                 alt="{{ childlink.title | escape }}"
@@ -132,7 +153,7 @@
                                 height="150"
                               >
                             {%- else -%}
-                              {%- comment -%} Shopify image object {%- endcomment -%}
+                              {%- comment -%} Shopify image object (featured_media, featured_image) {%- endcomment -%}
                               <img 
                                 src="{{ menu_item_image | image_url: width: 150 }}"
                                 alt="{{ menu_item_image.alt | default: childlink.title | escape }}"
@@ -152,6 +173,16 @@
                             <li>
                               {%- comment -%} Get image for grandchild menu item {%- endcomment -%}
                               {%- assign grandchild_image = null -%}
+                              
+                              {%- comment -%} Try to get product from URL if type is not detected {%- endcomment -%}
+                              {%- assign grandchild_product = null -%}
+                              {%- if grandchildlink.type == 'product' -%}
+                                {%- assign grandchild_product = grandchildlink.object -%}
+                              {%- elsif grandchildlink.url contains '/products/' -%}
+                                {%- assign product_handle = grandchildlink.url | split: '/products/' | last | split: '?' | first -%}
+                                {%- assign grandchild_product = all_products[product_handle] -%}
+                              {%- endif -%}
+                              
                               {%- if grandchildlink.type == 'collection' -%}
                                 {%- if grandchildlink.object.metafields.custom.menu_image != blank -%}
                                   {%- assign grandchild_image = grandchildlink.object.metafields.custom.menu_image -%}
@@ -160,15 +191,15 @@
                                 {%- elsif grandchildlink.object.featured_image != blank -%}
                                   {%- assign grandchild_image = grandchildlink.object.featured_image -%}
                                 {%- endif -%}
-                              {%- elsif grandchildlink.type == 'product' -%}
-                                {%- if grandchildlink.object.metafields.custom.menu_image != blank -%}
-                                  {%- assign grandchild_image = grandchildlink.object.metafields.custom.menu_image -%}
-                                {%- elsif grandchildlink.object.metafields.theme.menu_image != blank -%}
-                                  {%- assign grandchild_image = grandchildlink.object.metafields.theme.menu_image -%}
-                                {%- elsif grandchildlink.object.metafields.shopify.menu_image != blank -%}
-                                  {%- assign grandchild_image = grandchildlink.object.metafields.shopify.menu_image -%}
-                                {%- elsif grandchildlink.object.featured_media != blank -%}
-                                  {%- assign grandchild_image = grandchildlink.object.featured_media -%}
+                              {%- elsif grandchild_product != null -%}
+                                {%- if grandchild_product.metafields.custom.menu_image != blank -%}
+                                  {%- assign grandchild_image = grandchild_product.metafields.custom.menu_image -%}
+                                {%- elsif grandchild_product.metafields.theme.menu_image != blank -%}
+                                  {%- assign grandchild_image = grandchild_product.metafields.theme.menu_image -%}
+                                {%- elsif grandchild_product.metafields.shopify.menu_image != blank -%}
+                                  {%- assign grandchild_image = grandchild_product.metafields.shopify.menu_image -%}
+                                {%- elsif grandchild_product.featured_media != blank -%}
+                                  {%- assign grandchild_image = grandchild_product.featured_media -%}
                                 {%- endif -%}
                               {%- elsif grandchildlink.type == 'page' -%}
                                 {%- if grandchildlink.object.metafields.custom.menu_image != blank -%}
@@ -188,7 +219,18 @@
                               >
                                 {%- if grandchild_image != null -%}
                                   <span class="mega-menu__image-wrapper">
-                                    {%- if grandchild_image contains 'http' or grandchild_image contains '//' -%}
+                                    {%- if grandchild_image.url != blank -%}
+                                      {%- comment -%} File metafield object with .url property {%- endcomment -%}
+                                      <img 
+                                        src="{{ grandchild_image.url }}"
+                                        alt="{{ grandchild_image.alt | default: grandchildlink.title | escape }}"
+                                        class="mega-menu__item-image"
+                                        loading="lazy"
+                                        width="100"
+                                        height="100"
+                                      >
+                                    {%- elsif grandchild_image contains 'http' or grandchild_image contains '//' -%}
+                                      {%- comment -%} External URL string {%- endcomment -%}
                                       <img 
                                         src="{{ grandchild_image }}"
                                         alt="{{ grandchildlink.title | escape }}"
@@ -198,6 +240,7 @@
                                         height="100"
                                       >
                                     {%- else -%}
+                                      {%- comment -%} Shopify image object {%- endcomment -%}
                                       <img 
                                         src="{{ grandchild_image | image_url: width: 100 }}"
                                         alt="{{ grandchild_image.alt | default: grandchildlink.title | escape }}"
