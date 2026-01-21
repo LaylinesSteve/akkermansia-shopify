@@ -81,12 +81,13 @@
                     {%- if menu_product != null -%}
                       {%- comment -%} Check if this is Shop menu and first two items {%- endcomment -%}
                       {%- if is_shop_menu and forloop.index <= 2 -%}
+                        {%- comment -%} Try multiple ways to get the product image {%- endcomment -%}
                         {%- if menu_product.featured_media != blank -%}
                           {%- assign menu_item_image = menu_product.featured_media -%}
-                        {%- elsif menu_product.media.first != blank -%}
-                          {%- assign menu_item_image = menu_product.media.first -%}
-                        {%- elsif menu_product.images.first != blank -%}
-                          {%- assign menu_item_image = menu_product.images.first -%}
+                        {%- elsif menu_product.media != blank and menu_product.media.size > 0 -%}
+                          {%- assign menu_item_image = menu_product.media[0] -%}
+                        {%- elsif menu_product.images != blank and menu_product.images.size > 0 -%}
+                          {%- assign menu_item_image = menu_product.images[0] -%}
                         {%- endif -%}
                       {%- endif -%}
                     {%- elsif childlink.type == 'collection' -%}
