@@ -6,33 +6,41 @@
 {% endcomment %}
 
 <style>
-  .mega-menu__link--with-image {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
+  .mega-menu__product-card {
+    margin-bottom: 1rem;
   }
   
-  .mega-menu__image-wrapper {
-    flex-shrink: 0;
+  .mega-menu__product-link {
     display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 0.2s ease;
   }
   
-  .mega-menu__item-image {
+  .mega-menu__product-link:hover {
+    opacity: 0.8;
+  }
+  
+  .mega-menu__product-image {
     width: 150px;
-    height: auto;
-    border-radius: 4px;
+    height: 150px;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    background: #f5f5f5;
+  }
+  
+  .mega-menu__product-image img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     display: block;
   }
   
-  .mega-menu__link--level-2 .mega-menu__item-image {
-    width: 150px;
+  .mega-menu__product-title {
+    font-size: 0.9rem;
+    line-height: 1.3;
     max-width: 150px;
-  }
-  
-  .mega-menu__link:not(.mega-menu__link--level-2) .mega-menu__item-image {
-    width: 100px;
-    max-width: 100px;
   }
   
   .mega-menu__link-text {
@@ -40,13 +48,14 @@
   }
   
   @media screen and (max-width: 989px) {
-    .mega-menu__item-image {
-      width: 100px;
+    .mega-menu__product-image {
+      width: 120px;
+      height: 120px;
     }
     
-    .mega-menu__link--level-2 .mega-menu__item-image {
-      width: 100px;
-      max-width: 100px;
+    .mega-menu__product-title {
+      max-width: 120px;
+      font-size: 0.85rem;
     }
   }
 </style>
@@ -80,84 +89,74 @@
                   class="mega-menu__list page-width{% if link.levels == 1 %} mega-menu__list--condensed{% endif %}"
                   role="list"
                 >
-                  {%- comment -%} Check if this is the Shop menu (case-insensitive) {%- endcomment -%}
+                  {%- comment -%} Check if this is the Shop menu {%- endcomment -%}
                   {%- assign is_shop_menu = false -%}
                   {%- assign link_title_lower = link.title | downcase -%}
-                  {%- if link_title_lower == 'shop' or link.handle == 'shop' or link_title_lower contains 'shop' -%}
+                  {%- if link_title_lower == 'shop' or link.handle == 'shop' -%}
                     {%- assign is_shop_menu = true -%}
                   {%- endif -%}
                   
                   {%- for childlink in link.links -%}
                     <li>
-                      {%- comment -%} Get image from product (first two products in Shop menu only) {%- endcomment -%}
-                      {%- assign menu_item_image = null -%}
-                      
-                      {%- comment -%} Try to get product from URL or type {%- endcomment -%}
-                      {%- assign menu_product = null -%}
-                      {%- if childlink.type == 'product' -%}
-                        {%- assign menu_product = childlink.object -%}
-                      {%- elsif childlink.url contains '/products/' -%}
-                        {%- assign product_handle = childlink.url | split: '/products/' | last | split: '?' | first | split: '#' | first -%}
-                        {%- assign menu_product = all_products[product_handle] -%}
-                        {%- comment -%} If all_products doesn't work, try products collection {%- endcomment -%}
-                        {%- if menu_product == null -%}
-                          {%- for product in collections.all.products -%}
-                            {%- if product.handle == product_handle -%}
-                              {%- assign menu_product = product -%}
-                              {%- break -%}
-                            {%- endif -%}
-                          {%- endfor -%}
+                      {%- comment -%} For Shop menu: first two items get product cards, others are regular links {%- endcomment -%}
+                      {%- if is_shop_menu and forloop.index <= 2 -%}
+                        {%- comment -%} Get product object {%- endcomment -%}
+                        {%- assign menu_product = null -%}
+                        {%- if childlink.type == 'product' -%}
+                          {%- assign menu_product = childlink.object -%}
+                        {%- elsif childlink.url contains '/products/' -%}
+                          {%- assign product_handle = childlink.url | split: '/products/' | last | split: '?' | first | split: '#' | first -%}
+                          {%- assign menu_product = all_products[product_handle] -%}
                         {%- endif -%}
-                      {%- endif -%}
-                      
-                      {%- comment -%} For first two products in Shop menu, use first product image {%- endcomment -%}
-                      {%- if menu_product != null -%}
-                        {%- comment -%} Check if this is Shop menu and first two items {%- endcomment -%}
-                        {%- if is_shop_menu and forloop.index <= 2 -%}
-                          {%- comment -%} Get product image - try featured_media first, then first media item {%- endcomment -%}
-                          {%- if menu_product.featured_media != blank -%}
-                            {%- assign menu_item_image = menu_product.featured_media -%}
-                          {%- elsif menu_product.media != blank and menu_product.media.size > 0 -%}
-                            {%- assign menu_item_image = menu_product.media[0] -%}
-                          {%- endif -%}
-                        {%- endif -%}
-                      {%- elsif childlink.type == 'collection' -%}
-                        {%- if childlink.object.featured_image != blank -%}
-                          {%- assign menu_item_image = childlink.object.featured_image -%}
-                        {%- endif -%}
-                      {%- endif -%}
-                      
-                      {%- comment -%} Debug output - shows what's detected {%- endcomment -%}
-                      {%- if forloop.index <= 2 -%}
-                        {%- assign has_image = 'no' -%}
-                        {%- if menu_item_image != null -%}
-                          {%- assign has_image = 'yes' -%}
-                        {%- endif -%}
-                        <!-- Menu: {{ link.title }}, Is Shop: {{ is_shop_menu }}, Product: {{ menu_product.title | default: 'none' }}, Image: {{ has_image }} -->
-                      {%- endif -%}
-                      
-                      <a
-                        id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
-                        href="{{ childlink.url }}"
-                        class="mega-menu__link mega-menu__link--level-2 link{% if childlink.current %} mega-menu__link--active{% endif %}{% if menu_item_image != null %} mega-menu__link--with-image{% endif %}"
-                        {% if childlink.current %}
-                          aria-current="page"
-                        {% endif %}
-                      >
-                        {%- if menu_item_image != null -%}
-                          <span class="mega-menu__image-wrapper">
-                            <img 
-                              src="{{ menu_item_image | image_url: width: 150 }}"
-                              alt="{{ menu_item_image.alt | default: childlink.title | escape }}"
-                              class="mega-menu__item-image"
-                              loading="lazy"
-                              width="150"
-                              height="{{ 150 | divided_by: menu_item_image.aspect_ratio | round }}"
+                        
+                        {%- if menu_product != null -%}
+                          {%- comment -%} Render as product card {%- endcomment -%}
+                          <div class="mega-menu__product-card">
+                            <a
+                              href="{{ menu_product.url }}"
+                              class="mega-menu__product-link"
+                              id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
                             >
-                          </span>
+                              {%- if menu_product.featured_media != null -%}
+                                <div class="mega-menu__product-image">
+                                  <img
+                                    src="{{ menu_product.featured_media | image_url: width: 200 }}"
+                                    alt="{{ menu_product.featured_media.alt | default: menu_product.title | escape }}"
+                                    loading="lazy"
+                                    width="200"
+                                    height="{{ 200 | divided_by: menu_product.featured_media.aspect_ratio | round }}"
+                                  >
+                                </div>
+                              {%- endif -%}
+                              <div class="mega-menu__product-title">{{ menu_product.title }}</div>
+                            </a>
+                          </div>
+                        {%- else -%}
+                          {%- comment -%} Fallback to regular link if product not found {%- endcomment -%}
+                          <a
+                            id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
+                            href="{{ childlink.url }}"
+                            class="mega-menu__link mega-menu__link--level-2 link{% if childlink.current %} mega-menu__link--active{% endif %}"
+                            {% if childlink.current %}
+                              aria-current="page"
+                            {% endif %}
+                          >
+                            <span class="mega-menu__link-text">{{ childlink.title | escape }}</span>
+                          </a>
                         {%- endif -%}
-                        <span class="mega-menu__link-text">{{ childlink.title | escape }}</span>
-                      </a>
+                      {%- else -%}
+                        {%- comment -%} Regular menu link (not first two in Shop menu) {%- endcomment -%}
+                        <a
+                          id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
+                          href="{{ childlink.url }}"
+                          class="mega-menu__link mega-menu__link--level-2 link{% if childlink.current %} mega-menu__link--active{% endif %}"
+                          {% if childlink.current %}
+                            aria-current="page"
+                          {% endif %}
+                        >
+                          <span class="mega-menu__link-text">{{ childlink.title | escape }}</span>
+                        </a>
+                      {%- endif -%}
                       {%- if childlink.links != blank -%}
                         <ul class="list-unstyled" role="list">
                           {%- for grandchildlink in childlink.links -%}
