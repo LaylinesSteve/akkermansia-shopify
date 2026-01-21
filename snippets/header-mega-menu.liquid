@@ -80,9 +80,10 @@
                   class="mega-menu__list page-width{% if link.levels == 1 %} mega-menu__list--condensed{% endif %}"
                   role="list"
                 >
-                  {%- comment -%} Check if this is the Shop menu {%- endcomment -%}
+                  {%- comment -%} Check if this is the Shop menu (case-insensitive) {%- endcomment -%}
                   {%- assign is_shop_menu = false -%}
-                  {%- if link.title == 'Shop' or link.handle == 'shop' -%}
+                  {%- assign link_title_lower = link.title | downcase -%}
+                  {%- if link_title_lower == 'shop' or link.handle == 'shop' or link_title_lower contains 'shop' -%}
                     {%- assign is_shop_menu = true -%}
                   {%- endif -%}
                   
@@ -101,11 +102,16 @@
                       {%- endif -%}
                       
                       {%- comment -%} For first two products in Shop menu, use first product image {%- endcomment -%}
-                      {%- if is_shop_menu and menu_product != null and forloop.index <= 2 -%}
-                        {%- if menu_product.featured_media != blank -%}
-                          {%- assign menu_item_image = menu_product.featured_media -%}
-                        {%- elsif menu_product.media.first != blank -%}
-                          {%- assign menu_item_image = menu_product.media.first -%}
+                      {%- if menu_product != null -%}
+                        {%- comment -%} Check if this is Shop menu and first two items {%- endcomment -%}
+                        {%- if is_shop_menu and forloop.index <= 2 -%}
+                          {%- if menu_product.featured_media != blank -%}
+                            {%- assign menu_item_image = menu_product.featured_media -%}
+                          {%- elsif menu_product.media.first != blank -%}
+                            {%- assign menu_item_image = menu_product.media.first -%}
+                          {%- elsif menu_product.images.first != blank -%}
+                            {%- assign menu_item_image = menu_product.images.first -%}
+                          {%- endif -%}
                         {%- endif -%}
                       {%- elsif childlink.type == 'collection' -%}
                         {%- if childlink.object.featured_image != blank -%}
