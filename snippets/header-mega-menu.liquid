@@ -6,6 +6,14 @@
 {% endcomment %}
 
 <style>
+  /* Make parent list a flex container when it contains product cards */
+  .mega-menu__list.mega-menu__list--condensed:has(.mega-menu__product-cards-container) {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 1.5rem !important;
+    flex-wrap: nowrap !important;
+  }
+  
   /* Container for product cards - side by side on desktop */
   /* Override grid layout for product cards container */
   .mega-menu__list .mega-menu__product-cards-container {
@@ -15,10 +23,9 @@
     flex-wrap: nowrap !important;
     list-style: none !important;
     padding: 0 !important;
-    margin: 0 0 1rem 0 !important;
+    margin: 0 !important;
     align-items: flex-start;
-    grid-column: 1 / -1 !important; /* Span all grid columns */
-    width: 100% !important;
+    flex: 0 0 auto;
   }
   
   .mega-menu__product-cards-container .mega-menu__product-card {
