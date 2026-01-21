@@ -58,7 +58,7 @@
         "custom_liquid_zWzRdm": {
           "type": "custom_liquid",
           "settings": {
-            "custom_liquid": "{% if customer %}\n  <h2 style=\"display: flex; align-items: center;\">\n    {{ product.price | money }}\n    <small style=\"padding-left: 8px; display: inline-flex; text-decoration: line-through; color: gray;\">\n      $65\n    </small>\n    <small style=\"padding-left: 8px; display: inline-flex;\">\n      per bottle\n    </small>\n  </h2>\n{% endif %}"
+            "custom_liquid": "{% if customer and customer.tags contains 'healthcare_provider' %}\n  <h2 style=\"display: flex; align-items: center;\">\n    {{ product.price | money }}\n    <small style=\"padding-left: 8px; display: inline-flex; text-decoration: line-through; color: gray;\">\n      $65\n    </small>\n    <small style=\"padding-left: 8px; display: inline-flex;\">\n      per bottle\n    </small>\n  </h2>\n{% endif %}"
           }
         },
         "text_naU9yM": {
