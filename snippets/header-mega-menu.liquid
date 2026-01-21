@@ -104,25 +104,37 @@
                         {%- assign menu_product = null -%}
                         {%- assign product_found = false -%}
                         
-                        {%- comment -%} Method 1: Direct product type {%- endcomment -%}
-                        {%- if childlink.type == 'product' -%}
-                          {%- assign menu_product = childlink.object -%}
-                          {%- assign product_found = true -%}
+                        {%- comment -%} Method 1: Direct product type or product_link type {%- endcomment -%}
+                        {%- if childlink.type == 'product' or childlink.type == 'product_link' -%}
+                          {%- if childlink.object != null and childlink.object != blank -%}
+                            {%- assign menu_product = childlink.object -%}
+                            {%- assign product_found = true -%}
+                          {%- endif -%}
                         {%- endif -%}
                         
-                        {%- comment -%} Method 2: Extract from URL {%- endcomment -%}
+                        {%- comment -%} Method 2: Extract from URL if object not available {%- endcomment -%}
                         {%- if product_found == false and childlink.url contains '/products/' -%}
                           {%- assign product_handle = childlink.url | split: '/products/' | last | split: '?' | first | split: '#' | first -%}
+                          {%- comment -%} Try with the handle as-is first {%- endcomment -%}
                           {%- assign menu_product = all_products[product_handle] -%}
                           {%- if menu_product != null and menu_product != blank -%}
                             {%- assign product_found = true -%}
+                          {%- else -%}
+                            {%- comment -%} Try URL-decoded version {%- endcomment -%}
+                            {%- assign decoded_handle = product_handle | url_decode -%}
+                            {%- if decoded_handle != product_handle -%}
+                              {%- assign menu_product = all_products[decoded_handle] -%}
+                              {%- if menu_product != null and menu_product != blank -%}
+                                {%- assign product_found = true -%}
+                              {%- endif -%}
+                            {%- endif -%}
                           {%- endif -%}
                         {%- endif -%}
                         
                         {%- comment -%} Method 3: Search collections.all {%- endcomment -%}
                         {%- if product_found == false and product_handle != blank -%}
                           {%- for product in collections.all.products -%}
-                            {%- if product.handle == product_handle -%}
+                            {%- if product.handle == product_handle or product.handle == decoded_handle -%}
                               {%- assign menu_product = product -%}
                               {%- assign product_found = true -%}
                               {%- break -%}
