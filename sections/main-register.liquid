@@ -64,78 +64,6 @@
     border: 1px solid #f5c6cb;
   }
 
-  .registration-type-selector {
-    margin: 20px 0 30px;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-  }
-
-  .registration-type-selector h3 {
-    margin: 0 0 15px 0;
-    font-size: 16px;
-    font-weight: 600;
-  }
-
-  .registration-type-options {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-
-  .registration-type-options label {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    font-size: 16px;
-    padding: 10px 15px;
-    border: 2px solid #ddd;
-    border-radius: 5px;
-    background: white;
-    transition: all 0.3s ease;
-  }
-
-  .registration-type-options label:hover {
-    border-color: #5B3C94;
-    background: #f5f5f5;
-  }
-
-  .registration-type-options input[type="radio"] {
-    margin-right: 8px;
-    cursor: pointer;
-  }
-
-  .registration-type-options input[type="radio"]:checked + span {
-    font-weight: 600;
-  }
-
-  .registration-type-options label:has(input[type="radio"]:checked) {
-    border-color: #5B3C94;
-    background: #f0e8ff;
-  }
-
-  .hcp-fields {
-    display: none;
-    transition: opacity 0.3s ease;
-  }
-
-  .hcp-fields.show {
-    display: block;
-    animation: fadeIn 0.3s ease;
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
 {%- endstyle -%}
 
 <div class="customer register section-{{ section.id }}-padding">
@@ -151,23 +79,6 @@
   <h1>{{ 'customer.register.title' | t }}</h1>
   
   {%- form 'create_customer' -%}
-    <!-- Registration Type Selector -->
-    <div class="registration-type-selector">
-      <h3>I am registering as:</h3>
-      <div class="registration-type-options">
-        <label>
-          <input type="radio" name="registration_type" value="consumer" id="registration-type-consumer" checked>
-          <span>Consumer</span>
-        </label>
-        <label>
-          <input type="radio" name="registration_type" value="hcp" id="registration-type-hcp">
-          <span>Healthcare Provider</span>
-        </label>
-      </div>
-    </div>
-
-    <!-- Hidden field to store registration type -->
-    <input type="hidden" name="customer[note][Registration Type]" id="registration-type-hidden" value="consumer">
     {%- if request.params.return_url -%}
     <input type="hidden" name="return_url" value="{{ request.params.return_url | url_encode }}">
     {%- elsif request.referer -%}
@@ -240,41 +151,38 @@
       </span>
     {%- endif -%}
 
-    <!-- HCP-specific fields (hidden by default, shown when HCP is selected) -->
-    <div class="hcp-fields" id="hcp-fields-container">
-      <div class="field">
-        <input type="text" name="customer[note][Company Name]" id="RegisterForm-CompanyName" 
-               placeholder="Company Name">
-        <label for="RegisterForm-CompanyName">Company Name <span style="color: red;">*</span></label>
-      </div>
-      
-      <div class="field">
-        <input type="text" name="customer[note][NPI Number]" id="RegisterForm-NPINumber" 
-               placeholder="NPI Number">
-        <label for="RegisterForm-NPINumber">NPI Number <span style="color: red;">*</span></label>
-      </div>
-
-      <br>
-      <div class="checkbox-row">
-        <input type="checkbox" id="RegisterForm-Reseller" name="customer[note][Reseller]" value="Yes">
-        <label for="RegisterForm-Reseller">
-          I am a reseller and can upload my reseller certificate.
-        </label>
-      </div>
-
-      <!-- Hidden field to store the uploaded file URL -->
-      <input type="hidden" name="customer[note][Reseller Certificate URL]" id="certificate-url">
-
-      <!-- File Upload Container -->
-      <div class="file-upload-container" id="reseller-certificate-upload">
-        <h4>Upload Reseller Certificate</h4>
-        <button type="button" id="upload-btn" class="upload-btn">Choose Certificate File</button>
-        <div class="file-info" id="certificate-info"></div>
-        <small>Accepted formats: PDF, JPG, PNG (max 20MB)</small>
-      </div>
+    <div class="field">
+      <input type="text" name="customer[note][Company Name]" id="RegisterForm-CompanyName" 
+             placeholder="Company Name" required>
+      <label for="RegisterForm-CompanyName">Company Name</label>
+    </div>
+    
+    <div class="field">
+      <input type="text" name="customer[note][NPI Number]" id="RegisterForm-NPINumber" 
+             placeholder="NPI Number" required>
+      <label for="RegisterForm-NPINumber">NPI Number</label>
     </div>
 
-    <p><small>By clicking Create, you agree to The Akkermansia Company's Terms & Conditions, MAP Policy, and Authorized Reseller Policy.</small></p>
+    <br>
+    <div class="checkbox-row">
+      <input type="checkbox" id="RegisterForm-Reseller" name="customer[note][Reseller]" value="Yes">
+      <label for="RegisterForm-Reseller">
+        I am a reseller and can upload my reseller certificate.
+      </label>
+    </div>
+
+    <!-- Hidden field to store the uploaded file URL -->
+    <input type="hidden" name="customer[note][Reseller Certificate URL]" id="certificate-url">
+
+    <!-- File Upload Container -->
+    <div class="file-upload-container" id="reseller-certificate-upload">
+      <h4>Upload Reseller Certificate</h4>
+      <button type="button" id="upload-btn" class="upload-btn">Choose Certificate File</button>
+      <div class="file-info" id="certificate-info"></div>
+      <small>Accepted formats: PDF, JPG, PNG (max 20MB)</small>
+    </div>
+
+    <p id="terms-policy-text" class="terms-policy-text"><small>By clicking Create, you agree to The Akkermansia Company's Terms & Conditions, MAP Policy, and Authorized Reseller Policy.</small></p>
     
     <button type="submit" id="submit-btn">{{ 'customer.register.submit' | t }}</button>
   {%- endform -%}
@@ -285,15 +193,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Registration type toggle elements
-  const registrationTypeConsumer = document.getElementById('registration-type-consumer');
-  const registrationTypeHcp = document.getElementById('registration-type-hcp');
-  const registrationTypeHidden = document.getElementById('registration-type-hidden');
-  const hcpFieldsContainer = document.getElementById('hcp-fields-container');
-  const companyNameField = document.getElementById('RegisterForm-CompanyName');
-  const npiNumberField = document.getElementById('RegisterForm-NPINumber');
-  
-  // Reseller and upload elements
   const resellerCheckbox = document.getElementById('RegisterForm-Reseller');
   const uploadContainer = document.getElementById('reseller-certificate-upload');
   const uploadBtn = document.getElementById('upload-btn');
@@ -301,6 +200,32 @@ document.addEventListener('DOMContentLoaded', function() {
   const certificateUrlInput = document.getElementById('certificate-url');
   const form = document.querySelector('form');
   const submitBtn = document.getElementById('submit-btn');
+  const termsText = document.getElementById('terms-policy-text');
+  
+  // Hide/show terms text based on registration type
+  function toggleTermsText() {
+    const consumerRadio = document.getElementById('registration-type-consumer');
+    if (consumerRadio && termsText) {
+      if (consumerRadio.checked) {
+        termsText.style.display = 'none';
+      } else {
+        termsText.style.display = 'block';
+      }
+    }
+  }
+  
+  // Check for registration type radio buttons and add listeners
+  const consumerRadio = document.getElementById('registration-type-consumer');
+  const hcpRadio = document.getElementById('registration-type-hcp');
+  
+  if (consumerRadio && hcpRadio && termsText) {
+    // Set initial state
+    toggleTermsText();
+    
+    // Add event listeners
+    consumerRadio.addEventListener('change', toggleTermsText);
+    hcpRadio.addEventListener('change', toggleTermsText);
+  }
 
   // ===== NEW: capture intended return URL =====
   const params = new URLSearchParams(window.location.search);
@@ -321,69 +246,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const returnTo = sanitizeReturnTo(rawReturnTo);
   // ===========================================
 
-  // Function to toggle HCP fields visibility
-  function toggleHcpFields(isHcp) {
-    if (isHcp) {
-      hcpFieldsContainer.classList.add('show');
-      // Make HCP fields required
-      if (companyNameField) {
-        companyNameField.setAttribute('required', 'required');
-      }
-      if (npiNumberField) {
-        npiNumberField.setAttribute('required', 'required');
-      }
-      registrationTypeHidden.value = 'hcp';
-    } else {
-      hcpFieldsContainer.classList.remove('show');
-      // Remove required attribute from HCP fields
-      if (companyNameField) {
-        companyNameField.removeAttribute('required');
-        companyNameField.value = '';
-      }
-      if (npiNumberField) {
-        npiNumberField.removeAttribute('required');
-        npiNumberField.value = '';
-      }
-      // Reset reseller checkbox and upload
-      if (resellerCheckbox) {
-        resellerCheckbox.checked = false;
-      }
-      if (uploadContainer) {
-        uploadContainer.classList.remove('show');
-      }
-      if (certificateUrlInput) {
-        certificateUrlInput.value = '';
-      }
-      if (infoDiv) {
-        infoDiv.innerHTML = '';
-        infoDiv.className = 'file-info';
-      }
-      if (uploadBtn) {
-        uploadBtn.textContent = 'Choose Certificate File';
-        uploadBtn.disabled = false;
-      }
-      uploadedFileUrl = '';
-      registrationTypeHidden.value = 'consumer';
-    }
-  }
-
-  // Handle registration type change
-  if (registrationTypeConsumer && registrationTypeHcp) {
-    registrationTypeConsumer.addEventListener('change', function() {
-      if (this.checked) {
-        toggleHcpFields(false);
-      }
-    });
-
-    registrationTypeHcp.addEventListener('change', function() {
-      if (this.checked) {
-        toggleHcpFields(true);
-      }
-    });
-
-    // Initialize based on default selection (consumer)
-    toggleHcpFields(false);
-  }
 
   const CLOUDINARY_CLOUD_NAME = 'dacv4ke6z';  // Get from Cloudinary dashboard
   const CLOUDINARY_UPLOAD_PRESET = 'reseller_documents';  // Your preset name
@@ -468,32 +330,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Form submission validation
   form.addEventListener('submit', function(e) {
-    const isHcp = registrationTypeHcp && registrationTypeHcp.checked;
-    
-    // Validate HCP fields only if HCP is selected
-    if (isHcp) {
-      // Check required HCP fields
-      if (companyNameField && !companyNameField.value.trim()) {
-        e.preventDefault();
-        alert('Please enter your Company Name.');
-        companyNameField.focus();
-        return false;
-      }
-      
-      if (npiNumberField && !npiNumberField.value.trim()) {
-        e.preventDefault();
-        alert('Please enter your NPI Number.');
-        npiNumberField.focus();
-        return false;
-      }
-      
-      // If reseller is checked but no file uploaded
-      if (resellerCheckbox && resellerCheckbox.checked && !uploadedFileUrl) {
-        e.preventDefault();
-        alert('Please upload your reseller certificate before submitting.');
-        uploadBtn.focus();
-        return false;
-      }
+    // If reseller is checked but no file uploaded
+    if (resellerCheckbox.checked && !uploadedFileUrl) {
+      e.preventDefault();
+      alert('Please upload your reseller certificate before submitting.');
+      uploadBtn.focus();
+      return false;
     }
 
     // ===== NEW: stash the return target for after-auth redirect =====
