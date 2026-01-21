@@ -118,10 +118,13 @@
                           {%- endif -%}
                         {%- endif -%}
                         
-                        {%- comment -%} Debug: Check what we found {%- endcomment -%}
                         {%- if menu_product != null and menu_product != blank -%}
                           {%- comment -%} Render as product card {%- endcomment -%}
-                          <!-- Debug: Found product {{ menu_product.title }}, featured_media: {{ menu_product.featured_media != blank }}, media size: {{ menu_product.media.size }} -->
+                          {%- assign has_featured_media = 'no' -%}
+                          {%- if menu_product.featured_media != blank -%}
+                            {%- assign has_featured_media = 'yes' -%}
+                          {%- endif -%}
+                          <!-- Debug: Found product {{ menu_product.title }}, featured_media: {{ has_featured_media }}, media size: {{ menu_product.media.size }} -->
                           <div class="mega-menu__product-card">
                             <a
                               href="{{ menu_product.url }}"
