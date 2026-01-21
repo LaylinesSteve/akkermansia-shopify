@@ -9,6 +9,29 @@
  */
 {
   "sections": {
+    "announcement_bar_G9XHV6": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement_WdhYMm": {
+          "type": "announcement",
+          "settings": {
+            "text": "For Health Care Practitioners",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "announcement_WdhYMm"
+      ],
+      "custom_css": [
+        ".announcement-bar {background-color: #cf027f;}",
+        ".h5 {color: white; font-size: 24px;}"
+      ],
+      "name": "Announcement bar",
+      "settings": {
+        "color_scheme": "accent-1"
+      }
+    },
     "main": {
       "type": "main-product",
       "blocks": {
@@ -675,6 +698,7 @@
     }
   },
   "order": [
+    "announcement_bar_G9XHV6",
     "main",
     "icon_texst_col_product_JVywLh",
     "custom_liquid_zdA63F",
