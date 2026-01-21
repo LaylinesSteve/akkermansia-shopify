@@ -80,12 +80,18 @@
                   class="mega-menu__list page-width{% if link.levels == 1 %} mega-menu__list--condensed{% endif %}"
                   role="list"
                 >
+                  {%- comment -%} Check if this is the Shop menu {%- endcomment -%}
+                  {%- assign is_shop_menu = false -%}
+                  {%- if link.title == 'Shop' or link.handle == 'shop' -%}
+                    {%- assign is_shop_menu = true -%}
+                  {%- endif -%}
+                  
                   {%- for childlink in link.links -%}
                     <li>
-                      {%- comment -%} Get image from metafield or object {%- endcomment -%}
+                      {%- comment -%} Get image from product (first two products in Shop menu only) {%- endcomment -%}
                       {%- assign menu_item_image = null -%}
                       
-                      {%- comment -%} Try to get product from URL if type is not detected {%- endcomment -%}
+                      {%- comment -%} Try to get product from URL or type {%- endcomment -%}
                       {%- assign menu_product = null -%}
                       {%- if childlink.type == 'product' -%}
                         {%- assign menu_product = childlink.object -%}
@@ -94,30 +100,16 @@
                         {%- assign menu_product = all_products[product_handle] -%}
                       {%- endif -%}
                       
-                      {%- if childlink.type == 'collection' -%}
-                        {%- if childlink.object.metafields.custom.menu_image != blank -%}
-                          {%- assign menu_item_image = childlink.object.metafields.custom.menu_image -%}
-                        {%- elsif childlink.object.metafields.theme.menu_image != blank -%}
-                          {%- assign menu_item_image = childlink.object.metafields.theme.menu_image -%}
-                        {%- elsif childlink.object.featured_image != blank -%}
-                          {%- assign menu_item_image = childlink.object.featured_image -%}
-                        {%- endif -%}
-                      {%- elsif menu_product != null -%}
-                        {%- comment -%} Check for menu_image metafield on product {%- endcomment -%}
-                        {%- if menu_product.metafields.custom.menu_image != blank -%}
-                          {%- assign menu_item_image = menu_product.metafields.custom.menu_image -%}
-                        {%- elsif menu_product.metafields.theme.menu_image != blank -%}
-                          {%- assign menu_item_image = menu_product.metafields.theme.menu_image -%}
-                        {%- elsif menu_product.metafields.shopify.menu_image != blank -%}
-                          {%- assign menu_item_image = menu_product.metafields.shopify.menu_image -%}
-                        {%- elsif menu_product.featured_media != blank -%}
+                      {%- comment -%} For first two products in Shop menu, use first product image {%- endcomment -%}
+                      {%- if is_shop_menu and menu_product != null and forloop.index <= 2 -%}
+                        {%- if menu_product.featured_media != blank -%}
                           {%- assign menu_item_image = menu_product.featured_media -%}
+                        {%- elsif menu_product.media.first != blank -%}
+                          {%- assign menu_item_image = menu_product.media.first -%}
                         {%- endif -%}
-                      {%- elsif childlink.type == 'page' -%}
-                        {%- if childlink.object.metafields.custom.menu_image != blank -%}
-                          {%- assign menu_item_image = childlink.object.metafields.custom.menu_image -%}
-                        {%- elsif childlink.object.metafields.theme.menu_image != blank -%}
-                          {%- assign menu_item_image = childlink.object.metafields.theme.menu_image -%}
+                      {%- elsif childlink.type == 'collection' -%}
+                        {%- if childlink.object.featured_image != blank -%}
+                          {%- assign menu_item_image = childlink.object.featured_image -%}
                         {%- endif -%}
                       {%- endif -%}
                       
@@ -131,38 +123,14 @@
                       >
                         {%- if menu_item_image != null -%}
                           <span class="mega-menu__image-wrapper">
-                            {%- comment -%} Handle different image types: file metafield, URL string, or image object {%- endcomment -%}
-                            {%- if menu_item_image.url != blank -%}
-                              {%- comment -%} File metafield object with .url property {%- endcomment -%}
-                              <img 
-                                src="{{ menu_item_image.url }}"
-                                alt="{{ menu_item_image.alt | default: childlink.title | escape }}"
-                                class="mega-menu__item-image"
-                                loading="lazy"
-                                width="150"
-                                height="150"
-                              >
-                            {%- elsif menu_item_image contains 'http' or menu_item_image contains '//' -%}
-                              {%- comment -%} External URL string {%- endcomment -%}
-                              <img 
-                                src="{{ menu_item_image }}"
-                                alt="{{ childlink.title | escape }}"
-                                class="mega-menu__item-image"
-                                loading="lazy"
-                                width="150"
-                                height="150"
-                              >
-                            {%- else -%}
-                              {%- comment -%} Shopify image object (featured_media, featured_image) {%- endcomment -%}
-                              <img 
-                                src="{{ menu_item_image | image_url: width: 150 }}"
-                                alt="{{ menu_item_image.alt | default: childlink.title | escape }}"
-                                class="mega-menu__item-image"
-                                loading="lazy"
-                                width="150"
-                                height="{{ 150 | divided_by: menu_item_image.aspect_ratio | round }}"
-                              >
-                            {%- endif -%}
+                            <img 
+                              src="{{ menu_item_image | image_url: width: 150 }}"
+                              alt="{{ menu_item_image.alt | default: childlink.title | escape }}"
+                              class="mega-menu__item-image"
+                              loading="lazy"
+                              width="150"
+                              height="{{ 150 | divided_by: menu_item_image.aspect_ratio | round }}"
+                            >
                           </span>
                         {%- endif -%}
                         <span class="mega-menu__link-text">{{ childlink.title | escape }}</span>
