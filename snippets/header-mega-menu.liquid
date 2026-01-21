@@ -107,17 +107,28 @@
                         {%- elsif childlink.url contains '/products/' -%}
                           {%- assign product_handle = childlink.url | split: '/products/' | last | split: '?' | first | split: '#' | first -%}
                           {%- assign menu_product = all_products[product_handle] -%}
+                          {%- comment -%} Fallback: search in collections.all if all_products doesn't work {%- endcomment -%}
+                          {%- if menu_product == null or menu_product == blank -%}
+                            {%- for product in collections.all.products -%}
+                              {%- if product.handle == product_handle -%}
+                                {%- assign menu_product = product -%}
+                                {%- break -%}
+                              {%- endif -%}
+                            {%- endfor -%}
+                          {%- endif -%}
                         {%- endif -%}
                         
-                        {%- if menu_product != null -%}
+                        {%- comment -%} Debug: Check what we found {%- endcomment -%}
+                        {%- if menu_product != null and menu_product != blank -%}
                           {%- comment -%} Render as product card {%- endcomment -%}
+                          <!-- Debug: Found product {{ menu_product.title }}, featured_media: {{ menu_product.featured_media != blank }}, media size: {{ menu_product.media.size }} -->
                           <div class="mega-menu__product-card">
                             <a
                               href="{{ menu_product.url }}"
                               class="mega-menu__product-link"
                               id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
                             >
-                              {%- if menu_product.featured_media != null -%}
+                              {%- if menu_product.featured_media != blank -%}
                                 <div class="mega-menu__product-image">
                                   <img
                                     src="{{ menu_product.featured_media | image_url: width: 200 }}"
@@ -125,6 +136,16 @@
                                     loading="lazy"
                                     width="200"
                                     height="{{ 200 | divided_by: menu_product.featured_media.aspect_ratio | round }}"
+                                  >
+                                </div>
+                              {%- elsif menu_product.media != blank and menu_product.media.size > 0 -%}
+                                <div class="mega-menu__product-image">
+                                  <img
+                                    src="{{ menu_product.media[0] | image_url: width: 200 }}"
+                                    alt="{{ menu_product.media[0].alt | default: menu_product.title | escape }}"
+                                    loading="lazy"
+                                    width="200"
+                                    height="{{ 200 | divided_by: menu_product.media[0].aspect_ratio | round }}"
                                   >
                                 </div>
                               {%- endif -%}
