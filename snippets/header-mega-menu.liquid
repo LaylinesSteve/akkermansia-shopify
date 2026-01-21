@@ -84,14 +84,28 @@
                     <li>
                       {%- comment -%} Get image from metafield or object {%- endcomment -%}
                       {%- assign menu_item_image = null -%}
-                      {%- if childlink.object.metafields.custom.menu_image != blank -%}
-                        {%- assign menu_item_image = childlink.object.metafields.custom.menu_image -%}
-                      {%- elsif childlink.object.metafields.custom.menu_image_url != blank -%}
-                        {%- assign menu_item_image = childlink.object.metafields.custom.menu_image_url -%}
-                      {%- elsif childlink.type == 'product' and childlink.object.featured_media != blank -%}
-                        {%- assign menu_item_image = childlink.object.featured_media -%}
-                      {%- elsif childlink.type == 'collection' and childlink.object.featured_image != blank -%}
-                        {%- assign menu_item_image = childlink.object.featured_image -%}
+                      {%- if childlink.type == 'collection' -%}
+                        {%- if childlink.object.metafields.custom.menu_image != blank -%}
+                          {%- assign menu_item_image = childlink.object.metafields.custom.menu_image -%}
+                        {%- elsif childlink.object.metafields.theme.menu_image != blank -%}
+                          {%- assign menu_item_image = childlink.object.metafields.theme.menu_image -%}
+                        {%- elsif childlink.object.featured_image != blank -%}
+                          {%- assign menu_item_image = childlink.object.featured_image -%}
+                        {%- endif -%}
+                      {%- elsif childlink.type == 'product' -%}
+                        {%- if childlink.object.metafields.custom.menu_image != blank -%}
+                          {%- assign menu_item_image = childlink.object.metafields.custom.menu_image -%}
+                        {%- elsif childlink.object.metafields.theme.menu_image != blank -%}
+                          {%- assign menu_item_image = childlink.object.metafields.theme.menu_image -%}
+                        {%- elsif childlink.object.featured_media != blank -%}
+                          {%- assign menu_item_image = childlink.object.featured_media -%}
+                        {%- endif -%}
+                      {%- elsif childlink.type == 'page' -%}
+                        {%- if childlink.object.metafields.custom.menu_image != blank -%}
+                          {%- assign menu_item_image = childlink.object.metafields.custom.menu_image -%}
+                        {%- elsif childlink.object.metafields.theme.menu_image != blank -%}
+                          {%- assign menu_item_image = childlink.object.metafields.theme.menu_image -%}
+                        {%- endif -%}
                       {%- endif -%}
                       
                       <a
@@ -135,14 +149,28 @@
                             <li>
                               {%- comment -%} Get image for grandchild menu item {%- endcomment -%}
                               {%- assign grandchild_image = null -%}
-                              {%- if grandchildlink.object.metafields.custom.menu_image != blank -%}
-                                {%- assign grandchild_image = grandchildlink.object.metafields.custom.menu_image -%}
-                              {%- elsif grandchildlink.object.metafields.custom.menu_image_url != blank -%}
-                                {%- assign grandchild_image = grandchildlink.object.metafields.custom.menu_image_url -%}
-                              {%- elsif grandchildlink.type == 'product' and grandchildlink.object.featured_media != blank -%}
-                                {%- assign grandchild_image = grandchildlink.object.featured_media -%}
-                              {%- elsif grandchildlink.type == 'collection' and grandchildlink.object.featured_image != blank -%}
-                                {%- assign grandchild_image = grandchildlink.object.featured_image -%}
+                              {%- if grandchildlink.type == 'collection' -%}
+                                {%- if grandchildlink.object.metafields.custom.menu_image != blank -%}
+                                  {%- assign grandchild_image = grandchildlink.object.metafields.custom.menu_image -%}
+                                {%- elsif grandchildlink.object.metafields.theme.menu_image != blank -%}
+                                  {%- assign grandchild_image = grandchildlink.object.metafields.theme.menu_image -%}
+                                {%- elsif grandchildlink.object.featured_image != blank -%}
+                                  {%- assign grandchild_image = grandchildlink.object.featured_image -%}
+                                {%- endif -%}
+                              {%- elsif grandchildlink.type == 'product' -%}
+                                {%- if grandchildlink.object.metafields.custom.menu_image != blank -%}
+                                  {%- assign grandchild_image = grandchildlink.object.metafields.custom.menu_image -%}
+                                {%- elsif grandchildlink.object.metafields.theme.menu_image != blank -%}
+                                  {%- assign grandchild_image = grandchildlink.object.metafields.theme.menu_image -%}
+                                {%- elsif grandchildlink.object.featured_media != blank -%}
+                                  {%- assign grandchild_image = grandchildlink.object.featured_media -%}
+                                {%- endif -%}
+                              {%- elsif grandchildlink.type == 'page' -%}
+                                {%- if grandchildlink.object.metafields.custom.menu_image != blank -%}
+                                  {%- assign grandchild_image = grandchildlink.object.metafields.custom.menu_image -%}
+                                {%- elsif grandchildlink.object.metafields.theme.menu_image != blank -%}
+                                  {%- assign grandchild_image = grandchildlink.object.metafields.theme.menu_image -%}
+                                {%- endif -%}
                               {%- endif -%}
                               
                               <a
