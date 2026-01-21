@@ -274,7 +274,7 @@
       </div>
     </div>
 
-    <p><small>By clicking Create, you agree to The Akkermansia Company's Terms & Conditions, MAP Policy, and Authorized Reseller Policy.</small></p>
+    <p id="terms-policy-text"><small>By clicking Create, you agree to The Akkermansia Company's Terms & Conditions, MAP Policy, and Authorized Reseller Policy.</small></p>
     
     <button type="submit" id="submit-btn">{{ 'customer.register.submit' | t }}</button>
   {%- endform -%}
@@ -292,6 +292,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const hcpFieldsContainer = document.getElementById('hcp-fields-container');
   const companyNameField = document.getElementById('RegisterForm-CompanyName');
   const npiNumberField = document.getElementById('RegisterForm-NPINumber');
+  const termsPolicyText = document.getElementById('terms-policy-text');
   
   // Reseller and upload elements
   const resellerCheckbox = document.getElementById('RegisterForm-Reseller');
@@ -333,6 +334,10 @@ document.addEventListener('DOMContentLoaded', function() {
         npiNumberField.setAttribute('required', 'required');
       }
       registrationTypeHidden.value = 'hcp';
+      // Show terms text for HCP
+      if (termsPolicyText) {
+        termsPolicyText.style.display = 'block';
+      }
     } else {
       hcpFieldsContainer.classList.remove('show');
       // Remove required attribute from HCP fields
@@ -364,6 +369,10 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       uploadedFileUrl = '';
       registrationTypeHidden.value = 'consumer';
+      // Hide terms text for Consumer
+      if (termsPolicyText) {
+        termsPolicyText.style.display = 'none';
+      }
     }
   }
 
