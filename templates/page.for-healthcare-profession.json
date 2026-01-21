@@ -1,1 +1,467 @@
-{"sections":{"main":{"type":"main-page","disabled":true,"settings":{"padding_top":28,"padding_bottom":28}},"image_banner_tzgBdU":{"type":"image-banner","blocks":{"heading_d8NC6C":{"type":"heading","settings":{"heading":"A Breakthrough Metabolic Health Solution","heading_size":"h1"}},"text_EJgRmk":{"type":"text","settings":{"texta":"<p>The Akkermansia Company provides dietary supplement solutions for patients with Metabolic and Gut related health conditions.<\/p><p>All The Akkermansia Company products are developed with the only safe, stable and clinically proven form of pasteurized <em>Akkermansia muciniphila<\/em>, <em>Akkermansia<\/em> MucT™, the essential microbe associated with the root cause of numerous chronic health condition to deliver better health outcomes.<\/p>","text_style":"subtitle"}},"buttons_8VQXzG":{"type":"buttons","disabled":true,"settings":{"button_label_1":"Shop Now","button_link_1":"https:\/\/www.metagenics.com\/akkermansia","button_style_secondary_1":false,"button_label_2":"","button_link_2":"","button_style_secondary_2":false}}},"block_order":["heading_d8NC6C","text_EJgRmk","buttons_8VQXzG"],"custom_css":["p {color: white;}","@media (max-width: 768px) {.banner__content {background-color: #031834; }}"],"settings":{"image":"shopify:\/\/shop_images\/hcp-hero.jpg","image_overlay_opacity":40,"image_height":"medium","desktop_content_position":"middle-left","show_text_box":true,"desktop_content_alignment":"left","color_scheme":"scheme-5","image_behavior":"none","mobile_content_alignment":"center","stack_images_on_mobile":true,"show_text_below":true}},"image_with_text_home1_9k6Lfm":{"type":"image-with-text-home1","blocks":{"heading_ctVUnU":{"type":"heading","settings":{"heading":"Superiority of Pasteurized <em>Akkermansia muciniphila<\/em> MucT™","heading_size":"h1"}},"caption_MGjtEQ":{"type":"caption","settings":{"iconimg":"shopify:\/\/shop_images\/proven-results-icon.svg","caption":"<p><strong>Clinically Proven Results<\/strong><\/p><p>The only <em>Akkermansia muciniphila<\/em> product clinically studied in humans<\/p>","text_style":"caption-with-letter-spacing","text_size":"medium"}},"caption_if7BPJ":{"type":"caption","settings":{"iconimg":"shopify:\/\/shop_images\/unparalled-safety-icon.svg","caption":"<p><strong>Unparalleled Safety<\/strong><\/p><p>Proven to be the safest form through pasteurization<\/p>","text_style":"caption-with-letter-spacing","text_size":"medium"}},"caption_fwNRg3":{"type":"caption","settings":{"iconimg":"shopify:\/\/shop_images\/superior-stability-icon.svg","caption":"<p><strong>Superior Stability<\/strong><\/p><p><em>Akkermansia muciniphila <\/em>MucT™<em> <\/em>does not interact with your diet or other supplements<\/p>","text_style":"caption-with-letter-spacing","text_size":"medium"}},"caption_qzh4Xm":{"type":"caption","settings":{"iconimg":"shopify:\/\/shop_images\/akkermansia-pill-icon.svg","caption":"<p><strong>The only <\/strong><em><strong>Akkermansia muciniphila <\/strong><\/em><strong>product approved as a dietary supplement<\/strong><\/p><p>European Food Safety Authority (EFSA) approved<\/p>","text_style":"caption-with-letter-spacing","text_size":"medium"}},"caption_cNz7da":{"type":"caption","settings":{"iconimg":"shopify:\/\/shop_images\/100x.svg","caption":"<p><strong>Up to 100x more <\/strong><em><strong>Akkermansia muciniphila<\/strong><\/em><\/p><p>More bioavailable gut protection than probiotic products*<\/p>","text_style":"caption-with-letter-spacing","text_size":"medium"}},"button_GatCFi":{"type":"button","settings":{"button_label":"Learn More About Our Science","button_link":"shopify:\/\/pages\/a-groundbreaking-gut-health-solution","button_style_secondary":false}}},"block_order":["heading_ctVUnU","caption_MGjtEQ","caption_if7BPJ","caption_fwNRg3","caption_qzh4Xm","caption_cNz7da","button_GatCFi"],"settings":{"image":"shopify:\/\/shop_images\/molecules-bubbles.jpg","height":"adapt","desktop_image_width":"medium","layout":"image_first","desktop_content_position":"top","desktop_content_alignment":"left","content_layout":"no-overlap","section_color_scheme":"","color_scheme":"","image_behavior":"none","mobile_content_alignment":"left","padding_top":36,"padding_bottom":36}},"rich_text_wBdNCF":{"type":"rich-text","blocks":{"heading_HwhDUE":{"type":"heading","settings":{"heading":"Akkermansia muciniphila – a keystone bacterium","heading_size":"h1"}},"text_Twh6cK":{"type":"text","settings":{"text":"<p>One key characteristic of <em>Akkermansia muciniphila <\/em>is its ability to live in the mucus layer that covers cells in the intestine. Being located so close to such cells, it is even able to communicate with them. <em>Akkermansia muciniphila<\/em>’s unique location and natural occurrence within our bodies makes it the ideal gut health supplement.<\/p>"}}},"block_order":["heading_HwhDUE","text_Twh6cK"],"settings":{"desktop_content_position":"left","content_alignment":"left","color_scheme":"","full_width":true,"padding_top":40,"padding_bottom":0}},"collapsible_content_qLbKBN":{"type":"collapsible-content","blocks":{"collapsible_row_EVUtmJ":{"type":"collapsible_row","settings":{"heading":"Naturally Occurring from Infancy","icon":"none","row_content":"<p><em>Akkermansia muciniphila<\/em> can be found in the human gut during infancy, increasing in abundance as the body reaches maturity.<\/p><p><em>Akkermansia muciniphila<\/em> cells have even been detected in human breast milk, perhaps due to its ability to use the complex sugar molecules in breast milk as its sole source of energy.<\/p>","page":""}},"collapsible_row_iKQ7gp":{"type":"collapsible_row","settings":{"heading":"A Mutually Beneficial Relationship","icon":"none","row_content":"<p>The fact that <em>Akkermansia muciniphila <\/em>can be found in many different species and is located so close to the intestinal wall strongly suggests that the bacterium has a symbiotic relationship with its hosts. Over the last decade, it has been shown through a large body of scientific research that the presence of <em>Akkermansia muciniphila <\/em>in humans is associated with better health.<\/p>","page":""}},"collapsible_row_ktYhgg":{"type":"collapsible_row","settings":{"heading":"Groundbreaking Results in Human Clinical Trials","icon":"none","row_content":"<p>Our previous findings that <em>Akkermansia muciniphila <\/em>MucT™ improves gut barrier function are being reinforced by ongoing clinical trials showing avoidance of weight regain through use of our formula.<\/p>","page":""}}},"block_order":["collapsible_row_EVUtmJ","collapsible_row_iKQ7gp","collapsible_row_ktYhgg"],"custom_css":[".collapsible-button-container {margin-top: 30px;}"],"settings":{"caption":"","button_label":"Learn More About Science","button_link":"shopify:\/\/pages\/resources","heading":"","heading_size":"h1","heading_alignment":"left","layout":"none","color_scheme":"","container_color_scheme":"","open_first_collapsible_row":true,"image":"shopify:\/\/shop_images\/scientist-looking-at-test-tubes.png","image_ratio":"small","desktop_layout":"image_second","content":"","padding_top":36,"padding_bottom":36}},"img_with_txt_video_gpJEpe":{"type":"img-with-txt-video","blocks":{"heading_xm6wy7":{"type":"heading","settings":{"heading":"The <em>Akkermansia muciniphila <\/em>MucT™ Solution","heading_size":"h1"}}},"block_order":["heading_xm6wy7"],"settings":{"video":"https:\/\/cdn.shopify.com\/videos\/c\/o\/v\/4df32c50fca74f6f80c2ed2638c354b0.mp4","controlsshow":true,"show_social":false,"height":"adapt","desktop_image_width":"medium","layout":"image_first","desktop_content_position":"top","desktop_content_alignment":"left","content_layout":"no-overlap","section_color_scheme":"","color_scheme":"","image_behavior":"none","mobile_content_alignment":"left","padding_top":44,"padding_bottom":36}},"image_with_text_home1_dfCwy7":{"type":"image-with-text-home1","blocks":{"heading_TDrHw9":{"type":"heading","settings":{"heading":"Healthy Weight","heading_size":"h1"}},"text_n9RYtw":{"type":"text","settings":{"text":"<p>Supports healthy weight, glucose metabolism, and cardiometabolic health.* <\/p>","text_style":"body"}},"caption_FkD343":{"type":"caption","settings":{"iconimg":"shopify:\/\/shop_images\/clinically-proven-icon_3e45b59e-592f-46ba-9237-4a9917f379d5.svg","caption":"<p><strong>Clinically shown to aid in weight maintenance*<\/strong><\/p>","text_style":"caption-with-letter-spacing","text_size":"medium"}},"caption_q9gJXa":{"type":"caption","settings":{"iconimg":"shopify:\/\/shop_images\/chromium-icon.svg","caption":"<p><strong>Contains chromium to support healthy glucose metabolism*<\/strong><\/p>","text_style":"caption-with-letter-spacing","text_size":"medium"}},"caption_BK69nW":{"type":"caption","settings":{"iconimg":"shopify:\/\/shop_images\/green-tea-icon.svg","caption":"<p><strong>Features EGCG from green tea extract for additional weight management support*<\/strong><\/p>","text_style":"caption-with-letter-spacing","text_size":"medium"}},"button_PfUFfr":{"type":"button","settings":{"button_label":" Shop Healthy Weight","button_link":"https:\/\/www.metagenics.com\/akkermansia","button_style_secondary":false}}},"block_order":["heading_TDrHw9","text_n9RYtw","caption_FkD343","caption_q9gJXa","caption_BK69nW","button_PfUFfr"],"disabled":true,"custom_css":[".image-with-text__content {padding-left: 0;}"],"settings":{"image":"shopify:\/\/shop_images\/hand-holding-healthy-weight-bottle.jpg","height":"adapt","desktop_image_width":"medium","layout":"text_first","desktop_content_position":"top","desktop_content_alignment":"left","content_layout":"no-overlap","section_color_scheme":"","color_scheme":"","image_behavior":"none","mobile_content_alignment":"left","padding_top":36,"padding_bottom":36}},"rich_text_J7JRL9":{"type":"rich-text","blocks":{"heading_4NmDN8":{"type":"heading","settings":{"heading":"Meet the Experts ","heading_size":"h1"}},"text_rnN7hU":{"type":"text","settings":{"text":"<p>Learn more about our globally diverse team of scientific advisors and their qualifying experience<\/p>"}}},"block_order":["heading_4NmDN8","text_rnN7hU"],"settings":{"desktop_content_position":"center","content_alignment":"center","color_scheme":"","full_width":true,"padding_top":40,"padding_bottom":52}},"team_section_y8zCcC":{"type":"team-section","blocks":{"member_zcW3kz":{"type":"member","settings":{"image":"shopify:\/\/shop_images\/Prof.-Dr.-Robert-Jan-Brummer-1.png","name":"Prof. Dr. Robert-Jan Brummer","bio":"<p>Robert JM Brummer is professor of Gastroenterology and Clinical Nutrition and senior consultant at Örebro University and University Hospital, Sweden. His field of expertise covers gastroenterology, clinical nutrition, gut barrier function, microbiota including pre\/pro\/post-biotics, mucosal immunology, microbiota-gut-brain axis and stress response, irritable bowel syndrome and inflammatory bowel diseases.<\/p><p>He is director of the interdisciplinary Nutrition-Gut-Brain Research Centre as well as the national research excellence center PAN Sweden (Plant-based Proteins for Health and Well-being). As Pro-Vice-Chancellor of the University he leads the University Food and Health Strategic Programme that comprises all Faculties and Schools of the University.<\/p>"}},"member_mfL8zA":{"type":"member","settings":{"image":"shopify:\/\/shop_images\/Prof.-Dr.-em.-Wim-HM-Saris-1.png","name":"Prof. Dr. em. Wim HM Saris","bio":"<p>Wim Saris is a professor emeritus of Human Nutrition at the Medical and Health Science faculty of Maastricht University, the Netherlands. He was a member of the Dutch Health and Nutrition Council and has chaired the Dutch RDA committee since 1985. He was a member of the Scientific Committee on Food of the European Commission in Brussels (now EFSA) from 1996 until 2003.<\/p><p>His field of expertise covers energy metabolism and substrate utilization under different conditions, such as athletic performance, obesity, diabetes and cancer, with a particular emphasis on the relationship between daily physical activity and energy and substrate balance. Other interests are gene-nutrient interaction in the gut and genetic susceptibility in relation to nutrition (Nutrigenomics).<\/p>"}},"member_er4Xhe":{"type":"member","settings":{"image":"shopify:\/\/shop_images\/Prof.-Dr.-em.-John-Funder-1.png","name":"Prof. Dr. em. John Funder","bio":"<p>John Funder is a distinguished scientist and professor emeritus at the Hudson Institute of Medical Research, Melbourne, Australia.<\/p><p>His field of expertise covers endocrinology and research in the field of the salt-retaining (mineralocorticoid) hormone aldosterone, and the role of the mineralocorticoid receptor in organs such as the kidney, and in hypertension and heart failure, linking endocrinology and cardiology (cardiometabolic health).<\/p>"}},"member_ibYMJz":{"type":"member","settings":{"image":"shopify:\/\/shop_images\/Prof.-Dr.-Ir.-Ellen-Blaak.png","name":"Prof. Dr. Ir. Ellen Blaak","bio":"<p>Ellen Blaak has been a professor in Human Biology since 2007 and is Chair of the Department of Human Biology. Besides being a professor at Maastricht University, she is a project leader within the Top Institute Food and Nutrition, a public-private partnership of academia and international Food Industry, focused on precompetitive research. She is a member of the Nutrition committee of the Dutch Health Council and of several national and international advisory board\/grant evaluation committees.<\/p><p>Her research focuses on the interorgan metabolic crosstalk (gut-adipose tissue-muscle metabolism) in the etiology of obesity, insulin resistance and type 2 diabetes mellitus (&gt;320 publ) as well as the impact of nutritional or lifestyle intervention.<\/p>"}},"member_GDaBh8":{"type":"member","settings":{"image":"shopify:\/\/shop_images\/Prof.-Dr.-Lukas-van-Oudenhove-1.png","name":"Prof. Dr. Lukas van Oudenhove","bio":"<p>Lukas van Oudenhove is associate research professor at the Faculty of Medicine, University of Leuven, head of the Laboratory for Brain-Gut Axis Studies (LabGAS) embedded in the Translational Research Center for Gastrointestinal Disorders (TARGID), and consultation-liaison psychiatrist at the University Hospitals Leuven, Belgium.<\/p><p>His research focuses on mechanistic studies of (microbiota) gut-brain interactions in health and disease, including functional gastrointestinal\/somatic disorders, disorders of appetite and food intake, (visceral) pain, and affective disorders, using a variety of methods including functional brain imaging.<\/p>"}}},"block_order":["member_zcW3kz","member_mfL8zA","member_er4Xhe","member_ibYMJz","member_GDaBh8"],"settings":{}},"custom_liquid_Geb46G":{"type":"custom-liquid","settings":{"custom_liquid":"{% comment %}\nAdd this as a Custom Liquid block in your page sections\n{% endcomment %}\n\n{% unless customer.tags contains 'healthcare_provider' %}\n<style>\n  body.modal-open {\n    overflow: hidden;\n  }\n<\/style>\n\n<div id=\"providerModal\" style=\"display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;\">\n  <div style=\"position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 2rem; border-radius: 0.5rem; max-width: 500px; width: 90%;\">\n    <div style=\"margin-bottom: 1.5rem;\">\n      <h2 style=\"font-size: 1.25rem; font-weight: bold; color: #333;\">Healthcare Provider Confirmation<\/h2>\n    <\/div>\n    <div style=\"display: flex; align-items: flex-start; gap: 0.5rem; margin-bottom: 1.5rem;\">\n      <input \n        type=\"checkbox\" \n        id=\"providerCheckbox\" \n        style=\"margin-top: 0.25rem;\"\n      >\n      <label for=\"providerCheckbox\">\n        I confirm that I am a licensed healthcare provider and am authorized to access this content.\n      <\/label>\n    <\/div>\n    <button \n      id=\"confirmButton\" \n      disabled\n      style=\"background-color: #000; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 0.25rem; cursor: pointer; width: 100%; opacity: 0.5;\"\n    >\n      Confirm\n    <\/button>\n  <\/div>\n<\/div>\n\n<script>\ndocument.addEventListener('DOMContentLoaded', function() {\n  const pageUrl = window.location.pathname;\n  const storageKey = 'healthcareProviderConfirmed_' + pageUrl;\n  \n  if (!localStorage.getItem(storageKey)) {\n    document.getElementById('providerModal').style.display = 'block';\n    document.body.classList.add('modal-open');\n  }\n\n  document.getElementById('providerCheckbox').addEventListener('change', function(e) {\n    const button = document.getElementById('confirmButton');\n    button.disabled = !e.target.checked;\n    button.style.opacity = e.target.checked ? '1' : '0.5';\n  });\n\n  document.getElementById('confirmButton').addEventListener('click', function() {\n    if (document.getElementById('providerCheckbox').checked) {\n      localStorage.setItem(storageKey, 'true');\n      document.getElementById('providerModal').style.display = 'none';\n      document.body.classList.remove('modal-open');\n      \n      {% if customer %}\n        fetch('\/admin\/api\/2024-01\/customers\/{{ customer.id }}\/tags.json', {\n          method: 'PUT',\n          headers: {\n            'Content-Type': 'application\/json',\n          },\n          body: JSON.stringify({\n            tags: [...'{{ customer.tags }}'.split(','), 'healthcare_provider']\n          })\n        });\n      {% endif %}\n    }\n  });\n});\n<\/script>\n{% endunless %}","color_scheme":"","padding_top":0,"padding_bottom":52}}},"order":["main","image_banner_tzgBdU","image_with_text_home1_9k6Lfm","rich_text_wBdNCF","collapsible_content_qLbKBN","img_with_txt_video_gpJEpe","image_with_text_home1_dfCwy7","rich_text_J7JRL9","team_section_y8zCcC","custom_liquid_Geb46G"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {
+        "padding_top": 28,
+        "padding_bottom": 28
+      }
+    },
+    "image_banner_tzgBdU": {
+      "type": "image-banner",
+      "blocks": {
+        "heading_d8NC6C": {
+          "type": "heading",
+          "settings": {
+            "heading": "A Breakthrough Metabolic Health Solution",
+            "heading_size": "h1"
+          }
+        },
+        "text_EJgRmk": {
+          "type": "text",
+          "settings": {
+            "texta": "<p>The Akkermansia Company provides dietary supplement solutions for patients with Metabolic and Gut related health conditions.</p><p>All The Akkermansia Company products are developed with the only safe, stable and clinically proven form of pasteurized <em>Akkermansia muciniphila</em>, <em>Akkermansia</em> MucT™, the essential microbe associated with the root cause of numerous chronic health condition to deliver better health outcomes.</p>",
+            "text_style": "subtitle"
+          }
+        },
+        "buttons_8VQXzG": {
+          "type": "buttons",
+          "settings": {
+            "button_label_1": "Register for Wholesale Pricing",
+            "button_link_1": "https://www.theakkermansiacompany.com/account/register",
+            "button_style_secondary_1": false,
+            "button_label_2": "",
+            "button_link_2": "",
+            "button_style_secondary_2": false
+          }
+        }
+      },
+      "block_order": [
+        "heading_d8NC6C",
+        "text_EJgRmk",
+        "buttons_8VQXzG"
+      ],
+      "custom_css": [
+        "p {color: white;}",
+        "@media (max-width: 768px) {.banner__content {background-color: #031834; }}"
+      ],
+      "settings": {
+        "image": "shopify://shop_images/hcp-hero.jpg",
+        "image_overlay_opacity": 40,
+        "image_height": "medium",
+        "desktop_content_position": "middle-left",
+        "show_text_box": true,
+        "desktop_content_alignment": "left",
+        "color_scheme": "scheme-5",
+        "image_behavior": "none",
+        "mobile_content_alignment": "center",
+        "stack_images_on_mobile": true,
+        "show_text_below": true
+      }
+    },
+    "image_with_text_home1_9k6Lfm": {
+      "type": "image-with-text-home1",
+      "blocks": {
+        "heading_ctVUnU": {
+          "type": "heading",
+          "settings": {
+            "heading": "Superiority of Pasteurized <em>Akkermansia muciniphila</em> MucT™",
+            "heading_size": "h1"
+          }
+        },
+        "caption_MGjtEQ": {
+          "type": "caption",
+          "settings": {
+            "iconimg": "shopify://shop_images/proven-results-icon.svg",
+            "caption": "<p><strong>Clinically Proven Results</strong></p><p>The only <em>Akkermansia muciniphila</em> product clinically studied in humans</p>",
+            "text_style": "caption-with-letter-spacing",
+            "text_size": "medium"
+          }
+        },
+        "caption_if7BPJ": {
+          "type": "caption",
+          "settings": {
+            "iconimg": "shopify://shop_images/unparalled-safety-icon.svg",
+            "caption": "<p><strong>Unparalleled Safety</strong></p><p>Proven to be the safest form through pasteurization</p>",
+            "text_style": "caption-with-letter-spacing",
+            "text_size": "medium"
+          }
+        },
+        "caption_fwNRg3": {
+          "type": "caption",
+          "settings": {
+            "iconimg": "shopify://shop_images/superior-stability-icon.svg",
+            "caption": "<p><strong>Superior Stability</strong></p><p><em>Akkermansia muciniphila </em>MucT™<em> </em>does not interact with your diet or other supplements</p>",
+            "text_style": "caption-with-letter-spacing",
+            "text_size": "medium"
+          }
+        },
+        "caption_qzh4Xm": {
+          "type": "caption",
+          "settings": {
+            "iconimg": "shopify://shop_images/akkermansia-pill-icon.svg",
+            "caption": "<p><strong>The only </strong><em><strong>Akkermansia muciniphila </strong></em><strong>product approved as a dietary supplement</strong></p><p>European Food Safety Authority (EFSA) approved</p>",
+            "text_style": "caption-with-letter-spacing",
+            "text_size": "medium"
+          }
+        },
+        "caption_cNz7da": {
+          "type": "caption",
+          "settings": {
+            "iconimg": "shopify://shop_images/100x.svg",
+            "caption": "<p><strong>Up to 100x more </strong><em><strong>Akkermansia muciniphila</strong></em></p><p>More bioavailable gut protection than probiotic products*</p>",
+            "text_style": "caption-with-letter-spacing",
+            "text_size": "medium"
+          }
+        },
+        "button_GatCFi": {
+          "type": "button",
+          "settings": {
+            "button_label": "Learn More About Our Science",
+            "button_link": "shopify://pages/a-groundbreaking-gut-health-solution",
+            "button_style_secondary": false
+          }
+        }
+      },
+      "block_order": [
+        "heading_ctVUnU",
+        "caption_MGjtEQ",
+        "caption_if7BPJ",
+        "caption_fwNRg3",
+        "caption_qzh4Xm",
+        "caption_cNz7da",
+        "button_GatCFi"
+      ],
+      "settings": {
+        "image": "shopify://shop_images/molecules-bubbles.jpg",
+        "height": "adapt",
+        "desktop_image_width": "medium",
+        "layout": "image_first",
+        "desktop_content_position": "top",
+        "desktop_content_alignment": "left",
+        "content_layout": "no-overlap",
+        "section_color_scheme": "",
+        "color_scheme": "",
+        "image_behavior": "none",
+        "mobile_content_alignment": "left",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "rich_text_wBdNCF": {
+      "type": "rich-text",
+      "blocks": {
+        "heading_HwhDUE": {
+          "type": "heading",
+          "settings": {
+            "heading": "Akkermansia muciniphila – a keystone bacterium",
+            "heading_size": "h1"
+          }
+        },
+        "text_Twh6cK": {
+          "type": "text",
+          "settings": {
+            "text": "<p>One key characteristic of <em>Akkermansia muciniphila </em>is its ability to live in the mucus layer that covers cells in the intestine. Being located so close to such cells, it is even able to communicate with them. <em>Akkermansia muciniphila</em>’s unique location and natural occurrence within our bodies makes it the ideal gut health supplement.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "heading_HwhDUE",
+        "text_Twh6cK"
+      ],
+      "settings": {
+        "desktop_content_position": "left",
+        "content_alignment": "left",
+        "color_scheme": "",
+        "full_width": true,
+        "padding_top": 40,
+        "padding_bottom": 0
+      }
+    },
+    "collapsible_content_qLbKBN": {
+      "type": "collapsible-content",
+      "blocks": {
+        "collapsible_row_EVUtmJ": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "Naturally Occurring from Infancy",
+            "icon": "none",
+            "row_content": "<p><em>Akkermansia muciniphila</em> can be found in the human gut during infancy, increasing in abundance as the body reaches maturity.</p><p><em>Akkermansia muciniphila</em> cells have even been detected in human breast milk, perhaps due to its ability to use the complex sugar molecules in breast milk as its sole source of energy.</p>",
+            "page": ""
+          }
+        },
+        "collapsible_row_iKQ7gp": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "A Mutually Beneficial Relationship",
+            "icon": "none",
+            "row_content": "<p>The fact that <em>Akkermansia muciniphila </em>can be found in many different species and is located so close to the intestinal wall strongly suggests that the bacterium has a symbiotic relationship with its hosts. Over the last decade, it has been shown through a large body of scientific research that the presence of <em>Akkermansia muciniphila </em>in humans is associated with better health.</p>",
+            "page": ""
+          }
+        },
+        "collapsible_row_ktYhgg": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "Groundbreaking Results in Human Clinical Trials",
+            "icon": "none",
+            "row_content": "<p>Our previous findings that <em>Akkermansia muciniphila </em>MucT™ improves gut barrier function are being reinforced by ongoing clinical trials showing avoidance of weight regain through use of our formula.</p>",
+            "page": ""
+          }
+        }
+      },
+      "block_order": [
+        "collapsible_row_EVUtmJ",
+        "collapsible_row_iKQ7gp",
+        "collapsible_row_ktYhgg"
+      ],
+      "custom_css": [
+        ".collapsible-button-container {margin-top: 30px;}"
+      ],
+      "settings": {
+        "caption": "",
+        "button_label": "Learn More About Science",
+        "button_link": "shopify://pages/resources",
+        "heading": "",
+        "heading_size": "h1",
+        "heading_alignment": "left",
+        "layout": "none",
+        "color_scheme": "",
+        "container_color_scheme": "",
+        "open_first_collapsible_row": true,
+        "image": "shopify://shop_images/scientist-looking-at-test-tubes.png",
+        "image_ratio": "small",
+        "desktop_layout": "image_second",
+        "content": "",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "img_with_txt_video_gpJEpe": {
+      "type": "img-with-txt-video",
+      "blocks": {
+        "heading_xm6wy7": {
+          "type": "heading",
+          "settings": {
+            "heading": "The <em>Akkermansia muciniphila </em>MucT™ Solution",
+            "heading_size": "h1"
+          }
+        }
+      },
+      "block_order": [
+        "heading_xm6wy7"
+      ],
+      "settings": {
+        "video": "https://cdn.shopify.com/videos/c/o/v/4df32c50fca74f6f80c2ed2638c354b0.mp4",
+        "controlsshow": true,
+        "show_social": false,
+        "height": "adapt",
+        "desktop_image_width": "medium",
+        "layout": "image_first",
+        "desktop_content_position": "top",
+        "desktop_content_alignment": "left",
+        "content_layout": "no-overlap",
+        "section_color_scheme": "",
+        "color_scheme": "",
+        "image_behavior": "none",
+        "mobile_content_alignment": "left",
+        "padding_top": 44,
+        "padding_bottom": 36
+      }
+    },
+    "image_with_text_home1_dfCwy7": {
+      "type": "image-with-text-home1",
+      "blocks": {
+        "heading_TDrHw9": {
+          "type": "heading",
+          "settings": {
+            "heading": "Healthy Weight",
+            "heading_size": "h1"
+          }
+        },
+        "text_n9RYtw": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Supports healthy weight, glucose metabolism, and cardiometabolic health.* </p>",
+            "text_style": "body"
+          }
+        },
+        "caption_FkD343": {
+          "type": "caption",
+          "settings": {
+            "iconimg": "shopify://shop_images/clinically-proven-icon_3e45b59e-592f-46ba-9237-4a9917f379d5.svg",
+            "caption": "<p><strong>Clinically shown to aid in weight maintenance*</strong></p>",
+            "text_style": "caption-with-letter-spacing",
+            "text_size": "medium"
+          }
+        },
+        "caption_q9gJXa": {
+          "type": "caption",
+          "settings": {
+            "iconimg": "shopify://shop_images/chromium-icon.svg",
+            "caption": "<p><strong>Contains chromium to support healthy glucose metabolism*</strong></p>",
+            "text_style": "caption-with-letter-spacing",
+            "text_size": "medium"
+          }
+        },
+        "caption_BK69nW": {
+          "type": "caption",
+          "settings": {
+            "iconimg": "shopify://shop_images/green-tea-icon.svg",
+            "caption": "<p><strong>Features EGCG from green tea extract for additional weight management support*</strong></p>",
+            "text_style": "caption-with-letter-spacing",
+            "text_size": "medium"
+          }
+        },
+        "button_PfUFfr": {
+          "type": "button",
+          "settings": {
+            "button_label": " Shop Healthy Weight",
+            "button_link": "https://www.metagenics.com/akkermansia",
+            "button_style_secondary": false
+          }
+        }
+      },
+      "block_order": [
+        "heading_TDrHw9",
+        "text_n9RYtw",
+        "caption_FkD343",
+        "caption_q9gJXa",
+        "caption_BK69nW",
+        "button_PfUFfr"
+      ],
+      "disabled": true,
+      "custom_css": [
+        ".image-with-text__content {padding-left: 0;}"
+      ],
+      "settings": {
+        "image": "shopify://shop_images/hand-holding-healthy-weight-bottle.jpg",
+        "height": "adapt",
+        "desktop_image_width": "medium",
+        "layout": "text_first",
+        "desktop_content_position": "top",
+        "desktop_content_alignment": "left",
+        "content_layout": "no-overlap",
+        "section_color_scheme": "",
+        "color_scheme": "",
+        "image_behavior": "none",
+        "mobile_content_alignment": "left",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "rich_text_J7JRL9": {
+      "type": "rich-text",
+      "blocks": {
+        "heading_4NmDN8": {
+          "type": "heading",
+          "settings": {
+            "heading": "Meet the Experts ",
+            "heading_size": "h1"
+          }
+        },
+        "text_rnN7hU": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Learn more about our globally diverse team of scientific advisors and their qualifying experience</p>"
+          }
+        }
+      },
+      "block_order": [
+        "heading_4NmDN8",
+        "text_rnN7hU"
+      ],
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "",
+        "full_width": true,
+        "padding_top": 40,
+        "padding_bottom": 52
+      }
+    },
+    "team_section_y8zCcC": {
+      "type": "team-section",
+      "blocks": {
+        "member_zcW3kz": {
+          "type": "member",
+          "settings": {
+            "image": "shopify://shop_images/Prof.-Dr.-Robert-Jan-Brummer-1.png",
+            "name": "Prof. Dr. Robert-Jan Brummer",
+            "bio": "<p>Robert JM Brummer is professor of Gastroenterology and Clinical Nutrition and senior consultant at Örebro University and University Hospital, Sweden. His field of expertise covers gastroenterology, clinical nutrition, gut barrier function, microbiota including pre/pro/post-biotics, mucosal immunology, microbiota-gut-brain axis and stress response, irritable bowel syndrome and inflammatory bowel diseases.</p><p>He is director of the interdisciplinary Nutrition-Gut-Brain Research Centre as well as the national research excellence center PAN Sweden (Plant-based Proteins for Health and Well-being). As Pro-Vice-Chancellor of the University he leads the University Food and Health Strategic Programme that comprises all Faculties and Schools of the University.</p>"
+          }
+        },
+        "member_mfL8zA": {
+          "type": "member",
+          "settings": {
+            "image": "shopify://shop_images/Prof.-Dr.-em.-Wim-HM-Saris-1.png",
+            "name": "Prof. Dr. em. Wim HM Saris",
+            "bio": "<p>Wim Saris is a professor emeritus of Human Nutrition at the Medical and Health Science faculty of Maastricht University, the Netherlands. He was a member of the Dutch Health and Nutrition Council and has chaired the Dutch RDA committee since 1985. He was a member of the Scientific Committee on Food of the European Commission in Brussels (now EFSA) from 1996 until 2003.</p><p>His field of expertise covers energy metabolism and substrate utilization under different conditions, such as athletic performance, obesity, diabetes and cancer, with a particular emphasis on the relationship between daily physical activity and energy and substrate balance. Other interests are gene-nutrient interaction in the gut and genetic susceptibility in relation to nutrition (Nutrigenomics).</p>"
+          }
+        },
+        "member_er4Xhe": {
+          "type": "member",
+          "settings": {
+            "image": "shopify://shop_images/Prof.-Dr.-em.-John-Funder-1.png",
+            "name": "Prof. Dr. em. John Funder",
+            "bio": "<p>John Funder is a distinguished scientist and professor emeritus at the Hudson Institute of Medical Research, Melbourne, Australia.</p><p>His field of expertise covers endocrinology and research in the field of the salt-retaining (mineralocorticoid) hormone aldosterone, and the role of the mineralocorticoid receptor in organs such as the kidney, and in hypertension and heart failure, linking endocrinology and cardiology (cardiometabolic health).</p>"
+          }
+        },
+        "member_ibYMJz": {
+          "type": "member",
+          "settings": {
+            "image": "shopify://shop_images/Prof.-Dr.-Ir.-Ellen-Blaak.png",
+            "name": "Prof. Dr. Ir. Ellen Blaak",
+            "bio": "<p>Ellen Blaak has been a professor in Human Biology since 2007 and is Chair of the Department of Human Biology. Besides being a professor at Maastricht University, she is a project leader within the Top Institute Food and Nutrition, a public-private partnership of academia and international Food Industry, focused on precompetitive research. She is a member of the Nutrition committee of the Dutch Health Council and of several national and international advisory board/grant evaluation committees.</p><p>Her research focuses on the interorgan metabolic crosstalk (gut-adipose tissue-muscle metabolism) in the etiology of obesity, insulin resistance and type 2 diabetes mellitus (&gt;320 publ) as well as the impact of nutritional or lifestyle intervention.</p>"
+          }
+        },
+        "member_GDaBh8": {
+          "type": "member",
+          "settings": {
+            "image": "shopify://shop_images/Prof.-Dr.-Lukas-van-Oudenhove-1.png",
+            "name": "Prof. Dr. Lukas van Oudenhove",
+            "bio": "<p>Lukas van Oudenhove is associate research professor at the Faculty of Medicine, University of Leuven, head of the Laboratory for Brain-Gut Axis Studies (LabGAS) embedded in the Translational Research Center for Gastrointestinal Disorders (TARGID), and consultation-liaison psychiatrist at the University Hospitals Leuven, Belgium.</p><p>His research focuses on mechanistic studies of (microbiota) gut-brain interactions in health and disease, including functional gastrointestinal/somatic disorders, disorders of appetite and food intake, (visceral) pain, and affective disorders, using a variety of methods including functional brain imaging.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "member_zcW3kz",
+        "member_mfL8zA",
+        "member_er4Xhe",
+        "member_ibYMJz",
+        "member_GDaBh8"
+      ],
+      "settings": {}
+    },
+    "custom_liquid_Geb46G": {
+      "type": "custom-liquid",
+      "settings": {
+        "custom_liquid": "{% comment %}\nAdd this as a Custom Liquid block in your page sections\n{% endcomment %}\n\n{% unless customer.tags contains 'healthcare_provider' %}\n<style>\n  body.modal-open {\n    overflow: hidden;\n  }\n</style>\n\n<div id=\"providerModal\" style=\"display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;\">\n  <div style=\"position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 2rem; border-radius: 0.5rem; max-width: 500px; width: 90%;\">\n    <div style=\"margin-bottom: 1.5rem;\">\n      <h2 style=\"font-size: 1.25rem; font-weight: bold; color: #333;\">Healthcare Provider Confirmation</h2>\n    </div>\n    <div style=\"display: flex; align-items: flex-start; gap: 0.5rem; margin-bottom: 1.5rem;\">\n      <input \n        type=\"checkbox\" \n        id=\"providerCheckbox\" \n        style=\"margin-top: 0.25rem;\"\n      >\n      <label for=\"providerCheckbox\">\n        I confirm that I am a licensed healthcare provider and am authorized to access this content.\n      </label>\n    </div>\n    <button \n      id=\"confirmButton\" \n      disabled\n      style=\"background-color: #000; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 0.25rem; cursor: pointer; width: 100%; opacity: 0.5;\"\n    >\n      Confirm\n    </button>\n  </div>\n</div>\n\n<script>\ndocument.addEventListener('DOMContentLoaded', function() {\n  const pageUrl = window.location.pathname;\n  const storageKey = 'healthcareProviderConfirmed_' + pageUrl;\n  \n  if (!localStorage.getItem(storageKey)) {\n    document.getElementById('providerModal').style.display = 'block';\n    document.body.classList.add('modal-open');\n  }\n\n  document.getElementById('providerCheckbox').addEventListener('change', function(e) {\n    const button = document.getElementById('confirmButton');\n    button.disabled = !e.target.checked;\n    button.style.opacity = e.target.checked ? '1' : '0.5';\n  });\n\n  document.getElementById('confirmButton').addEventListener('click', function() {\n    if (document.getElementById('providerCheckbox').checked) {\n      localStorage.setItem(storageKey, 'true');\n      document.getElementById('providerModal').style.display = 'none';\n      document.body.classList.remove('modal-open');\n      \n      {% if customer %}\n        fetch('/admin/api/2024-01/customers/{{ customer.id }}/tags.json', {\n          method: 'PUT',\n          headers: {\n            'Content-Type': 'application/json',\n          },\n          body: JSON.stringify({\n            tags: [...'{{ customer.tags }}'.split(','), 'healthcare_provider']\n          })\n        });\n      {% endif %}\n    }\n  });\n});\n</script>\n{% endunless %}",
+        "color_scheme": "",
+        "padding_top": 0,
+        "padding_bottom": 52
+      }
+    }
+  },
+  "order": [
+    "main",
+    "image_banner_tzgBdU",
+    "image_with_text_home1_9k6Lfm",
+    "rich_text_wBdNCF",
+    "collapsible_content_qLbKBN",
+    "img_with_txt_video_gpJEpe",
+    "image_with_text_home1_dfCwy7",
+    "rich_text_J7JRL9",
+    "team_section_y8zCcC",
+    "custom_liquid_Geb46G"
+  ]
+}
