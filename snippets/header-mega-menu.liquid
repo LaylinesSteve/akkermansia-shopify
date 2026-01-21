@@ -5,6 +5,52 @@
   {% render 'header-mega-menu' %}
 {% endcomment %}
 
+<style>
+  .mega-menu__link--with-image {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .mega-menu__image-wrapper {
+    flex-shrink: 0;
+    display: block;
+  }
+  
+  .mega-menu__item-image {
+    width: 150px;
+    height: auto;
+    border-radius: 4px;
+    object-fit: cover;
+    display: block;
+  }
+  
+  .mega-menu__link--level-2 .mega-menu__item-image {
+    width: 150px;
+    max-width: 150px;
+  }
+  
+  .mega-menu__link:not(.mega-menu__link--level-2) .mega-menu__item-image {
+    width: 100px;
+    max-width: 100px;
+  }
+  
+  .mega-menu__link-text {
+    display: block;
+  }
+  
+  @media screen and (max-width: 989px) {
+    .mega-menu__item-image {
+      width: 100px;
+    }
+    
+    .mega-menu__link--level-2 .mega-menu__item-image {
+      width: 100px;
+      max-width: 100px;
+    }
+  }
+</style>
+
 <nav class="header__inline-menu">
   <ul class="list-menu list-menu--inline" role="list">
     {%- for link in section.settings.menu.links -%}
@@ -36,29 +82,101 @@
                 >
                   {%- for childlink in link.links -%}
                     <li>
+                      {%- comment -%} Get image from metafield or object {%- endcomment -%}
+                      {%- assign menu_item_image = null -%}
+                      {%- if childlink.object.metafields.custom.menu_image != blank -%}
+                        {%- assign menu_item_image = childlink.object.metafields.custom.menu_image -%}
+                      {%- elsif childlink.object.metafields.custom.menu_image_url != blank -%}
+                        {%- assign menu_item_image = childlink.object.metafields.custom.menu_image_url -%}
+                      {%- elsif childlink.type == 'product' and childlink.object.featured_media != blank -%}
+                        {%- assign menu_item_image = childlink.object.featured_media -%}
+                      {%- elsif childlink.type == 'collection' and childlink.object.featured_image != blank -%}
+                        {%- assign menu_item_image = childlink.object.featured_image -%}
+                      {%- endif -%}
+                      
                       <a
                         id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
                         href="{{ childlink.url }}"
-                        class="mega-menu__link mega-menu__link--level-2 link{% if childlink.current %} mega-menu__link--active{% endif %}"
+                        class="mega-menu__link mega-menu__link--level-2 link{% if childlink.current %} mega-menu__link--active{% endif %}{% if menu_item_image != null %} mega-menu__link--with-image{% endif %}"
                         {% if childlink.current %}
                           aria-current="page"
                         {% endif %}
                       >
-                        {{ childlink.title | escape }}
+                        {%- if menu_item_image != null -%}
+                          <span class="mega-menu__image-wrapper">
+                            {%- if menu_item_image contains 'http' or menu_item_image contains '//' -%}
+                              {%- comment -%} External URL image {%- endcomment -%}
+                              <img 
+                                src="{{ menu_item_image }}"
+                                alt="{{ childlink.title | escape }}"
+                                class="mega-menu__item-image"
+                                loading="lazy"
+                                width="150"
+                                height="150"
+                              >
+                            {%- else -%}
+                              {%- comment -%} Shopify image object {%- endcomment -%}
+                              <img 
+                                src="{{ menu_item_image | image_url: width: 150 }}"
+                                alt="{{ menu_item_image.alt | default: childlink.title | escape }}"
+                                class="mega-menu__item-image"
+                                loading="lazy"
+                                width="150"
+                                height="{{ 150 | divided_by: menu_item_image.aspect_ratio | round }}"
+                              >
+                            {%- endif -%}
+                          </span>
+                        {%- endif -%}
+                        <span class="mega-menu__link-text">{{ childlink.title | escape }}</span>
                       </a>
                       {%- if childlink.links != blank -%}
                         <ul class="list-unstyled" role="list">
                           {%- for grandchildlink in childlink.links -%}
                             <li>
+                              {%- comment -%} Get image for grandchild menu item {%- endcomment -%}
+                              {%- assign grandchild_image = null -%}
+                              {%- if grandchildlink.object.metafields.custom.menu_image != blank -%}
+                                {%- assign grandchild_image = grandchildlink.object.metafields.custom.menu_image -%}
+                              {%- elsif grandchildlink.object.metafields.custom.menu_image_url != blank -%}
+                                {%- assign grandchild_image = grandchildlink.object.metafields.custom.menu_image_url -%}
+                              {%- elsif grandchildlink.type == 'product' and grandchildlink.object.featured_media != blank -%}
+                                {%- assign grandchild_image = grandchildlink.object.featured_media -%}
+                              {%- elsif grandchildlink.type == 'collection' and grandchildlink.object.featured_image != blank -%}
+                                {%- assign grandchild_image = grandchildlink.object.featured_image -%}
+                              {%- endif -%}
+                              
                               <a
                                 id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
                                 href="{{ grandchildlink.url }}"
-                                class="mega-menu__link link{% if grandchildlink.current %} mega-menu__link--active{% endif %}"
+                                class="mega-menu__link link{% if grandchildlink.current %} mega-menu__link--active{% endif %}{% if grandchild_image != null %} mega-menu__link--with-image{% endif %}"
                                 {% if grandchildlink.current %}
                                   aria-current="page"
                                 {% endif %}
                               >
-                                {{ grandchildlink.title | escape }}
+                                {%- if grandchild_image != null -%}
+                                  <span class="mega-menu__image-wrapper">
+                                    {%- if grandchild_image contains 'http' or grandchild_image contains '//' -%}
+                                      <img 
+                                        src="{{ grandchild_image }}"
+                                        alt="{{ grandchildlink.title | escape }}"
+                                        class="mega-menu__item-image"
+                                        loading="lazy"
+                                        width="100"
+                                        height="100"
+                                      >
+                                    {%- else -%}
+                                      <img 
+                                        src="{{ grandchild_image | image_url: width: 100 }}"
+                                        alt="{{ grandchild_image.alt | default: grandchildlink.title | escape }}"
+                                        class="mega-menu__item-image"
+                                        loading="lazy"
+                                        width="100"
+                                        height="{{ 100 | divided_by: grandchild_image.aspect_ratio | round }}"
+                                      >
+                                    {%- endif -%}
+                                  </span>
+                                {%- endif -%}
+                                <span class="mega-menu__link-text">{{ grandchildlink.title | escape }}</span>
                               </a>
                             </li>
                           {%- endfor -%}

@@ -5,6 +5,31 @@
   {% render 'header-dropdown-menu' %}
 {% endcomment %}
 
+<style>
+  .header__menu-item--with-image {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .header__menu-image-wrapper {
+    flex-shrink: 0;
+    display: block;
+  }
+  
+  .header__menu-item-image {
+    width: 80px;
+    height: auto;
+    border-radius: 4px;
+    object-fit: cover;
+    display: block;
+  }
+  
+  .header__submenu .header__menu-item-image {
+    width: 60px;
+  }
+</style>
+
 <nav class="header__inline-menu">
   <ul class="list-menu list-menu--inline" role="list">
     {%- for link in section.settings.menu.links -%}
@@ -33,23 +58,81 @@
               >
                 {%- for childlink in link.links -%}
                   <li>
+                    {%- comment -%} Get image from metafield or object {%- endcomment -%}
+                    {%- assign menu_item_image = null -%}
+                    {%- if childlink.object.metafields.custom.menu_image != blank -%}
+                      {%- assign menu_item_image = childlink.object.metafields.custom.menu_image -%}
+                    {%- elsif childlink.object.metafields.custom.menu_image_url != blank -%}
+                      {%- assign menu_item_image = childlink.object.metafields.custom.menu_image_url -%}
+                    {%- elsif childlink.type == 'product' and childlink.object.featured_media != blank -%}
+                      {%- assign menu_item_image = childlink.object.featured_media -%}
+                    {%- elsif childlink.type == 'collection' and childlink.object.featured_image != blank -%}
+                      {%- assign menu_item_image = childlink.object.featured_image -%}
+                    {%- endif -%}
+                    
                     {%- if childlink.links == blank -%}
                       <a
                         id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
                         href="{{ childlink.url }}"
-                        class="header__menu-item list-menu__item link link--text focus-inset caption-large{% if childlink.current %} list-menu__item--active{% endif %}"
+                        class="header__menu-item list-menu__item link link--text focus-inset caption-large{% if childlink.current %} list-menu__item--active{% endif %}{% if menu_item_image != null %} header__menu-item--with-image{% endif %}"
                         {% if childlink.current %}
                           aria-current="page"
                         {% endif %}
                       >
-                        {{ childlink.title | escape }}
+                        {%- if menu_item_image != null -%}
+                          <span class="header__menu-image-wrapper">
+                            {%- if menu_item_image contains 'http' or menu_item_image contains '//' -%}
+                              <img 
+                                src="{{ menu_item_image }}"
+                                alt="{{ childlink.title | escape }}"
+                                class="header__menu-item-image"
+                                loading="lazy"
+                                width="80"
+                                height="80"
+                              >
+                            {%- else -%}
+                              <img 
+                                src="{{ menu_item_image | image_url: width: 80 }}"
+                                alt="{{ menu_item_image.alt | default: childlink.title | escape }}"
+                                class="header__menu-item-image"
+                                loading="lazy"
+                                width="80"
+                                height="{{ 80 | divided_by: menu_item_image.aspect_ratio | round }}"
+                              >
+                            {%- endif -%}
+                          </span>
+                        {%- endif -%}
+                        <span>{{ childlink.title | escape }}</span>
                       </a>
                     {%- else -%}
                       <details id="Details-HeaderSubMenu-{{ link.handle }}-{{ childlink.handle }}">
                         <summary
                           id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
-                          class="header__menu-item link link--text list-menu__item focus-inset caption-large"
+                          class="header__menu-item link link--text list-menu__item focus-inset caption-large{% if menu_item_image != null %} header__menu-item--with-image{% endif %}"
                         >
+                          {%- if menu_item_image != null -%}
+                            <span class="header__menu-image-wrapper">
+                              {%- if menu_item_image contains 'http' or menu_item_image contains '//' -%}
+                                <img 
+                                  src="{{ menu_item_image }}"
+                                  alt="{{ childlink.title | escape }}"
+                                  class="header__menu-item-image"
+                                  loading="lazy"
+                                  width="80"
+                                  height="80"
+                                >
+                              {%- else -%}
+                                <img 
+                                  src="{{ menu_item_image | image_url: width: 80 }}"
+                                  alt="{{ menu_item_image.alt | default: childlink.title | escape }}"
+                                  class="header__menu-item-image"
+                                  loading="lazy"
+                                  width="80"
+                                  height="{{ 80 | divided_by: menu_item_image.aspect_ratio | round }}"
+                                >
+                              {%- endif -%}
+                            </span>
+                          {%- endif -%}
                           <span>{{ childlink.title | escape }}</span>
                           {% render 'icon-caret' %}
                         </summary>
@@ -59,15 +142,50 @@
                         >
                           {%- for grandchildlink in childlink.links -%}
                             <li>
+                              {%- comment -%} Get image for grandchild menu item {%- endcomment -%}
+                              {%- assign grandchild_image = null -%}
+                              {%- if grandchildlink.object.metafields.custom.menu_image != blank -%}
+                                {%- assign grandchild_image = grandchildlink.object.metafields.custom.menu_image -%}
+                              {%- elsif grandchildlink.object.metafields.custom.menu_image_url != blank -%}
+                                {%- assign grandchild_image = grandchildlink.object.metafields.custom.menu_image_url -%}
+                              {%- elsif grandchildlink.type == 'product' and grandchildlink.object.featured_media != blank -%}
+                                {%- assign grandchild_image = grandchildlink.object.featured_media -%}
+                              {%- elsif grandchildlink.type == 'collection' and grandchildlink.object.featured_image != blank -%}
+                                {%- assign grandchild_image = grandchildlink.object.featured_image -%}
+                              {%- endif -%}
+                              
                               <a
                                 id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
                                 href="{{ grandchildlink.url }}"
-                                class="header__menu-item list-menu__item link link--text focus-inset caption-large{% if grandchildlink.current %} list-menu__item--active{% endif %}"
+                                class="header__menu-item list-menu__item link link--text focus-inset caption-large{% if grandchildlink.current %} list-menu__item--active{% endif %}{% if grandchild_image != null %} header__menu-item--with-image{% endif %}"
                                 {% if grandchildlink.current %}
                                   aria-current="page"
                                 {% endif %}
                               >
-                                {{ grandchildlink.title | escape }}
+                                {%- if grandchild_image != null -%}
+                                  <span class="header__menu-image-wrapper">
+                                    {%- if grandchild_image contains 'http' or grandchild_image contains '//' -%}
+                                      <img 
+                                        src="{{ grandchild_image }}"
+                                        alt="{{ grandchildlink.title | escape }}"
+                                        class="header__menu-item-image"
+                                        loading="lazy"
+                                        width="60"
+                                        height="60"
+                                      >
+                                    {%- else -%}
+                                      <img 
+                                        src="{{ grandchild_image | image_url: width: 60 }}"
+                                        alt="{{ grandchild_image.alt | default: grandchildlink.title | escape }}"
+                                        class="header__menu-item-image"
+                                        loading="lazy"
+                                        width="60"
+                                        height="{{ 60 | divided_by: grandchild_image.aspect_ratio | round }}"
+                                      >
+                                    {%- endif -%}
+                                  </span>
+                                {%- endif -%}
+                                <span>{{ grandchildlink.title | escape }}</span>
                               </a>
                             </li>
                           {%- endfor -%}
