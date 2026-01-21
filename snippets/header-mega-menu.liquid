@@ -100,55 +100,60 @@
                     <li>
                       {%- comment -%} For Shop menu: first two items get product cards, others are regular links {%- endcomment -%}
                       {%- if is_shop_menu and forloop.index <= 2 -%}
-                        {%- comment -%} Get product object {%- endcomment -%}
+                        {%- comment -%} Get product object - try multiple methods {%- endcomment -%}
                         {%- assign menu_product = null -%}
+                        {%- assign product_found = false -%}
+                        
+                        {%- comment -%} Method 1: Direct product type {%- endcomment -%}
                         {%- if childlink.type == 'product' -%}
                           {%- assign menu_product = childlink.object -%}
-                        {%- elsif childlink.url contains '/products/' -%}
+                          {%- assign product_found = true -%}
+                        {%- endif -%}
+                        
+                        {%- comment -%} Method 2: Extract from URL {%- endcomment -%}
+                        {%- if product_found == false and childlink.url contains '/products/' -%}
                           {%- assign product_handle = childlink.url | split: '/products/' | last | split: '?' | first | split: '#' | first -%}
                           {%- assign menu_product = all_products[product_handle] -%}
-                          {%- comment -%} Fallback: search in collections.all if all_products doesn't work {%- endcomment -%}
-                          {%- if menu_product == null or menu_product == blank -%}
-                            {%- for product in collections.all.products -%}
-                              {%- if product.handle == product_handle -%}
-                                {%- assign menu_product = product -%}
-                                {%- break -%}
-                              {%- endif -%}
-                            {%- endfor -%}
+                          {%- if menu_product != null and menu_product != blank -%}
+                            {%- assign product_found = true -%}
                           {%- endif -%}
                         {%- endif -%}
                         
-                        {%- if menu_product != null and menu_product != blank -%}
-                          {%- comment -%} Render as product card {%- endcomment -%}
-                          {%- assign has_featured_media = 'no' -%}
-                          {%- if menu_product.featured_media != blank -%}
-                            {%- assign has_featured_media = 'yes' -%}
-                          {%- endif -%}
-                          <!-- Debug: Found product {{ menu_product.title }}, featured_media: {{ has_featured_media }}, media size: {{ menu_product.media.size }} -->
+                        {%- comment -%} Method 3: Search collections.all {%- endcomment -%}
+                        {%- if product_found == false and product_handle != blank -%}
+                          {%- for product in collections.all.products -%}
+                            {%- if product.handle == product_handle -%}
+                              {%- assign menu_product = product -%}
+                              {%- assign product_found = true -%}
+                              {%- break -%}
+                            {%- endif -%}
+                          {%- endfor -%}
+                        {%- endif -%}
+                        
+                        {%- comment -%} Render product card if found {%- endcomment -%}
+                        {%- if product_found and menu_product != null and menu_product != blank -%}
                           <div class="mega-menu__product-card">
                             <a
                               href="{{ menu_product.url }}"
                               class="mega-menu__product-link"
                               id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
                             >
+                              {%- comment -%} Get product image {%- endcomment -%}
+                              {%- assign product_image = null -%}
                               {%- if menu_product.featured_media != blank -%}
-                                <div class="mega-menu__product-image">
-                                  <img
-                                    src="{{ menu_product.featured_media | image_url: width: 200 }}"
-                                    alt="{{ menu_product.featured_media.alt | default: menu_product.title | escape }}"
-                                    loading="lazy"
-                                    width="200"
-                                    height="{{ 200 | divided_by: menu_product.featured_media.aspect_ratio | round }}"
-                                  >
-                                </div>
+                                {%- assign product_image = menu_product.featured_media -%}
                               {%- elsif menu_product.media != blank and menu_product.media.size > 0 -%}
+                                {%- assign product_image = menu_product.media[0] -%}
+                              {%- endif -%}
+                              
+                              {%- if product_image != null -%}
                                 <div class="mega-menu__product-image">
                                   <img
-                                    src="{{ menu_product.media[0] | image_url: width: 200 }}"
-                                    alt="{{ menu_product.media[0].alt | default: menu_product.title | escape }}"
+                                    src="{{ product_image | image_url: width: 200 }}"
+                                    alt="{{ product_image.alt | default: menu_product.title | escape }}"
                                     loading="lazy"
                                     width="200"
-                                    height="{{ 200 | divided_by: menu_product.media[0].aspect_ratio | round }}"
+                                    height="{{ 200 | divided_by: product_image.aspect_ratio | round }}"
                                   >
                                 </div>
                               {%- endif -%}
@@ -157,6 +162,7 @@
                           </div>
                         {%- else -%}
                           {%- comment -%} Fallback to regular link if product not found {%- endcomment -%}
+                          <!-- Debug: Product not found for {{ childlink.title }}, type: {{ childlink.type }}, url: {{ childlink.url }} -->
                           <a
                             id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
                             href="{{ childlink.url }}"
