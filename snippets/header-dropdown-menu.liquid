@@ -73,6 +73,8 @@
                         {%- assign menu_item_image = childlink.object.metafields.custom.menu_image -%}
                       {%- elsif childlink.object.metafields.theme.menu_image != blank -%}
                         {%- assign menu_item_image = childlink.object.metafields.theme.menu_image -%}
+                      {%- elsif childlink.object.metafields.shopify.menu_image != blank -%}
+                        {%- assign menu_item_image = childlink.object.metafields.shopify.menu_image -%}
                       {%- elsif childlink.object.featured_media != blank -%}
                         {%- assign menu_item_image = childlink.object.featured_media -%}
                       {%- endif -%}
@@ -171,6 +173,8 @@
                                   {%- assign grandchild_image = grandchildlink.object.metafields.custom.menu_image -%}
                                 {%- elsif grandchildlink.object.metafields.theme.menu_image != blank -%}
                                   {%- assign grandchild_image = grandchildlink.object.metafields.theme.menu_image -%}
+                                {%- elsif grandchildlink.object.metafields.shopify.menu_image != blank -%}
+                                  {%- assign grandchild_image = grandchildlink.object.metafields.shopify.menu_image -%}
                                 {%- elsif grandchildlink.object.featured_media != blank -%}
                                   {%- assign grandchild_image = grandchildlink.object.featured_media -%}
                                 {%- endif -%}
