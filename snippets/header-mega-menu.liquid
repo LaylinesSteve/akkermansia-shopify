@@ -129,7 +129,11 @@
                       
                       {%- comment -%} Debug output - shows what's detected {%- endcomment -%}
                       {%- if forloop.index <= 2 -%}
-                        <!-- Menu: {{ link.title }}, Is Shop: {{ is_shop_menu }}, Product: {{ menu_product.title | default: 'none' }}, Image: {{ menu_item_image != null }} -->
+                        {%- assign has_image = 'no' -%}
+                        {%- if menu_item_image != null -%}
+                          {%- assign has_image = 'yes' -%}
+                        {%- endif -%}
+                        <!-- Menu: {{ link.title }}, Is Shop: {{ is_shop_menu }}, Product: {{ menu_product.title | default: 'none' }}, Image: {{ has_image }} -->
                       {%- endif -%}
                       
                       <a
