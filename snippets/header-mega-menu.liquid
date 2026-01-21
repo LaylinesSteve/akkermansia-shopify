@@ -79,6 +79,15 @@
     display: block;
   }
   
+  /* Style for non-product-card items in Shop menu - align to bottom and font weight 500 */
+  .mega-menu__list.mega-menu__list--condensed:has(.mega-menu__product-cards-container) > li:not(.mega-menu__product-cards-container) {
+    align-self: flex-end;
+  }
+  
+  .mega-menu__list.mega-menu__list--condensed:has(.mega-menu__product-cards-container) > li:not(.mega-menu__product-cards-container) .mega-menu__link-text {
+    font-weight: 500;
+  }
+  
   @media screen and (max-width: 989px) {
     .mega-menu__list .mega-menu__product-cards-container {
       flex-direction: column !important;
