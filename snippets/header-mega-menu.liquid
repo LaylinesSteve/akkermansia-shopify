@@ -7,17 +7,20 @@
 
 <style>
   /* Container for product cards - side by side on desktop */
-  .mega-menu__product-cards-container {
-    display: flex;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  .mega-menu__list .mega-menu__product-cards-container {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 1.5rem !important;
+    flex-wrap: nowrap !important;
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 0 1rem 0 !important;
+    align-items: flex-start;
   }
   
-  .mega-menu__product-card {
-    flex: 0 0 auto;
+  .mega-menu__product-cards-container .mega-menu__product-card {
+    flex: 0 0 auto !important;
+    margin: 0 !important;
   }
   
   .mega-menu__product-link {
@@ -32,27 +35,28 @@
   }
   
   .mega-menu__product-image {
-    width: 150px;
-    height: 150px;
+    width: 150px !important;
+    height: 150px !important;
     overflow: hidden;
     border-radius: 8px;
     margin-bottom: 0.5rem;
     background: #f5f5f5;
-    display: block;
+    display: block !important;
   }
   
   .mega-menu__product-image img {
-    width: 100%;
-    height: 100%;
+    width: 100% !important;
+    height: 100% !important;
     object-fit: cover;
-    display: block;
+    display: block !important;
   }
   
   .mega-menu__product-title {
-    font-size: 1.1rem;
+    font-size: 1.1rem !important;
     line-height: 1.4;
     max-width: 150px;
     font-weight: 500;
+    margin: 0;
   }
   
   .mega-menu__link-text {
@@ -60,20 +64,26 @@
   }
   
   @media screen and (max-width: 989px) {
-    .mega-menu__product-cards-container {
-      flex-direction: column;
-      gap: 1rem;
+    .mega-menu__list .mega-menu__product-cards-container {
+      flex-direction: column !important;
+      gap: 1rem !important;
     }
     
     .mega-menu__product-image {
-      width: 120px;
-      height: 120px;
-      display: block;
+      width: 120px !important;
+      height: 120px !important;
+      display: block !important;
+    }
+    
+    .mega-menu__product-image img {
+      display: block !important;
+      width: 100% !important;
+      height: 100% !important;
     }
     
     .mega-menu__product-title {
       max-width: 120px;
-      font-size: 1rem;
+      font-size: 1rem !important;
     }
   }
 </style>
@@ -114,19 +124,20 @@
                     {%- assign is_shop_menu = true -%}
                   {%- endif -%}
                   
-                  {%- comment -%} For Shop menu: wrap first two product cards in a container {%- endcomment -%}
-                  {%- if is_shop_menu -%}
-                    <li class="mega-menu__product-cards-container">
-                  {%- endif -%}
-                  
                   {%- for childlink in link.links -%}
-                    {%- if is_shop_menu and forloop.index <= 2 -%}
-                      {%- comment -%} Product cards go inside the container {%- endcomment -%}
-                    {%- else -%}
+                    {%- comment -%} For Shop menu: first two items get product cards, others are regular links {%- endcomment -%}
+                    {%- if is_shop_menu and forloop.index == 1 -%}
+                      {%- comment -%} Open container for first product {%- endcomment -%}
+                      <li class="mega-menu__product-cards-container">
+                    {%- elsif is_shop_menu and forloop.index > 2 -%}
+                      {%- comment -%} Regular list item for items after first two {%- endcomment -%}
+                      <li>
+                    {%- elsif is_shop_menu == false -%}
+                      {%- comment -%} Regular list item for non-Shop menus {%- endcomment -%}
                       <li>
                     {%- endif -%}
-                      {%- comment -%} For Shop menu: first two items get product cards, others are regular links {%- endcomment -%}
-                      {%- if is_shop_menu and forloop.index <= 2 -%}
+                    
+                    {%- if is_shop_menu and forloop.index <= 2 -%}
                         {%- comment -%} Get product object - try multiple methods {%- endcomment -%}
                         {%- assign menu_product = null -%}
                         {%- assign product_found = false -%}
@@ -226,14 +237,16 @@
                           <span class="mega-menu__link-text">{{ childlink.title | escape }}</span>
                         </a>
                       {%- endif -%}
+                      
                       {%- comment -%} Close container after second product card {%- endcomment -%}
                       {%- if is_shop_menu and forloop.index == 2 -%}
                         </li>
                       {%- elsif is_shop_menu and forloop.index > 2 -%}
-                        {%- comment -%} Regular list item for items after first two {%- endcomment -%}
+                        </li>
                       {%- elsif is_shop_menu == false -%}
-                        {%- comment -%} Regular list item for non-Shop menus {%- endcomment -%}
+                        </li>
                       {%- endif -%}
+                      
                       {%- if childlink.links != blank -%}
                         <ul class="list-unstyled" role="list">
                           {%- for grandchildlink in childlink.links -%}
