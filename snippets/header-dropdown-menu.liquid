@@ -73,21 +73,28 @@
                     {%- if childlink.type == 'product' -%}
                       {%- assign menu_product = childlink.object -%}
                     {%- elsif childlink.url contains '/products/' -%}
-                      {%- assign product_handle = childlink.url | split: '/products/' | last | split: '?' | first -%}
+                      {%- assign product_handle = childlink.url | split: '/products/' | last | split: '?' | first | split: '#' | first -%}
                       {%- assign menu_product = all_products[product_handle] -%}
+                      {%- comment -%} If all_products doesn't work, try products collection {%- endcomment -%}
+                      {%- if menu_product == null -%}
+                        {%- for product in collections.all.products -%}
+                          {%- if product.handle == product_handle -%}
+                            {%- assign menu_product = product -%}
+                            {%- break -%}
+                          {%- endif -%}
+                        {%- endfor -%}
+                      {%- endif -%}
                     {%- endif -%}
                     
                     {%- comment -%} For first two products in Shop menu, use first product image {%- endcomment -%}
                     {%- if menu_product != null -%}
                       {%- comment -%} Check if this is Shop menu and first two items {%- endcomment -%}
                       {%- if is_shop_menu and forloop.index <= 2 -%}
-                        {%- comment -%} Try multiple ways to get the product image {%- endcomment -%}
+                        {%- comment -%} Get product image - try featured_media first, then first media item {%- endcomment -%}
                         {%- if menu_product.featured_media != blank -%}
                           {%- assign menu_item_image = menu_product.featured_media -%}
                         {%- elsif menu_product.media != blank and menu_product.media.size > 0 -%}
                           {%- assign menu_item_image = menu_product.media[0] -%}
-                        {%- elsif menu_product.images != blank and menu_product.images.size > 0 -%}
-                          {%- assign menu_item_image = menu_product.images[0] -%}
                         {%- endif -%}
                       {%- endif -%}
                     {%- elsif childlink.type == 'collection' -%}
