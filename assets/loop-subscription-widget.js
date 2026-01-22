@@ -67,6 +67,13 @@ if (!customElements.get('loop-subscription-widget')) {
             this.handleOptionChange(e.target);
           }
         });
+
+        // Intercept form submission to add 3-pack product for 3-month plan
+        if (this.form) {
+          this.form.addEventListener('submit', (e) => {
+            this.handleFormSubmit(e);
+          });
+        }
       }
 
       switchTab(tabType) {
@@ -672,6 +679,116 @@ if (!customElements.get('loop-subscription-widget')) {
             }
             this.loadSellingPlans();
           }
+        }
+      }
+
+      isThreeMonthPlan(sellingPlan) {
+        if (!sellingPlan) return false;
+        
+        const planId = sellingPlan.id ? sellingPlan.id.toString() : '';
+        const intervalCount = sellingPlan.billingPolicy?.intervalCount || 1;
+        const intervalUnit = sellingPlan.billingPolicy?.interval || 'MONTH';
+        const planName = (sellingPlan.name || '').toLowerCase();
+        const planDesc = (sellingPlan.description || '').toLowerCase();
+        
+        return planId === '38624' ||
+               planId === 38624 ||
+               (intervalCount === 3 && (intervalUnit === 'MONTH' || intervalUnit === 'month')) ||
+               planName.includes('3 month') ||
+               planName.includes('90') ||
+               planDesc.includes('3 month');
+      }
+
+      async addProductToCart(productId, quantity = 1) {
+        try {
+          // First, get the product to find the first variant
+          const productResponse = await fetch(`/products/${productId}.js`);
+          if (!productResponse.ok) {
+            console.error(`Failed to fetch product ${productId}`);
+            return false;
+          }
+          
+          const productData = await productResponse.json();
+          const variantId = productData.variants?.[0]?.id;
+          
+          if (!variantId) {
+            console.error(`No variant found for product ${productId}`);
+            return false;
+          }
+          
+          // Add to cart via AJAX
+          const response = await fetch('/cart/add.js', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              id: variantId,
+              quantity: quantity
+            })
+          });
+          
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Failed to add product to cart:', errorData);
+            return false;
+          }
+          
+          const cartData = await response.json();
+          console.log('Product added to cart:', cartData);
+          return true;
+        } catch (error) {
+          console.error('Error adding product to cart:', error);
+          return false;
+        }
+      }
+
+      async handleFormSubmit(event) {
+        // Only intercept if 3-month plan is selected
+        if (!this.isThreeMonthPlan(this.selectedSellingPlan)) {
+          return; // Let form submit normally
+        }
+        
+        // Prevent default form submission
+        event.preventDefault();
+        event.stopPropagation();
+        
+        // Add the 3-pack product to cart first
+        const threePackProductId = '9212146057436';
+        console.log('Adding 3-pack product to cart for 3-month plan...');
+        
+        const productAdded = await this.addProductToCart(threePackProductId, 1);
+        
+        if (!productAdded) {
+          console.error('Failed to add 3-pack product to cart');
+          // Still submit the form even if adding the product failed
+          // You might want to show an error message to the user here
+        }
+        
+        // Now submit the original form
+        // Create a form data object from the form
+        const formData = new FormData(this.form);
+        
+        // Submit the form via AJAX or allow default submission
+        // Using fetch to submit the form
+        try {
+          const response = await fetch(this.form.action, {
+            method: 'POST',
+            body: formData
+          });
+          
+          if (response.ok) {
+            // Redirect to cart or handle success
+            window.location.href = '/cart';
+          } else {
+            console.error('Form submission failed');
+            // Fallback to default form submission
+            this.form.submit();
+          }
+        } catch (error) {
+          console.error('Error submitting form:', error);
+          // Fallback to default form submission
+          this.form.submit();
         }
       }
 
