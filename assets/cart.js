@@ -115,9 +115,11 @@ class CartItems extends HTMLElement {
     if (lineItem) {
       const isNinetyDay = lineItem.dataset.isNinetyDay === 'true';
       const minQuantity = parseInt(lineItem.dataset.minQuantity) || 1;
+      const requestedQuantity = parseInt(quantity);
       
       // Validate minimum quantity for 90-day plans
-      if (isNinetyDay && parseInt(quantity) < minQuantity) {
+      // Allow quantity 0 (deletion) but enforce minimum for any other quantity
+      if (isNinetyDay && requestedQuantity > 0 && requestedQuantity < minQuantity) {
         const quantityElement = document.getElementById(`Quantity-${line}`) || document.getElementById(`Drawer-quantity-${line}`);
         if (quantityElement) {
           // Reset to minimum quantity
