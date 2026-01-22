@@ -114,7 +114,20 @@
 
                   <tbody role="rowgroup">
                     {%- for item in cart.items -%}
-                      <tr id="CartDrawer-Item-{{ item.index | plus: 1 }}" class="cart-item" role="row">
+                      <tr id="CartDrawer-Item-{{ item.index | plus: 1 }}" class="cart-item" role="row"
+                        {%- if item.selling_plan_allocation != null -%}
+                          {%- assign selling_plan_name = item.selling_plan_allocation.selling_plan.name | downcase -%}
+                          {%- assign selling_plan_id = item.selling_plan_allocation.selling_plan.id -%}
+                          {%- assign is_ninety_day = false -%}
+                          {%- if selling_plan_id == 38624 or selling_plan_name contains '90' or selling_plan_name contains '3 month' -%}
+                            {%- assign is_ninety_day = true -%}
+                          {%- endif -%}
+                          data-selling-plan-id="{{ selling_plan_id }}"
+                          data-selling-plan-name="{{ item.selling_plan_allocation.selling_plan.name }}"
+                          data-is-ninety-day="{% if is_ninety_day %}true{% else %}false{% endif %}"
+                          data-min-quantity="{% if is_ninety_day %}3{% else %}1{% endif %}"
+                        {%- endif -%}
+                      >
                         <td class="cart-item__media" role="cell" headers="CartDrawer-ColumnProductImage">
                           {% if item.image %}
                             {% comment %} Leave empty space due to a:empty CSS display: none rule {% endcomment %}
@@ -296,7 +309,19 @@
                                     value="{{ item.quantity }}"
                                     {% # theme-check-disable %}
                                     data-cart-quantity="{{ cart | item_count_for_variant: item.variant.id }}"
-                                    min="0"
+                                    {%- if item.selling_plan_allocation != null -%}
+                                      {%- assign selling_plan_name = item.selling_plan_allocation.selling_plan.name | downcase -%}
+                                      {%- assign selling_plan_id = item.selling_plan_allocation.selling_plan.id -%}
+                                      {%- assign is_ninety_day = false -%}
+                                      {%- if selling_plan_id == 38624 or selling_plan_name contains '90' or selling_plan_name contains '3 month' -%}
+                                        {%- assign is_ninety_day = true -%}
+                                      {%- endif -%}
+                                      min="{% if is_ninety_day %}3{% else %}0{% endif %}"
+                                      data-min-quantity="{% if is_ninety_day %}3{% else %}1{% endif %}"
+                                    {%- else -%}
+                                      min="0"
+                                      data-min-quantity="1"
+                                    {%- endif -%}
                                     data-min="{{ item.variant.quantity_rule.min }}"
                                     {% if item.variant.quantity_rule.max != null %}
                                       max="{{ item.variant.quantity_rule.max }}"

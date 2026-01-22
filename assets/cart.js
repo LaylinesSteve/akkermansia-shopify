@@ -109,6 +109,33 @@ class CartItems extends HTMLElement {
   }
 
   updateQuantity(line, quantity, name, variantId) {
+    // Get the cart item element to check selling plan
+    const lineItem = document.getElementById(`CartItem-${line}`) || document.getElementById(`CartDrawer-Item-${line}`);
+    
+    if (lineItem) {
+      const isNinetyDay = lineItem.dataset.isNinetyDay === 'true';
+      const minQuantity = parseInt(lineItem.dataset.minQuantity) || 1;
+      
+      // Validate minimum quantity for 90-day plans
+      if (isNinetyDay && parseInt(quantity) < minQuantity) {
+        const quantityElement = document.getElementById(`Quantity-${line}`) || document.getElementById(`Drawer-quantity-${line}`);
+        if (quantityElement) {
+          // Reset to minimum quantity
+          quantityElement.value = minQuantity;
+          
+          // Show error message
+          const errorMessage = `The 90-day subscription plan requires a minimum quantity of ${minQuantity} products.`;
+          this.updateLiveRegions(line, errorMessage);
+          
+          // Focus on the quantity input
+          quantityElement.focus();
+          quantityElement.select();
+        }
+        return; // Don't proceed with the update
+      }
+    }
+    
+    // Continue with existing update logic
     this.enableLoading(line);
 
     const body = JSON.stringify({
@@ -132,6 +159,20 @@ class CartItems extends HTMLElement {
           quantityElement.value = quantityElement.getAttribute('value');
           this.updateLiveRegions(line, parsedState.errors);
           return;
+        }
+
+        // After successful update, validate again in case the response changed something
+        const updatedLineItem = document.getElementById(`CartItem-${line}`) || document.getElementById(`CartDrawer-Item-${line}`);
+        if (updatedLineItem) {
+          const updatedIsNinetyDay = updatedLineItem.dataset.isNinetyDay === 'true';
+          const updatedMinQuantity = parseInt(updatedLineItem.dataset.minQuantity) || 1;
+          const updatedQuantity = parsedState.items[line - 1] ? parsedState.items[line - 1].quantity : undefined;
+          
+          if (updatedIsNinetyDay && updatedQuantity && updatedQuantity < updatedMinQuantity) {
+            // Force update to minimum quantity
+            this.updateQuantity(line, updatedMinQuantity, name, variantId);
+            return;
+          }
         }
 
         this.classList.toggle('is-empty', parsedState.item_count === 0);
@@ -160,8 +201,6 @@ class CartItems extends HTMLElement {
         }
         this.updateLiveRegions(line, message);
 
-        const lineItem =
-          document.getElementById(`CartItem-${line}`) || document.getElementById(`CartDrawer-Item-${line}`);
         if (lineItem && lineItem.querySelector(`[name="${name}"]`)) {
           cartDrawerWrapper
             ? trapFocus(cartDrawerWrapper, lineItem.querySelector(`[name="${name}"]`))
