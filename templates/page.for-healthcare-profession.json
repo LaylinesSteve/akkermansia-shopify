@@ -119,7 +119,7 @@
           "type": "caption",
           "settings": {
             "iconimg": "shopify://shop_images/100x.svg",
-            "caption": "<p><strong>Up to 100x more </strong><em><strong>Akkermansia muciniphila</strong></em></p><p>More bioavailable gut protection than probiotic products*</p>",
+            "caption": "<p><strong>Up to 100x more </strong><em><strong>Akkermansia muciniphila</strong></em></p><p>More bioaccessibe gut protection than probiotic products*</p>",
             "text_style": "caption-with-letter-spacing",
             "text_size": "medium"
           }
