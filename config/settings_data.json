@@ -164,7 +164,9 @@
       },
       "header": {
         "type": "header",
-        "custom_css": [],
+        "custom_css": [
+          ".mega-menu__list.mega-menu__list--condensed:has(.mega-menu__product-cards-container) > li:not(.mega-menu__product-cards-container) .mega-menu__link-text {/* Existing styles */ color: #031834; font-size: 1.5rem; background-color: #f4f4f4; padding: 10px 20px; border-radius: 4px; text-decoration: none; display: inline-block; border: 1px solid #031834; transition: all 0.3s ease; }"
+        ],
         "settings": {
           "logo_position": "middle-left",
           "menu": "new-main",
