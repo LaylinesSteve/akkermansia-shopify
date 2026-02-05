@@ -43,7 +43,7 @@
             "heading_2": "Promote a healthy inflammatory response in the gut",
             "icon_3": "truck",
             "image_3": "shopify://shop_images/Healthy_Weight_Solutions_With_Glucose_Control_Tablets-6_1.png",
-            "heading_3": "Support insulin sensitivity & healthy glucose metabolism "
+            "heading_3": "Support insulin function & healthy glucose metabolism "
           }
         },
         "icon_with_text_hi64gC": {
@@ -85,7 +85,6 @@
         "loop_subscription_widget_R3jgzG": {
           "type": "loop_subscription_widget",
           "settings": {
-            "three_month_product": "the-akkermansia-company™-akkermansia-essential-3-units",
             "button_color": "#5b3c94",
             "button_border_radius": 8,
             "button_font_size": 16
