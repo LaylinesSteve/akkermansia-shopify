@@ -30,7 +30,7 @@
         "text_EJgRmk": {
           "type": "text",
           "settings": {
-            "texta": "<p>The Akkermansia Company provides dietary supplement solutions for patients with Metabolic and Gut related health conditions.</p><p>All The Akkermansia Company products are developed with the only safe, stable and clinically proven form of pasteurized <em>Akkermansia muciniphila</em>, <em>Akkermansia</em> MucT™, the essential microbe associated with the root cause of numerous chronic health condition to deliver better health outcomes.</p>",
+            "texta": "<p>The Akkermansia Company provides dietary supplement solutions to help patients with Metabolic and Gut related health conditions.</p><p>All The Akkermansia Company products are developed with the only safe, stable and clinically proven form of pasteurized <em>Akkermansia muciniphila</em>, <em>Akkermansia</em> MucT™, the essential microbe associated with the root cause of numerous chronic health condition to deliver better health outcomes.</p>",
             "text_style": "subtitle"
           }
         },
@@ -83,7 +83,7 @@
           "type": "caption",
           "settings": {
             "iconimg": "shopify://shop_images/proven-results-icon.svg",
-            "caption": "<p><strong>Clinically Proven Results</strong></p><p>The only <em>Akkermansia muciniphila</em> product clinically studied in humans</p>",
+            "caption": "<p><strong>Clinically Proven Results</strong></p><p>The first <em>Akkermansia muciniphila</em> product clinically studied in humans</p>",
             "text_style": "caption-with-letter-spacing",
             "text_size": "medium"
           }
@@ -110,7 +110,7 @@
           "type": "caption",
           "settings": {
             "iconimg": "shopify://shop_images/akkermansia-pill-icon.svg",
-            "caption": "<p><strong>The only </strong><em><strong>Akkermansia muciniphila </strong></em><strong>product approved as a dietary supplement</strong></p><p>European Food Safety Authority (EFSA) approved</p>",
+            "caption": "<p>The only Akkermansia miciniphila product approved for use in food in Europe</p>",
             "text_style": "caption-with-letter-spacing",
             "text_size": "medium"
           }
