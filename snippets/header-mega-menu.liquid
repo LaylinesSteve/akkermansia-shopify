@@ -88,6 +88,11 @@
     font-weight: 500;
   }
   
+  /* Health Care Professional link - font weight 700 */
+  .mega-menu__link--hcp .mega-menu__link-text {
+    font-weight: 700 !important;
+  }
+  
   @media screen and (max-width: 989px) {
     .mega-menu__list .mega-menu__product-cards-container {
       flex-direction: column !important;
@@ -255,10 +260,15 @@
                         {%- endif -%}
                       {%- else -%}
                         {%- comment -%} Regular menu link (not first two in Shop menu) {%- endcomment -%}
+                        {%- assign childlink_title_lower = childlink.title | downcase -%}
+                        {%- assign is_hcp_link = false -%}
+                        {%- if childlink_title_lower contains 'health care professional' or childlink_title_lower contains 'healthcare professional' or childlink_title_lower contains 'hcp' -%}
+                          {%- assign is_hcp_link = true -%}
+                        {%- endif -%}
                         <a
                           id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
                           href="{{ childlink.url }}"
-                          class="mega-menu__link mega-menu__link--level-2 link{% if childlink.current %} mega-menu__link--active{% endif %}"
+                          class="mega-menu__link mega-menu__link--level-2 link{% if childlink.current %} mega-menu__link--active{% endif %}{% if is_hcp_link %} mega-menu__link--hcp{% endif %}"
                           {% if childlink.current %}
                             aria-current="page"
                           {% endif %}
