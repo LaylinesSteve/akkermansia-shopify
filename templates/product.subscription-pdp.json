@@ -119,6 +119,9 @@
         "collapsible_tab_jzCwkb",
         "text_Gyg4UV"
       ],
+      "custom_css": [
+        ".loop-subscription-widget__fsa-badge {display: none;}"
+      ],
       "settings": {
         "enable_sticky_info": true,
         "color_scheme": "",
@@ -397,6 +400,7 @@
       "blocks": {
         "heading_eHaTFJ": {
           "type": "heading",
+          "disabled": true,
           "settings": {
             "heading": "Protection Against Leaky Gut Syndrome",
             "heading_size": "h1"
@@ -405,7 +409,7 @@
         "text_gNqfxY": {
           "type": "text",
           "settings": {
-            "text": "<p><em>Akkermansia muciniphila</em> plays an essential role in strengthening your gut barrier—keeping beneficial bacteria in and harmful toxins out. By pasteurizing this crucial bacterium, we increase the accessibility of the protein <em>Amuc-1100</em>. This protein works alongside <em>Akkermansia</em> MucT™ to help replenish the valuable mucus in your gut barrier, helping to protect you against leaky gut and slow down the inflammatory response.*</p>"
+            "text": "<p><a href=\"https://www.theakkermansiacompany.com/pages/for-healthcare-professionals\" title=\"https://www.theakkermansiacompany.com/pages/for-healthcare-professionals\"><em>Health care professional? Learn more here.</em></a></p>"
           }
         }
       },
@@ -413,7 +417,6 @@
         "heading_eHaTFJ",
         "text_gNqfxY"
       ],
-      "disabled": true,
       "settings": {
         "desktop_content_position": "center",
         "content_alignment": "center",
