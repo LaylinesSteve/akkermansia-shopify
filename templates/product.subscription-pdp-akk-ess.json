@@ -20,8 +20,39 @@
           "type": "description",
           "settings": {}
         },
+        "icon_with_text_KFRtP7": {
+          "type": "icon-with-text",
+          "settings": {
+            "layout": "vertical",
+            "icon_1": "none",
+            "image_1": "shopify://shop_images/ruler.png",
+            "heading_1": "Weight maintenance",
+            "icon_2": "return",
+            "image_2": "shopify://shop_images/clinically-proven-icon.svg",
+            "heading_2": "Insulin function and healthy glucose metabolism*",
+            "icon_3": "truck",
+            "image_3": "shopify://shop_images/ruler_1.png",
+            "heading_3": "Gut barrier protection"
+          }
+        },
+        "icon_with_text_XmLJhc": {
+          "type": "icon-with-text",
+          "settings": {
+            "layout": "vertical",
+            "icon_1": "none",
+            "image_1": "shopify://shop_images/superior-stability-icon.svg",
+            "heading_1": "Immune function",
+            "icon_2": "return",
+            "image_2": "shopify://shop_images/Healthy_Weight_Solutions_With_Glucose_Control_Tablets-6.png",
+            "heading_2": "Antioxidant defense ",
+            "icon_3": "truck",
+            "image_3": "shopify://shop_images/green-tea-icon.svg",
+            "heading_3": ""
+          }
+        },
         "icon_with_text_azrGcG": {
           "type": "icon-with-text",
+          "disabled": true,
           "settings": {
             "layout": "vertical",
             "icon_1": "none",
@@ -37,6 +68,7 @@
         },
         "icon_with_text_hi64gC": {
           "type": "icon-with-text",
+          "disabled": true,
           "settings": {
             "layout": "vertical",
             "icon_1": "none",
@@ -109,6 +141,8 @@
       "block_order": [
         "title",
         "description",
+        "icon_with_text_KFRtP7",
+        "icon_with_text_XmLJhc",
         "icon_with_text_azrGcG",
         "icon_with_text_hi64gC",
         "loop_subscriptions_loop_widget_MUEQAQ",
