@@ -273,6 +273,37 @@
         "padding_bottom": 60
       }
     },
+    "rich_text_4aM4X6": {
+      "type": "rich-text",
+      "blocks": {
+        "heading_9dGcPg": {
+          "type": "heading",
+          "disabled": true,
+          "settings": {
+            "heading": "Protection Against Leaky Gut Syndrome",
+            "heading_size": "h1"
+          }
+        },
+        "text_qp73JX": {
+          "type": "text",
+          "settings": {
+            "text": "<p><a href=\"https://www.theakkermansiacompany.com/pages/for-healthcare-professionals\" title=\"https://www.theakkermansiacompany.com/pages/for-healthcare-professionals\"><em>Health care professional? Learn more here.</em></a></p>"
+          }
+        }
+      },
+      "block_order": [
+        "heading_9dGcPg",
+        "text_qp73JX"
+      ],
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "",
+        "full_width": true,
+        "padding_top": 64,
+        "padding_bottom": 36
+      }
+    },
     "custom_liquid_zdA63F": {
       "type": "custom-liquid",
       "custom_css": [
@@ -701,6 +732,7 @@
   "order": [
     "main",
     "icon_texst_col_product_JVywLh",
+    "rich_text_4aM4X6",
     "custom_liquid_zdA63F",
     "image_with_text_home_AyQE6f",
     "image_with_text_home1_4EpDqx",
