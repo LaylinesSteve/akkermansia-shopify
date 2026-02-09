@@ -153,6 +153,9 @@
         "collapsible_tab_jzCwkb",
         "text_Gyg4UV"
       ],
+      "custom_css": [
+        ".loop-subscription-widget__fsa-badge {display: none;}"
+      ],
       "settings": {
         "enable_sticky_info": true,
         "color_scheme": "",
