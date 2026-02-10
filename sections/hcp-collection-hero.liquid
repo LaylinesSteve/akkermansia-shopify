@@ -1,0 +1,73 @@
+<style>
+  .hcp-collection-hero {
+    text-align: center;
+    padding: 3rem 1.5rem 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .hcp-collection-hero__title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 0.75rem;
+    line-height: 1.2;
+  }
+
+  .hcp-collection-hero__description {
+    font-size: 1.1rem;
+    color: rgba(var(--color-foreground), 0.75);
+    margin: 0 0 1.5rem;
+    line-height: 1.6;
+  }
+
+  .hcp-collection-hero__cta {
+    display: inline-block;
+    background-color: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+    padding: 0.85rem 2rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: opacity 0.2s ease;
+    margin-bottom: 1rem;
+  }
+
+  .hcp-collection-hero__cta:hover {
+    opacity: 0.85;
+  }
+
+  @media screen and (max-width: 749px) {
+    .hcp-collection-hero {
+      padding: 2rem 1rem 1rem;
+    }
+
+    .hcp-collection-hero__title {
+      font-size: 1.5rem;
+    }
+
+    .hcp-collection-hero__description {
+      font-size: 1rem;
+    }
+  }
+</style>
+
+<div class="hcp-collection-hero page-width">
+  <h1 class="hcp-collection-hero__title">{{ collection.title }}</h1>
+  {% if collection.description != blank %}
+    <p class="hcp-collection-hero__description">{{ collection.description }}</p>
+  {% endif %}
+
+  {%- unless customer and customer.tags contains 'healthcare_provider' -%}
+    <a href="/account/register" class="hcp-collection-hero__cta">
+      Create a Professional Account
+    </a>
+  {%- endunless -%}
+</div>
+
+{% schema %}
+{
+  "name": "HCP Collection Hero",
+  "settings": []
+}
+{% endschema %}
