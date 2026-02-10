@@ -138,28 +138,28 @@
                       {%- endif -%}
                     {%- endif -%}
                     
-                    {%- if childlink.links == blank -%}
-                      {%- if is_shop_menu and use_hcp_image -%}
-                        {%- comment -%} HCP link styled like a product card with stethoscope image {%- endcomment -%}
-                        <a
-                          id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
-                          href="{{ childlink.url }}"
-                          class="header__menu-item list-menu__item link link--text focus-inset caption-large shop-card-item{% if childlink.current %} list-menu__item--active{% endif %}"
-                          {% if childlink.current %}
-                            aria-current="page"
-                          {% endif %}
+                    <!-- DEBUG: title="{{ childlink.title | escape }}" lower="{{ childlink_title_lower }}" is_shop={{ is_shop_menu }} is_hcp={{ is_hcp_link }} use_hcp_img={{ use_hcp_image }} has_children={{ childlink.links | size }} url="{{ childlink.url }}" type="{{ childlink.type }}" -->
+                    {%- if is_shop_menu and use_hcp_image -%}
+                      {%- comment -%} HCP link styled like a product card with stethoscope image (works with or without child links) {%- endcomment -%}
+                      <a
+                        id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
+                        href="{{ childlink.url }}"
+                        class="header__menu-item list-menu__item link link--text focus-inset caption-large shop-card-item{% if childlink.current %} list-menu__item--active{% endif %}"
+                        {% if childlink.current %}
+                          aria-current="page"
+                        {% endif %}
+                      >
+                        <img
+                          src="https://cdn.shopify.com/s/files/1/0699/8071/7276/files/stethoscope-icon.jpg?v=1770731738"
+                          alt="{{ childlink.title | escape }}"
+                          class="shop-card-image"
+                          loading="lazy"
+                          width="80"
+                          height="80"
                         >
-                          <img
-                            src="https://cdn.shopify.com/s/files/1/0699/8071/7276/files/stethoscope-icon.jpg?v=1770731738"
-                            alt="{{ childlink.title | escape }}"
-                            class="shop-card-image"
-                            loading="lazy"
-                            width="80"
-                            height="80"
-                          >
-                          <span class="shop-card-title">{{ childlink.title | escape }}</span>
-                        </a>
-                      {%- else -%}
+                        <span class="shop-card-title">{{ childlink.title | escape }}</span>
+                      </a>
+                    {%- elsif childlink.links == blank -%}
                       <a
                         id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
                         href="{{ childlink.url }}"
@@ -182,7 +182,6 @@
                         {%- endif -%}
                         <span>{{ childlink.title | escape }}</span>
                       </a>
-                      {%- endif -%}
                     {%- else -%}
                       <details id="Details-HeaderSubMenu-{{ link.handle }}-{{ childlink.handle }}">
                         <summary
