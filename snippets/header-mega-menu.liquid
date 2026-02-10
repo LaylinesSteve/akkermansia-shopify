@@ -66,6 +66,11 @@
     opacity: 1 !important;
   }
 
+  .mega-menu__product-image--hcp img {
+    border: 1px solid #000;
+    border-radius: 2px;
+  }
+
   .mega-menu__product-title {
     font-size: 1.25rem !important;
     line-height: 1.4;
@@ -177,7 +182,7 @@
                               class="mega-menu__product-link"
                               {% if childlink.current %} aria-current="page" {% endif %}
                             >
-                              <div class="mega-menu__product-image">
+                              <div class="mega-menu__product-image mega-menu__product-image--hcp">
                                 <img
                                   src="https://cdn.shopify.com/s/files/1/0699/8071/7276/files/stethoscope-icon.jpg?v=1770731738"
                                   alt="{{ childlink.title | escape }}"
