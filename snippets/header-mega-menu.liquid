@@ -164,7 +164,7 @@
                       {%- for childlink in link.links -%}
                         {%- assign childlink_title_lower = childlink.title | downcase -%}
                         {%- assign is_hcp_link = false -%}
-                        {%- if childlink_title_lower contains 'health care professional' or childlink_title_lower contains 'healthcare professional' or childlink_title_lower contains 'hcp' -%}
+                        {%- if childlink_title_lower contains 'health care professional' or childlink_title_lower contains 'healthcare professional' or childlink_title_lower contains 'heath care professional' or childlink_title_lower contains 'hcp' or childlink_title_lower contains 'professional' or childlink.url contains 'health-care-professional' -%}
                           {%- assign is_hcp_link = true -%}
                         {%- endif -%}
 
@@ -265,7 +265,7 @@
                     {%- for childlink in link.links -%}
                       {%- assign childlink_title_lower = childlink.title | downcase -%}
                       {%- assign is_hcp_link = false -%}
-                      {%- if childlink_title_lower contains 'health care professional' or childlink_title_lower contains 'healthcare professional' or childlink_title_lower contains 'hcp' -%}
+                      {%- if childlink_title_lower contains 'health care professional' or childlink_title_lower contains 'healthcare professional' or childlink_title_lower contains 'heath care professional' or childlink_title_lower contains 'hcp' or childlink_title_lower contains 'professional' or childlink.url contains 'health-care-professional' -%}
                         {%- assign is_hcp_link = true -%}
                       {%- endif -%}
                       {%- assign is_product_link = false -%}
