@@ -28,6 +28,33 @@
   .header__submenu .header__menu-item-image {
     width: 60px;
   }
+
+  /* Shop dropdown: bigger text */
+  .header__submenu--shop .header__menu-item {
+    font-size: 1.25rem !important;
+  }
+
+  /* Shop dropdown: product-style card items */
+  .header__submenu--shop .shop-card-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.4rem 1rem;
+  }
+  
+  .header__submenu--shop .shop-card-item .shop-card-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    object-fit: cover;
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .header__submenu--shop .shop-card-item .shop-card-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
 </style>
 
 <nav class="header__inline-menu">
@@ -52,7 +79,7 @@
               </summary>
               <ul
                 id="HeaderMenu-MenuList-{{ forloop.index }}"
-                class="header__submenu list-menu list-menu--disclosure color-{{ section.settings.menu_color_scheme }} gradient caption-large motion-reduce global-settings-popup"
+                class="header__submenu list-menu list-menu--disclosure color-{{ section.settings.menu_color_scheme }} gradient caption-large motion-reduce global-settings-popup{% if link.title | downcase == 'shop' or link.handle == 'shop' %} header__submenu--shop{% endif %}"
                 role="list"
                 tabindex="-1"
               >
@@ -65,8 +92,16 @@
                 
                 {%- for childlink in link.links -%}
                   <li>
-                    {%- comment -%} Get image from product (first two products in Shop menu only) {%- endcomment -%}
+                    {%- comment -%} Detect HCP link by title {%- endcomment -%}
+                    {%- assign childlink_title_lower = childlink.title | downcase -%}
+                    {%- assign is_hcp_link = false -%}
+                    {%- if childlink_title_lower contains 'health care professional' or childlink_title_lower contains 'healthcare professional' or childlink_title_lower contains 'hcp' or childlink_title_lower contains 'professional' -%}
+                      {%- assign is_hcp_link = true -%}
+                    {%- endif -%}
+
+                    {%- comment -%} Get image from product or assign stethoscope for HCP {%- endcomment -%}
                     {%- assign menu_item_image = null -%}
+                    {%- assign use_hcp_image = false -%}
                     
                     {%- comment -%} Try to get product from URL or type {%- endcomment -%}
                     {%- assign menu_product = null -%}
@@ -86,11 +121,11 @@
                       {%- endif -%}
                     {%- endif -%}
                     
-                    {%- comment -%} For first two products in Shop menu, use first product image {%- endcomment -%}
-                    {%- if menu_product != null -%}
-                      {%- comment -%} Check if this is Shop menu and first two items {%- endcomment -%}
-                      {%- if is_shop_menu and forloop.index <= 2 -%}
-                        {%- comment -%} Get product image - try featured_media first, then first media item {%- endcomment -%}
+                    {%- comment -%} For Shop menu: product images for products, stethoscope for HCP {%- endcomment -%}
+                    {%- if is_shop_menu and is_hcp_link -%}
+                      {%- assign use_hcp_image = true -%}
+                    {%- elsif menu_product != null -%}
+                      {%- if is_shop_menu -%}
                         {%- if menu_product.featured_media != blank -%}
                           {%- assign menu_item_image = menu_product.featured_media -%}
                         {%- elsif menu_product.media != blank and menu_product.media.size > 0 -%}
@@ -104,6 +139,27 @@
                     {%- endif -%}
                     
                     {%- if childlink.links == blank -%}
+                      {%- if is_shop_menu and use_hcp_image -%}
+                        {%- comment -%} HCP link styled like a product card with stethoscope image {%- endcomment -%}
+                        <a
+                          id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
+                          href="{{ childlink.url }}"
+                          class="header__menu-item list-menu__item link link--text focus-inset caption-large shop-card-item{% if childlink.current %} list-menu__item--active{% endif %}"
+                          {% if childlink.current %}
+                            aria-current="page"
+                          {% endif %}
+                        >
+                          <img
+                            src="https://cdn.shopify.com/s/files/1/0699/8071/7276/files/stethoscope-icon.jpg?v=1770731738"
+                            alt="{{ childlink.title | escape }}"
+                            class="shop-card-image"
+                            loading="lazy"
+                            width="80"
+                            height="80"
+                          >
+                          <span class="shop-card-title">{{ childlink.title | escape }}</span>
+                        </a>
+                      {%- else -%}
                       <a
                         id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
                         href="{{ childlink.url }}"
@@ -126,6 +182,7 @@
                         {%- endif -%}
                         <span>{{ childlink.title | escape }}</span>
                       </a>
+                      {%- endif -%}
                     {%- else -%}
                       <details id="Details-HeaderSubMenu-{{ link.handle }}-{{ childlink.handle }}">
                         <summary
