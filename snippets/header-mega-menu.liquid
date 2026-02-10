@@ -68,7 +68,7 @@
   }
   
   .mega-menu__product-title {
-    font-size: 1.1rem !important;
+    font-size: 1.25rem !important;
     line-height: 1.4;
     max-width: 150px;
     font-weight: 500;
@@ -77,20 +77,16 @@
   
   .mega-menu__link-text {
     display: block;
+    font-size: 1.25rem !important;
   }
   
-  /* Style for non-product-card items in Shop menu - align to bottom and font weight 500 */
+  /* Style for non-product-card items in Shop menu - align to bottom */
   .mega-menu__list.mega-menu__list--condensed:has(.mega-menu__product-cards-container) > li:not(.mega-menu__product-cards-container) {
     align-self: flex-end;
   }
   
   .mega-menu__list.mega-menu__list--condensed:has(.mega-menu__product-cards-container) > li:not(.mega-menu__product-cards-container) .mega-menu__link-text {
     font-weight: 500;
-  }
-  
-  /* Health Care Professional link - font weight 700 */
-  .mega-menu__link--hcp .mega-menu__link-text {
-    font-weight: 700 !important;
   }
   
   @media screen and (max-width: 989px) {
@@ -117,7 +113,11 @@
     
     .mega-menu__product-title {
       max-width: 120px;
-      font-size: 1rem !important;
+      font-size: 1.15rem !important;
+    }
+    
+    .mega-menu__link-text {
+      font-size: 1.15rem !important;
     }
   }
 </style>
@@ -159,12 +159,21 @@
                   {%- endif -%}
                   
                   {%- for childlink in link.links -%}
-                    {%- comment -%} For Shop menu: first two items get product cards, others are regular links {%- endcomment -%}
+                    {%- comment -%} Detect HCP link by title (used for third card in Shop menu) {%- endcomment -%}
+                    {%- assign childlink_title_lower = childlink.title | downcase -%}
+                    {%- assign is_hcp_link = false -%}
+                    {%- if childlink_title_lower contains 'health care professional' or childlink_title_lower contains 'healthcare professional' or childlink_title_lower contains 'hcp' -%}
+                      {%- assign is_hcp_link = true -%}
+                    {%- endif -%}
+                    {%- comment -%} For Shop menu: first two items get product cards; third can be HCP card; others are regular links {%- endcomment -%}
                     {%- if is_shop_menu and forloop.index == 1 -%}
-                      {%- comment -%} Open container for first product {%- endcomment -%}
+                      {%- comment -%} Open container for product cards (and HCP card) {%- endcomment -%}
                       <li class="mega-menu__product-cards-container">
-                    {%- elsif is_shop_menu and forloop.index > 2 -%}
-                      {%- comment -%} Regular list item for items after first two {%- endcomment -%}
+                    {%- elsif is_shop_menu and forloop.index > 2 and forloop.index != 3 -%}
+                      {%- comment -%} Regular list item for items after first three {%- endcomment -%}
+                      <li>
+                    {%- elsif is_shop_menu and forloop.index == 3 and is_hcp_link == false -%}
+                      {%- comment -%} Third item but not HCP - regular list item {%- endcomment -%}
                       <li>
                     {%- elsif is_shop_menu == false -%}
                       {%- comment -%} Regular list item for non-Shop menus {%- endcomment -%}
@@ -258,17 +267,33 @@
                             <span class="mega-menu__link-text">{{ childlink.title | escape }}</span>
                           </a>
                         {%- endif -%}
+                      {%- elsif is_shop_menu and forloop.index == 3 and is_hcp_link -%}
+                        {%- comment -%} Health Care Professionals as product-style card with stethoscope image {%- endcomment -%}
+                        <div class="mega-menu__product-card">
+                          <a
+                            id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
+                            href="{{ childlink.url }}"
+                            class="mega-menu__product-link"
+                            {% if childlink.current %} aria-current="page" {% endif %}
+                          >
+                            <div class="mega-menu__product-image">
+                              <img
+                                src="https://cdn.shopify.com/s/files/1/0699/8071/7276/files/stethoscope-icon.jpg?v=1770731738"
+                                alt="{{ childlink.title | escape }}"
+                                loading="lazy"
+                                width="200"
+                                height="200"
+                              >
+                            </div>
+                            <div class="mega-menu__product-title">{{ childlink.title | escape }}</div>
+                          </a>
+                        </div>
                       {%- else -%}
-                        {%- comment -%} Regular menu link (not first two in Shop menu) {%- endcomment -%}
-                        {%- assign childlink_title_lower = childlink.title | downcase -%}
-                        {%- assign is_hcp_link = false -%}
-                        {%- if childlink_title_lower contains 'health care professional' or childlink_title_lower contains 'healthcare professional' or childlink_title_lower contains 'hcp' -%}
-                          {%- assign is_hcp_link = true -%}
-                        {%- endif -%}
+                        {%- comment -%} Regular menu link (not first two in Shop menu, or third when not HCP) {%- endcomment -%}
                         <a
                           id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
                           href="{{ childlink.url }}"
-                          class="mega-menu__link mega-menu__link--level-2 link{% if childlink.current %} mega-menu__link--active{% endif %}{% if is_hcp_link %} mega-menu__link--hcp{% endif %}"
+                          class="mega-menu__link mega-menu__link--level-2 link{% if childlink.current %} mega-menu__link--active{% endif %}"
                           {% if childlink.current %}
                             aria-current="page"
                           {% endif %}
@@ -277,10 +302,8 @@
                         </a>
                       {%- endif -%}
                       
-                      {%- comment -%} Close container after second product card {%- endcomment -%}
-                      {%- if is_shop_menu and forloop.index == 2 -%}
-                        </li>
-                      {%- elsif is_shop_menu and forloop.index > 2 -%}
+                      {%- comment -%} Close container: after third+ item in Shop menu, or after every item in non-Shop menus. Do not close after index 1 or 2 in Shop (container stays open for HCP card). {%- endcomment -%}
+                      {%- if is_shop_menu and forloop.index >= 3 -%}
                         </li>
                       {%- elsif is_shop_menu == false -%}
                         </li>
