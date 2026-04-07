@@ -150,14 +150,14 @@
 }
 
 .card__hcp-price-note {
-  margin-top: 0.65rem;
-  line-height: 1.45;
-  font-size: calc(0.85rem * var(--font-body-scale));
-  color: rgba(var(--color-foreground), 0.78);
+  margin-top: 0.75rem;
+  line-height: 1.5;
+  font-size: calc(1rem * var(--font-body-scale));
+  color: rgba(var(--color-foreground), 0.82);
 }
 
 .card__hcp-price-note__line {
-  margin: 0 0 0.35rem;
+  margin: 0 0 0.45rem;
 }
 
 .card__hcp-price-note__line:last-child {
