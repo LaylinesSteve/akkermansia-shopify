@@ -178,7 +178,7 @@
         assign register_return_url = request.referer
       endif
     -%}
-    <input type="hidden" name="return_url" id="register-return-url-input" value="{{ register_return_url | url_encode }}">
+    <input type="hidden" name="return_to" id="register-return-to-input" value="{{ register_return_url | url_encode }}">
     {%- if form.errors -%}
       <h2 class="form__message" tabindex="-1" autofocus>
         <svg aria-hidden="true" focusable="false">
@@ -327,7 +327,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // ===========================================
   // Healthcare providers land on the HCP collection after signup (unless ?return_to= is present).
   const HCP_AFTER_REGISTER_PATH = '/collections/health-care-professionals';
-  const returnUrlInput = document.getElementById('register-return-url-input');
+  const returnToInput = document.getElementById('register-return-to-input');
 
   // Function to toggle HCP fields visibility
   function toggleHcpFields(isHcp) {
@@ -518,8 +518,8 @@ document.addEventListener('DOMContentLoaded', function() {
       redirectTarget = sanitizeReturnTo(HCP_AFTER_REGISTER_PATH);
     }
     try { localStorage.setItem('return_to_after_auth', redirectTarget); } catch(e) {}
-    if (returnUrlInput) {
-      returnUrlInput.value = redirectTarget;
+    if (returnToInput) {
+      returnToInput.value = redirectTarget;
     }
 
     // Show loading state
