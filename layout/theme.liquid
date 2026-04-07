@@ -404,12 +404,14 @@ h5,
     // clear first to avoid loops
     localStorage.removeItem(key);
 
-    // enforce same-origin
-    var target = raw;
-    if (/^https?:\/\//i.test(raw)) {
-      var u = new URL(raw, window.location.origin);
-      if (u.origin !== window.location.origin) return;
+    // Use path + query on *this* host (avoids www vs apex / shop.url mismatch aborting redirect).
+    var target = raw.trim();
+    if (/^https?:\/\//i.test(target)) {
+      var u = new URL(target);
+      if (!u.pathname || u.pathname.charAt(0) !== '/') return;
       target = u.pathname + u.search + u.hash;
+    } else if (target.charAt(0) !== '/') {
+      return;
     }
 
     // no-op if we're already there

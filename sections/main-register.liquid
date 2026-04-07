@@ -177,8 +177,14 @@
       elsif request.referer != blank
         assign register_return_url = request.referer
       endif
+      assign hcp_register_collection = collections['health-care-professionals']
+      assign hcp_register_path = '/collections/health-care-professionals'
+      if hcp_register_collection != blank
+        assign hcp_register_path = hcp_register_collection.url
+      endif
     -%}
-    <input type="hidden" name="return_to" id="register-return-to-input" value="{{ register_return_url | url_encode }}">
+    {%- comment -%} return_to must stay unencoded in the value; url_encode breaks Shopify redirects (404). {%- endcomment -%}
+    <input type="hidden" name="return_to" id="register-return-to-input" value="{{ register_return_url | escape }}">
     {%- if form.errors -%}
       <h2 class="form__message" tabindex="-1" autofocus>
         <svg aria-hidden="true" focusable="false">
@@ -287,6 +293,8 @@
 <!-- Cloudinary Upload Widget -->
 <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript" async></script>
 
+<script type="application/json" id="hcp-after-register-path">{{ hcp_register_path | json }}</script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   // Registration type toggle elements
@@ -326,7 +334,17 @@ document.addEventListener('DOMContentLoaded', function() {
   const returnTo = sanitizeReturnTo(rawReturnTo);
   // ===========================================
   // Healthcare providers land on the HCP collection after signup (unless ?return_to= is present).
-  const HCP_AFTER_REGISTER_PATH = '/collections/health-care-professionals';
+  // Path comes from Liquid (locale/markets-aware); avoids hardcoded /collections/... 404s.
+  var hcpAfterRegisterPath = '/collections/health-care-professionals';
+  try {
+    var hcpPathEl = document.getElementById('hcp-after-register-path');
+    if (hcpPathEl && hcpPathEl.textContent) {
+      var parsed = JSON.parse(hcpPathEl.textContent);
+      if (typeof parsed === 'string' && parsed.indexOf('/') === 0) {
+        hcpAfterRegisterPath = parsed;
+      }
+    }
+  } catch (hcpPathErr) {}
   const returnToInput = document.getElementById('register-return-to-input');
 
   // Function to toggle HCP fields visibility
@@ -515,7 +533,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Return destination: explicit ?return_to= wins; else HCP registrants go to Health Care Professionals collection
     var redirectTarget = returnTo;
     if (isHcp && !params.get('return_to')) {
-      redirectTarget = sanitizeReturnTo(HCP_AFTER_REGISTER_PATH);
+      redirectTarget = sanitizeReturnTo(hcpAfterRegisterPath);
     }
     try { localStorage.setItem('return_to_after_auth', redirectTarget); } catch(e) {}
     if (returnToInput) {
