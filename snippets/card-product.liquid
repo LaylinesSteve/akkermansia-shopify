@@ -38,6 +38,12 @@
     if ratio == 0 or ratio == null
       assign ratio = 1
     endif
+    assign show_card_product_price = true
+    if card_product.tags contains 'hcp-only'
+      unless customer and customer.tags contains 'healthcare_provider'
+        assign show_card_product_price = false
+      endunless
+    endif
   -%}
   <div class="card-wrapper product-card-wrapper underline-links-hover">
     <div
@@ -203,9 +209,9 @@
               </p>
             {%- endif -%}
 
-            {%- unless card_product.tags contains 'hcp-only' -%}
+            {%- if show_card_product_price -%}
               {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
-            {%- endunless -%}
+            {%- endif -%}
             {%- if card_product.quantity_price_breaks_configured? -%}
               {% if card_product.variants.size == 1 and quick_add == 'bulk' %}
                 {% liquid
@@ -484,9 +490,9 @@
                       </div>
                       <div class="quick-add-modal__content-info--bulk-details large-up-hide">
                         <h3>{{ card_product.title | escape }}</h3>
-                        {%- unless card_product.tags contains 'hcp-only' -%}
+                        {%- if show_card_product_price -%}
                           {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
-                        {%- endunless -%}
+                        {%- endif -%}
                         {%- if card_product.quantity_price_breaks_configured? -%}
                           <div class="card__information-volume-pricing-note">
                             <span class="caption">{{ 'products.product.volume_pricing.note' | t }}</span>
@@ -497,9 +503,9 @@
                     <div>
                       <div class="quick-add-modal__content-info--bulk-details small-hide medium-hide">
                         <h3 class="h2">{{ card_product.title | escape }}</h3>
-                        {%- unless card_product.tags contains 'hcp-only' -%}
+                        {%- if show_card_product_price -%}
                           {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
-                        {%- endunless -%}
+                        {%- endif -%}
                         {%- if card_product.quantity_price_breaks_configured? -%}
                           <div class="card__information-volume-pricing-note">
                             <span class="caption">{{ 'products.product.volume_pricing.note' | t }}</span>
