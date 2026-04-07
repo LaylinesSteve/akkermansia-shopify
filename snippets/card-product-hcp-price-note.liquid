@@ -1,0 +1,14 @@
+{%- comment -%}
+  Shown under the collection card price on the Health Care Professionals collection
+  for customers tagged healthcare_provider. Pass show_note: true from card-product.
+{%- endcomment -%}
+{%- if show_note -%}
+  <div class="card__hcp-price-note">
+    <p class="card__hcp-price-note__line card__hcp-price-note__line--emphasis">
+      <strong>PRICE:</strong> per bottle
+    </p>
+    <p class="card__hcp-price-note__line">
+      Sold as a case of 12 one-month packs to Healthcare Practitioners.
+    </p>
+  </div>
+{%- endif -%}

@@ -44,6 +44,12 @@
         assign show_card_product_price = false
       endunless
     endif
+    assign show_hcp_collection_price_note = false
+    if show_card_product_price and collection != blank and collection.handle == 'health-care-professionals'
+      if customer and customer.tags contains 'healthcare_provider'
+        assign show_hcp_collection_price_note = true
+      endif
+    endif
   -%}
   <div class="card-wrapper product-card-wrapper underline-links-hover">
     <div
@@ -211,6 +217,7 @@
 
             {%- if show_card_product_price -%}
               {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
+              {% render 'card-product-hcp-price-note', show_note: show_hcp_collection_price_note %}
             {%- endif -%}
             {%- if card_product.quantity_price_breaks_configured? -%}
               {% if card_product.variants.size == 1 and quick_add == 'bulk' %}
@@ -492,6 +499,7 @@
                         <h3>{{ card_product.title | escape }}</h3>
                         {%- if show_card_product_price -%}
                           {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
+                          {% render 'card-product-hcp-price-note', show_note: show_hcp_collection_price_note %}
                         {%- endif -%}
                         {%- if card_product.quantity_price_breaks_configured? -%}
                           <div class="card__information-volume-pricing-note">
@@ -505,6 +513,7 @@
                         <h3 class="h2">{{ card_product.title | escape }}</h3>
                         {%- if show_card_product_price -%}
                           {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
+                          {% render 'card-product-hcp-price-note', show_note: show_hcp_collection_price_note %}
                         {%- endif -%}
                         {%- if card_product.quantity_price_breaks_configured? -%}
                           <div class="card__information-volume-pricing-note">
