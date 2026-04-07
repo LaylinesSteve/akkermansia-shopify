@@ -1,0 +1,24 @@
+{%- comment -%}
+  Outputs the registration type the customer selected at signup: "hcp" or "consumer".
+  The registration form stores this in customer note (see main-register.liquid).
+
+  Usage (in parent template):
+    {% capture customer_registration_type %}{% render 'customer-registration-type' %}{% endcapture %}
+    {% assign customer_registration_type = customer_registration_type | strip %}
+    {% if customer_registration_type == 'hcp' %}They selected Healthcare Provider{% endif %}
+
+  In Shopify Admin: Customers > [customer] > Note shows the stored value.
+
+  Note: For access control (HCP pricing, etc.) the theme uses the tag 'healthcare_provider',
+  which must be added separately (admin, Shopify Flow, or app).
+{%- endcomment -%}
+{%- if customer and customer.note != blank -%}
+  {%- assign note_lower = customer.note | downcase -%}
+  {%- if note_lower contains 'registration type: hcp' or note_lower contains 'registration type:hcp' -%}
+    hcp
+  {%- else -%}
+    consumer
+  {%- endif -%}
+{%- else -%}
+  consumer
+{%- endif -%}

@@ -166,15 +166,19 @@
       </div>
     </div>
 
-    <!-- Hidden field to store registration type -->
+    <!-- Hidden field: stored in customer note so you can see in Admin (Customers > Note) and in Liquid via customer.note. Use snippet 'customer-registration-type' to detect hcp vs consumer. -->
     <input type="hidden" name="customer[note][Registration Type]" id="registration-type-hidden" value="consumer">
-    {%- if request.params.return_url -%}
-    <input type="hidden" name="return_url" value="{{ request.params.return_url | url_encode }}">
-    {%- elsif request.referer -%}
-      <input type="hidden" name="return_url" value="{{ request.referer | url_encode }}">
-    {%- else -%}
-      <input type="hidden" name="return_url" value="{{ routes.account_url }}">
-    {%- endif -%}
+    {%- liquid
+      assign register_return_url = routes.account_url
+      if request.params.return_url != blank
+        assign register_return_url = request.params.return_url
+      elsif request.params.return_to != blank
+        assign register_return_url = request.params.return_to
+      elsif request.referer != blank
+        assign register_return_url = request.referer
+      endif
+    -%}
+    <input type="hidden" name="return_url" id="register-return-url-input" value="{{ register_return_url | url_encode }}">
     {%- if form.errors -%}
       <h2 class="form__message" tabindex="-1" autofocus>
         <svg aria-hidden="true" focusable="false">
@@ -321,6 +325,9 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   const returnTo = sanitizeReturnTo(rawReturnTo);
   // ===========================================
+  // Healthcare providers land on the HCP collection after signup (unless ?return_to= is present).
+  const HCP_AFTER_REGISTER_PATH = '/collections/health-care-professionals';
+  const returnUrlInput = document.getElementById('register-return-url-input');
 
   // Function to toggle HCP fields visibility
   function toggleHcpFields(isHcp) {
@@ -505,9 +512,15 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-    // ===== NEW: stash the return target for after-auth redirect =====
-    try { localStorage.setItem('return_to_after_auth', returnTo); } catch(e) {}
-    // ================================================================
+    // Return destination: explicit ?return_to= wins; else HCP registrants go to Health Care Professionals collection
+    var redirectTarget = returnTo;
+    if (isHcp && !params.get('return_to')) {
+      redirectTarget = sanitizeReturnTo(HCP_AFTER_REGISTER_PATH);
+    }
+    try { localStorage.setItem('return_to_after_auth', redirectTarget); } catch(e) {}
+    if (returnUrlInput) {
+      returnUrlInput.value = redirectTarget;
+    }
 
     // Show loading state
     submitBtn.textContent = 'Creating Account...';
