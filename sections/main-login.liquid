@@ -158,7 +158,7 @@
       </button>
       <br><br>
       <h3 style="text-align: center;">Not registered yet?</h3>
-      <a href="{{ routes.account_register_url }}{% if request.params.return_url %}?return_url={{ request.params.return_url | url_encode }}{% endif %}" style="font-size: 150%; line-height: 1.2;">
+      <a href="{{ routes.account_register_url }}{% if request.params.return_url %}?return_url={{ request.params.return_url | url_encode }}{% elsif request.params.return_to %}?return_to={{ request.params.return_to | url_encode }}{% endif %}" style="font-size: 150%; line-height: 1.2;">
         {{ 'customer.login_page.create_account' | t }}
       </a>
       <br><br>

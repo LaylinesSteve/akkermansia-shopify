@@ -455,9 +455,26 @@ h5,
 
 <script>
 (function() {
-  // Stash the current page when user clicks Login/Register links
-  function setReturnTarget(e) {
+  // Stash the current page when user clicks Login/Register links (so we can send them back after auth).
+  // Never stash when already on login/register/recover — otherwise "Create account" from login saves
+  // /account/login and post-auth redirect sends new customers back to the login page.
+  function isAccountGatePath(path) {
+    path = (path || '').split('?')[0];
+    return (
+      /\/account\/login$/i.test(path) ||
+      /\/account\/register$/i.test(path) ||
+      /\/account\/recover$/i.test(path) ||
+      /\/account\/activate/i.test(path) ||
+      /\/account\/reset/i.test(path) ||
+      /\/challenge$/i.test(path)
+    );
+  }
+
+  function setReturnTarget() {
     try {
+      if (isAccountGatePath(location.pathname)) {
+        return;
+      }
       var here = location.pathname + location.search + location.hash;
       localStorage.setItem('return_to_after_auth', here);
     } catch (e) {}
@@ -467,6 +484,14 @@ h5,
     var a = ev.target.closest('a');
     if (!a) return;
     var href = a.getAttribute('href') || '';
+    try {
+      if (/^https?:\/\//i.test(href)) {
+        var u = new URL(href);
+        if (location.host === u.host) {
+          href = u.pathname + u.search + u.hash;
+        }
+      }
+    } catch (e2) {}
     if (href.indexOf('/account/login') === 0 || href.indexOf('/account/register') === 0) {
       setReturnTarget();
     }
