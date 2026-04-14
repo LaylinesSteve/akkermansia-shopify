@@ -186,7 +186,14 @@
         if ref_down contains '/account/login' or ref_down contains '/account/register' or ref_down contains '/account/recover' or ref_down contains '/account/activate' or ref_down contains '/account/reset' or ref_down contains '/challenge'
           assign referer_is_account_gate = true
         endif
-        unless referer_is_account_gate
+        assign referer_is_store_root = false
+        if request.origin != blank
+          assign ref_after_origin = request.referer | remove: request.origin
+          if ref_after_origin == blank or ref_after_origin == '/' or ref_after_origin == ''
+            assign referer_is_store_root = true
+          endif
+        endif
+        unless referer_is_account_gate or referer_is_store_root
           assign register_return_url = request.referer
         endunless
       endif
@@ -326,8 +333,13 @@ document.addEventListener('DOMContentLoaded', function() {
   const uploadBtn = document.getElementById('upload-btn');
   const infoDiv = document.getElementById('certificate-info');
   const certificateUrlInput = document.getElementById('certificate-url');
-  const form = document.querySelector('form');
   const submitBtn = document.getElementById('submit-btn');
+  const form =
+    document.getElementById('create_customer') ||
+    (submitBtn && submitBtn.closest('form'));
+  if (!form || !submitBtn) {
+    return;
+  }
 
   // ===== Post-signup return URL (never send people back to login/register/challenge) =====
   const params = new URLSearchParams(window.location.search);
@@ -381,7 +393,27 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
   } catch (hcpPathErr) {}
+  if (!hcpAfterRegisterPath || hcpAfterRegisterPath.charAt(0) !== '/') {
+    hcpAfterRegisterPath = '/collections/health-care-professionals';
+  }
   const returnToInput = document.getElementById('register-return-to-input');
+  if (returnToInput) {
+    var initialRt = (returnToInput.value || '').trim();
+    try {
+      if (/^https?:\/\//i.test(initialRt)) {
+        var iu = new URL(initialRt, window.location.origin);
+        if (iu.origin === window.location.origin && (iu.pathname === '/' || iu.pathname === '')) {
+          returnToInput.value = accountHome;
+        }
+      } else if (initialRt === '/' || initialRt === '') {
+        returnToInput.value = accountHome;
+      }
+    } catch (irt) {
+      if (initialRt === '/' || initialRt === '') {
+        returnToInput.value = accountHome;
+      }
+    }
+  }
 
   // Function to toggle HCP fields visibility
   function toggleHcpFields(isHcp) {
