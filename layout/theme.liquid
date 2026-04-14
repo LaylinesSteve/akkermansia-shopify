@@ -408,14 +408,23 @@ h5,
 <script>
 (function() {
   try {
-    var HCP_POST_LOGIN_KEY = 'hcp_post_login_redirect';
-    var HCP_PATH = {{ hcp_redirect_path | json }};
-    var isHcpProvider = {{ is_hcp_customer | json }};
-
     function pathKey(p) {
       if (!p) return '';
       return p.split('?')[0].split('#')[0];
     }
+
+    var HCP_PATH = {{ hcp_redirect_path | json }};
+    var HCP_JUST_REGISTERED = 'hcp_just_registered';
+    if (sessionStorage.getItem(HCP_JUST_REGISTERED)) {
+      sessionStorage.removeItem(HCP_JUST_REGISTERED);
+      if (HCP_PATH && pathKey(window.location.pathname + window.location.search + window.location.hash) !== pathKey(HCP_PATH)) {
+        window.location.replace(HCP_PATH);
+        return;
+      }
+    }
+
+    var HCP_POST_LOGIN_KEY = 'hcp_post_login_redirect';
+    var isHcpProvider = {{ is_hcp_customer | json }};
 
     if (isHcpProvider && sessionStorage.getItem(HCP_POST_LOGIN_KEY)) {
       sessionStorage.removeItem(HCP_POST_LOGIN_KEY);

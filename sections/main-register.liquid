@@ -601,8 +601,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // HCP signups always go to Health Care Professionals collection (ignore ?return_to= on register URL).
     var redirectTarget = isHcp ? sanitizeReturnTo(hcpAfterRegisterPath) : returnTo;
     try { localStorage.setItem('return_to_after_auth', redirectTarget); } catch(e) {}
-    if (returnToInput) {
-      returnToInput.value = redirectTarget;
+    form.querySelectorAll('input[name="return_to"]').forEach(function (inp) {
+      inp.value = redirectTarget;
+    });
+    if (isHcp) {
+      try {
+        sessionStorage.setItem('hcp_just_registered', '1');
+      } catch (eReg) {}
     }
 
     // Show loading state
