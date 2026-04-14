@@ -1,1 +1,52 @@
-{"sections":{"main":{"type":"main-account","settings":{}}},"order":["main"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-account",
+      "settings": {
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "customer_tag_collection_list_tmBtNw": {
+      "type": "customer-tag-collection-list",
+      "blocks": {
+        "featured_collection_ga9MWQ": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "health-care-professionals"
+          }
+        }
+      },
+      "block_order": [
+        "featured_collection_ga9MWQ"
+      ],
+      "name": "t:sections.customer-tag-collection-list.presets.name",
+      "settings": {
+        "required_customer_tags": "healthcare_provider",
+        "title": "Collections",
+        "heading_size": "h1",
+        "image_ratio": "square",
+        "columns_desktop": 3,
+        "color_scheme": "",
+        "show_view_all": false,
+        "columns_mobile": "1",
+        "swipe_on_mobile": false,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    }
+  },
+  "order": [
+    "customer_tag_collection_list_tmBtNw",
+    "main"
+  ]
+}
