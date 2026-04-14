@@ -407,7 +407,8 @@ h5,
     if (postRegTarget) {
       sessionStorage.removeItem(POST_REG_KEY);
       try { localStorage.removeItem('return_to_after_auth'); } catch (ex) {}
-      if (postRegTarget.charAt(0) === '/' && pathKey(window.location.pathname) !== pathKey(postRegTarget)) {
+      var here = window.location.pathname + window.location.search;
+      if (postRegTarget.charAt(0) === '/' && here !== postRegTarget) {
         window.location.replace(postRegTarget);
         return;
       }

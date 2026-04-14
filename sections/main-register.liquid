@@ -489,7 +489,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Form submission validation
   form.addEventListener('submit', function(e) {
-    const isHcp = registrationTypeHcp && registrationTypeHcp.checked;
+    var isHcp = (registrationTypeHcp && registrationTypeHcp.checked) ||
+                (registrationTypeHidden && registrationTypeHidden.value === 'hcp');
     
     // Validate HCP fields only if HCP is selected
     if (isHcp) {
@@ -519,8 +520,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var redirectTarget = isHcp ? hcpDest : accountHome;
 
+    // Bust Shopify's edge cache so the redirected page renders with the logged-in customer.
+    var sep = redirectTarget.indexOf('?') === -1 ? '?' : '&';
+    var redirectTargetFresh = redirectTarget + sep + '_t=' + Date.now();
+
     // Shopify often ignores return_to on create_customer; sessionStorage is the reliable fallback.
-    try { sessionStorage.setItem('post_register_redirect', redirectTarget); } catch (ex) {}
+    try { sessionStorage.setItem('post_register_redirect', redirectTargetFresh); } catch (ex) {}
     try { localStorage.setItem('return_to_after_auth', redirectTarget); } catch (ex) {}
     form.querySelectorAll('input[name="return_to"]').forEach(function (inp) {
       inp.value = redirectTarget;
