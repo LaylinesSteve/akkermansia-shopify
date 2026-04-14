@@ -1,37 +1,3 @@
-{%- liquid
-  assign is_hcp_account = false
-  if customer.tags contains 'healthcare_provider'
-    assign is_hcp_account = true
-  endif
-  if customer.note != blank
-    assign acct_note_l = customer.note | downcase
-    if acct_note_l contains 'registration type: hcp' or acct_note_l contains 'registration type:hcp'
-      assign is_hcp_account = true
-    endif
-  endif
-  assign hcp_acct_coll = collections['health-care-professionals']
-  assign hcp_acct_dest = '/collections/health-care-professionals'
-  if hcp_acct_coll != blank
-    assign hcp_acct_dest = hcp_acct_coll.url
-  endif
--%}
-
-{%- if is_hcp_account -%}
-  <script>
-  (function(){
-    try {
-      var KEY = 'hcp_account_redirected';
-      if (sessionStorage.getItem(KEY)) return;
-      sessionStorage.setItem(KEY, '1');
-      var dest = {{ hcp_acct_dest | json }};
-      if (!dest || dest.charAt(0) !== '/') dest = '/collections/health-care-professionals';
-      var sep = dest.indexOf('?') === -1 ? '?' : '&';
-      window.location.replace(dest + sep + '_t=' + Date.now());
-    } catch(e){}
-  })();
-  </script>
-{%- endif -%}
-
 {{ 'customer.css' | asset_url | stylesheet_tag }}
 
 {%- style -%}

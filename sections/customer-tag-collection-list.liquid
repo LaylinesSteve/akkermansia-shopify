@@ -56,6 +56,14 @@
         assign show_customer_tag_collections = true
       endif
     endfor
+    unless show_customer_tag_collections
+      if tags_csv contains 'healthcare_provider' and customer.note != blank
+        assign _note_down = customer.note | downcase
+        if _note_down contains 'registration type: hcp' or _note_down contains 'registration type:hcp'
+          assign show_customer_tag_collections = true
+        endif
+      endif
+    endunless
   endif
 
   assign products_limit = section.settings.products_per_collection
