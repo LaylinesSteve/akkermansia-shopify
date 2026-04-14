@@ -524,6 +524,52 @@
       "settings": {
         "include_margins": true
       }
+    },
+    "customer_tag_collection_list_PpANPH": {
+      "type": "customer-tag-collection-list",
+      "blocks": {
+        "featured_collection_iz7JJb": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": ""
+          }
+        },
+        "featured_collection_QGyGbz": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": ""
+          }
+        }
+      },
+      "block_order": [
+        "featured_collection_iz7JJb",
+        "featured_collection_QGyGbz"
+      ],
+      "name": "t:sections.customer-tag-collection-list.presets.name",
+      "settings": {
+        "required_customer_tags": "healthcare_provider",
+        "title": "",
+        "heading_size": "h1",
+        "show_collection_headings": true,
+        "products_per_collection": 8,
+        "show_pricing_footnote": true,
+        "columns_desktop": 4,
+        "full_width": false,
+        "show_view_all_link": true,
+        "view_all_style": "solid",
+        "enable_desktop_slider": false,
+        "color_scheme": "",
+        "image_ratio": "adapt",
+        "image_shape": "default",
+        "show_secondary_image": false,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "none",
+        "columns_mobile": "2",
+        "swipe_on_mobile": false,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
     }
   },
   "order": [
@@ -535,6 +581,7 @@
     "img_with_txt_video_ApFVnF",
     "image_with_text_home2_7YpCRG",
     "multicolumn_dMtQEH",
-    "1724356498383368ea"
+    "1724356498383368ea",
+    "customer_tag_collection_list_PpANPH"
   ]
 }
