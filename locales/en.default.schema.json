@@ -661,6 +661,21 @@
         "name": "Collection list"
       }
     },
+    "customer-tag-collection-list": {
+      "name": "Collection list (customer tag)",
+      "settings": {
+        "header_access": {
+          "content": "Customer access"
+        },
+        "required_customer_tags": {
+          "label": "Required customer tags",
+          "info": "Comma-separated. Logged-in customers see this section only if they have at least one of these tags. Tag names are case-sensitive. Default: healthcare_provider."
+        }
+      },
+      "presets": {
+        "name": "Collection list (customer tag)"
+      }
+    },
     "contact-form": {
       "name": "Contact Form",
       "presets": {

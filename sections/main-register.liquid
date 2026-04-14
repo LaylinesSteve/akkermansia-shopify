@@ -169,39 +169,8 @@
     <!-- Hidden field: stored in customer note so you can see in Admin (Customers > Note) and in Liquid via customer.note. Use snippet 'customer-registration-type' to detect hcp vs consumer. -->
     <input type="hidden" name="customer[note][Registration Type]" id="registration-type-hidden" value="consumer">
     {%- liquid
+      # After signup, always return_to account home (reliable vs homepage / referer / localStorage).
       assign register_return_url = routes.account_url
-      if request.params.return_url != blank
-        assign pdown = request.params.return_url | downcase
-        unless pdown contains '/account/login' or pdown contains '/account/register' or pdown contains '/account/recover' or pdown contains '/account/activate' or pdown contains '/account/reset' or pdown contains '/challenge'
-          assign register_return_url = request.params.return_url
-        endunless
-      elsif request.params.return_to != blank
-        assign pdown = request.params.return_to | downcase
-        unless pdown contains '/account/login' or pdown contains '/account/register' or pdown contains '/account/recover' or pdown contains '/account/activate' or pdown contains '/account/reset' or pdown contains '/challenge'
-          assign register_return_url = request.params.return_to
-        endunless
-      elsif request.referer != blank
-        assign ref_down = request.referer | downcase
-        assign referer_is_account_gate = false
-        if ref_down contains '/account/login' or ref_down contains '/account/register' or ref_down contains '/account/recover' or ref_down contains '/account/activate' or ref_down contains '/account/reset' or ref_down contains '/challenge'
-          assign referer_is_account_gate = true
-        endif
-        assign referer_is_store_root = false
-        if request.origin != blank
-          assign ref_after_origin = request.referer | remove: request.origin
-          if ref_after_origin == blank or ref_after_origin == '/' or ref_after_origin == ''
-            assign referer_is_store_root = true
-          endif
-        endif
-        unless referer_is_account_gate or referer_is_store_root
-          assign register_return_url = request.referer
-        endunless
-      endif
-      assign hcp_register_collection = collections['health-care-professionals']
-      assign hcp_register_path = '/collections/health-care-professionals'
-      if hcp_register_collection != blank
-        assign hcp_register_path = hcp_register_collection.url
-      endif
     -%}
     {%- comment -%} return_to must stay unencoded in the value; url_encode breaks Shopify redirects (404). {%- endcomment -%}
     <input type="hidden" name="return_to" id="register-return-to-input" value="{{ register_return_url | escape }}">
@@ -313,7 +282,6 @@
 <!-- Cloudinary Upload Widget -->
 <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript" async></script>
 
-<script type="application/json" id="hcp-after-register-path">{{ hcp_register_path | json }}</script>
 <script type="application/json" id="register-account-home">{{ routes.account_url | json }}</script>
 
 <script>
@@ -341,8 +309,6 @@ document.addEventListener('DOMContentLoaded', function() {
     return;
   }
 
-  // ===== Post-signup return URL (never send people back to login/register/challenge) =====
-  const params = new URLSearchParams(window.location.search);
   var accountHome = '/account';
   try {
     var ahEl = document.getElementById('register-account-home');
@@ -352,67 +318,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   } catch (e1) {}
 
-  function sanitizeReturnTo(raw) {
-    try {
-      if (!/^https?:\/\//i.test(raw)) return raw || '/';
-      const u = new URL(raw, window.location.origin);
-      if (u.origin !== window.location.origin) return '/';
-      return u.pathname + u.search + u.hash || '/';
-    } catch(e) { return '/'; }
-  }
-
-  function isAuthGatePath(path) {
-    if (!path) return true;
-    var p = path.split('?')[0].split('#')[0].toLowerCase();
-    if (p === accountHome.toLowerCase()) return false;
-    return (
-      p === '/account/login' ||
-      p === '/account/register' ||
-      p === '/account/recover' ||
-      p.indexOf('/account/activate') === 0 ||
-      p.indexOf('/account/reset') === 0 ||
-      p === '/challenge'
-    );
-  }
-
-  const rawReturnTo =
-    params.get('return_to') ||
-    document.referrer ||
-    (window.location.pathname + window.location.search + window.location.hash);
-  var candidate = sanitizeReturnTo(rawReturnTo);
-  const returnTo = isAuthGatePath(candidate) ? accountHome : candidate;
-  // ===========================================
-  // Healthcare providers → HCP collection path from Liquid (Markets/locale aware).
-  var hcpAfterRegisterPath = '/collections/health-care-professionals';
-  try {
-    var hcpPathEl = document.getElementById('hcp-after-register-path');
-    if (hcpPathEl && hcpPathEl.textContent) {
-      var parsed = JSON.parse(hcpPathEl.textContent);
-      if (typeof parsed === 'string' && parsed.indexOf('/') === 0) {
-        hcpAfterRegisterPath = parsed;
-      }
-    }
-  } catch (hcpPathErr) {}
-  if (!hcpAfterRegisterPath || hcpAfterRegisterPath.charAt(0) !== '/') {
-    hcpAfterRegisterPath = '/collections/health-care-professionals';
-  }
   const returnToInput = document.getElementById('register-return-to-input');
   if (returnToInput) {
-    var initialRt = (returnToInput.value || '').trim();
-    try {
-      if (/^https?:\/\//i.test(initialRt)) {
-        var iu = new URL(initialRt, window.location.origin);
-        if (iu.origin === window.location.origin && (iu.pathname === '/' || iu.pathname === '')) {
-          returnToInput.value = accountHome;
-        }
-      } else if (initialRt === '/' || initialRt === '') {
-        returnToInput.value = accountHome;
-      }
-    } catch (irt) {
-      if (initialRt === '/' || initialRt === '') {
-        returnToInput.value = accountHome;
-      }
-    }
+    returnToInput.value = accountHome;
   }
 
   // Function to toggle HCP fields visibility
@@ -598,17 +506,14 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-    // HCP signups always go to Health Care Professionals collection (ignore ?return_to= on register URL).
-    var redirectTarget = isHcp ? sanitizeReturnTo(hcpAfterRegisterPath) : returnTo;
-    try { localStorage.setItem('return_to_after_auth', redirectTarget); } catch(e) {}
+    // Always land on account home after signup (consumer and HCP); avoids / and pre-Account localStorage issues.
+    var redirectTarget = accountHome;
+    try {
+      localStorage.setItem('return_to_after_auth', redirectTarget);
+    } catch (e) {}
     form.querySelectorAll('input[name="return_to"]').forEach(function (inp) {
       inp.value = redirectTarget;
     });
-    if (isHcp) {
-      try {
-        sessionStorage.setItem('hcp_just_registered', '1');
-      } catch (eReg) {}
-    }
 
     // Show loading state
     submitBtn.textContent = 'Creating Account...';

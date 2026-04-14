@@ -426,14 +426,6 @@ h5,
     }
 
     var HCP_PATH = {{ hcp_redirect_path | json }};
-    var HCP_JUST_REGISTERED = 'hcp_just_registered';
-    if (sessionStorage.getItem(HCP_JUST_REGISTERED)) {
-      sessionStorage.removeItem(HCP_JUST_REGISTERED);
-      if (HCP_PATH && pathKey(window.location.pathname + window.location.search + window.location.hash) !== pathKey(HCP_PATH)) {
-        window.location.replace(HCP_PATH);
-        return;
-      }
-    }
 
     var HCP_POST_LOGIN_KEY = 'hcp_post_login_redirect';
     var isHcpProvider = {{ is_hcp_for_redirect | json }};
