@@ -9,6 +9,13 @@
  */
 {
   "sections": {
+    "main": {
+      "type": "main-account",
+      "settings": {
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
     "customer_tag_collection_list_tmBtNw": {
       "type": "customer-tag-collection-list",
       "blocks": {
@@ -25,7 +32,7 @@
       "name": "t:sections.customer-tag-collection-list.presets.name",
       "settings": {
         "required_customer_tags": "healthcare_provider",
-        "title": "Collections",
+        "title": "",
         "heading_size": "h1",
         "show_collection_headings": true,
         "products_per_collection": 8,
@@ -85,26 +92,19 @@
         "columns_desktop": 2,
         "column_alignment": "center",
         "background_style": "primary",
-        "button_label": "Button label",
+        "button_label": "",
         "button_link": "",
         "color_scheme": "",
-        "columns_mobile": "1",
+        "columns_mobile": "2",
         "swipe_on_mobile": false,
-        "padding_top": 36,
-        "padding_bottom": 36
-      }
-    },
-    "main": {
-      "type": "main-account",
-      "settings": {
         "padding_top": 36,
         "padding_bottom": 36
       }
     }
   },
   "order": [
+    "main",
     "customer_tag_collection_list_tmBtNw",
-    "multicolumn_pGcHC4",
-    "main"
+    "multicolumn_pGcHC4"
   ]
 }
