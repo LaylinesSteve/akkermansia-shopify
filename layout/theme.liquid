@@ -393,6 +393,29 @@ h5,
 
  </style> 
 
+<script>
+(function() {
+  try {
+    function pathKey(p) {
+      if (!p) return '';
+      return p.split('?')[0].split('#')[0];
+    }
+
+    // Post-registration redirect — runs for ALL visitors (customer may not be logged in yet).
+    var POST_REG_KEY = 'post_register_redirect';
+    var postRegTarget = sessionStorage.getItem(POST_REG_KEY);
+    if (postRegTarget) {
+      sessionStorage.removeItem(POST_REG_KEY);
+      try { localStorage.removeItem('return_to_after_auth'); } catch (ex) {}
+      if (postRegTarget.charAt(0) === '/' && pathKey(window.location.pathname) !== pathKey(postRegTarget)) {
+        window.location.replace(postRegTarget);
+        return;
+      }
+    }
+  } catch(e) {}
+})();
+</script>
+
 {% if customer %}
 {%- liquid
   assign hcp_coll = collections['health-care-professionals']
@@ -404,7 +427,6 @@ h5,
   if customer.tags contains 'healthcare_provider'
     assign is_hcp_customer = true
   endif
-  # healthcare_provider tag may arrive via Flow after signup; registration note is immediate.
   assign is_hcp_by_note = false
   if customer.note != blank
     assign note_l = customer.note | downcase
@@ -423,18 +445,6 @@ h5,
     function pathKey(p) {
       if (!p) return '';
       return p.split('?')[0].split('#')[0];
-    }
-
-    // Post-registration redirect (most reliable — sessionStorage survives Shopify's own redirect to /).
-    var POST_REG_KEY = 'post_register_redirect';
-    var postRegTarget = sessionStorage.getItem(POST_REG_KEY);
-    if (postRegTarget) {
-      sessionStorage.removeItem(POST_REG_KEY);
-      try { localStorage.removeItem('return_to_after_auth'); } catch (ex) {}
-      if (postRegTarget.charAt(0) === '/' && pathKey(window.location.pathname) !== pathKey(postRegTarget)) {
-        window.location.replace(postRegTarget);
-        return;
-      }
     }
 
     var HCP_PATH = {{ hcp_redirect_path | json }};
