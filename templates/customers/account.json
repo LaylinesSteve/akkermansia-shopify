@@ -9,13 +9,6 @@
  */
 {
   "sections": {
-    "main": {
-      "type": "main-account",
-      "settings": {
-        "padding_top": 36,
-        "padding_bottom": 36
-      }
-    },
     "customer_tag_collection_list_tmBtNw": {
       "type": "customer-tag-collection-list",
       "blocks": {
@@ -34,12 +27,76 @@
         "required_customer_tags": "healthcare_provider",
         "title": "Collections",
         "heading_size": "h1",
-        "image_ratio": "square",
+        "show_collection_headings": true,
+        "products_per_collection": 8,
+        "show_pricing_footnote": true,
         "columns_desktop": 3,
+        "full_width": false,
+        "show_view_all_link": true,
+        "view_all_style": "solid",
+        "enable_desktop_slider": false,
         "color_scheme": "",
-        "show_view_all": false,
+        "image_ratio": "square",
+        "image_shape": "default",
+        "show_secondary_image": false,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "none",
         "columns_mobile": "1",
         "swipe_on_mobile": false,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "multicolumn_pGcHC4": {
+      "type": "multicolumn",
+      "blocks": {
+        "column_qkNNM4": {
+          "type": "column",
+          "settings": {
+            "image": "shopify://shop_images/stethoscope-icon.jpg",
+            "text": "<p>Health Care Providers</p>",
+            "title": "",
+            "link_label": "",
+            "link": "shopify://collections/health-care-professionals"
+          }
+        },
+        "column_fPjntE": {
+          "type": "column",
+          "settings": {
+            "image": "shopify://shop_images/img_2.png",
+            "text": "<p>Consumers</p>",
+            "title": "",
+            "link_label": "",
+            "link": "shopify://collections/consumer"
+          }
+        }
+      },
+      "block_order": [
+        "column_qkNNM4",
+        "column_fPjntE"
+      ],
+      "name": "t:sections.multicolumn.presets.name",
+      "settings": {
+        "title": "",
+        "heading_size": "h1",
+        "image_width": "half",
+        "image_ratio": "adapt",
+        "columns_desktop": 2,
+        "column_alignment": "center",
+        "background_style": "primary",
+        "button_label": "Button label",
+        "button_link": "",
+        "color_scheme": "",
+        "columns_mobile": "1",
+        "swipe_on_mobile": false,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "main": {
+      "type": "main-account",
+      "settings": {
         "padding_top": 36,
         "padding_bottom": 36
       }
@@ -47,6 +104,7 @@
   },
   "order": [
     "customer_tag_collection_list_tmBtNw",
+    "multicolumn_pGcHC4",
     "main"
   ]
 }
