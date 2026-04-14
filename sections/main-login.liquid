@@ -164,6 +164,22 @@
       <br><br>
     {%- endform -%}
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var loginForm =
+        document.querySelector('form#customer_login') ||
+        document.querySelector('form[action="/account/login"]');
+      if (!loginForm) return;
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('return_to')) return;
+      loginForm.addEventListener('submit', function () {
+        try {
+          sessionStorage.setItem('hcp_post_login_redirect', '1');
+        } catch (e) {}
+      });
+    });
+  </script>
   {%- if shop.checkout.guest_login -%}
     <div>
       <hr>

@@ -394,17 +394,47 @@ h5,
  </style> 
 
 {% if customer %}
+{%- liquid
+  assign hcp_coll = collections['health-care-professionals']
+  assign hcp_redirect_path = '/collections/health-care-professionals'
+  if hcp_coll != blank
+    assign hcp_redirect_path = hcp_coll.url
+  endif
+  assign is_hcp_customer = false
+  if customer.tags contains 'healthcare_provider'
+    assign is_hcp_customer = true
+  endif
+-%}
 <script>
 (function() {
   try {
+    var HCP_POST_LOGIN_KEY = 'hcp_post_login_redirect';
+    var HCP_PATH = {{ hcp_redirect_path | json }};
+    var isHcpProvider = {{ is_hcp_customer | json }};
+
+    function pathKey(p) {
+      if (!p) return '';
+      return p.split('?')[0].split('#')[0];
+    }
+
+    if (isHcpProvider && sessionStorage.getItem(HCP_POST_LOGIN_KEY)) {
+      sessionStorage.removeItem(HCP_POST_LOGIN_KEY);
+      try { localStorage.removeItem('return_to_after_auth'); } catch (e) {}
+      var here = window.location.pathname + window.location.search + window.location.hash;
+      if (HCP_PATH && pathKey(here) !== pathKey(HCP_PATH)) {
+        window.location.replace(HCP_PATH);
+        return;
+      }
+    } else if (!isHcpProvider && sessionStorage.getItem(HCP_POST_LOGIN_KEY)) {
+      sessionStorage.removeItem(HCP_POST_LOGIN_KEY);
+    }
+
     var key = 'return_to_after_auth';
     var raw = localStorage.getItem(key);
     if (!raw) return;
 
-    // clear first to avoid loops
     localStorage.removeItem(key);
 
-    // Use path + query on *this* host (avoids www vs apex / shop.url mismatch aborting redirect).
     var target = raw.trim();
     if (/^https?:\/\//i.test(target)) {
       var u = new URL(target);
@@ -414,9 +444,8 @@ h5,
       return;
     }
 
-    // no-op if we're already there
-    var here = window.location.pathname + window.location.search + window.location.hash;
-    if ((target || '/') !== here) {
+    var here2 = window.location.pathname + window.location.search + window.location.hash;
+    if ((target || '/') !== here2) {
       window.location.replace(target || '/');
     }
   } catch(e) {}
