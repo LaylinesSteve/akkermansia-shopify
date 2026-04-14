@@ -62,9 +62,9 @@
           "type": "column",
           "settings": {
             "image": "shopify://shop_images/stethoscope-icon.jpg",
-            "text": "<p>Health Care Providers</p>",
+            "text": "",
             "title": "",
-            "link_label": "",
+            "link_label": "HEALTH CARE PROVIDERS",
             "link": "shopify://collections/health-care-professionals"
           }
         },
@@ -72,9 +72,9 @@
           "type": "column",
           "settings": {
             "image": "shopify://shop_images/img_2.png",
-            "text": "<p>Consumers</p>",
+            "text": "",
             "title": "",
-            "link_label": "",
+            "link_label": "CONSUMERS",
             "link": "shopify://collections/consumer"
           }
         }
