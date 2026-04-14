@@ -36,25 +36,6 @@
       <script src="{{ 'animations.js' | asset_url }}" defer="defer"></script>
     {%- endif -%}
 
-    <script>
-    (function(){
-      try {
-        var m = document.cookie.match(/(?:^|;\s*)post_register_redirect=([^;]*)/);
-        if (!m) return;
-        var target = decodeURIComponent(m[1]);
-        document.cookie = 'post_register_redirect=;path=/;max-age=0';
-        try { sessionStorage.removeItem('post_register_redirect'); } catch(e){}
-        try { localStorage.removeItem('return_to_after_auth'); } catch(e){}
-        if (target && target.charAt(0) === '/') {
-          var here = window.location.pathname + window.location.search;
-          if (here !== target) {
-            window.location.replace(target);
-          }
-        }
-      } catch(e){}
-    })();
-    </script>
-
     {{ content_for_header }}
 
     {%- liquid

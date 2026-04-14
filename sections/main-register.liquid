@@ -326,15 +326,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   var accountHome = parsePath('register-account-home', '/account');
 
-  // Kill the "page before Account" stash so it can't override the post-register redirect.
+  // Kill the "page before Account" stash so it can't override post-register destination.
   try { localStorage.removeItem('return_to_after_auth'); } catch (e) {}
-
-  // Set cookie on click (fires before Shop Pay can intercept the submit event).
-  submitBtn.addEventListener('click', function() {
-    var sep = accountHome.indexOf('?') === -1 ? '?' : '&';
-    var fresh = accountHome + sep + '_t=' + Date.now();
-    document.cookie = 'post_register_redirect=' + encodeURIComponent(fresh) + ';path=/;max-age=300;SameSite=Lax';
-  });
 
   // Function to toggle HCP fields visibility
   function toggleHcpFields(isHcp) {
@@ -519,14 +512,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-    // All signups → account page with cache-bust so customer tags are fresh.
-    var sep = accountHome.indexOf('?') === -1 ? '?' : '&';
-    var redirectFresh = accountHome + sep + '_t=' + Date.now();
-
-    // Cookie survives Shop Pay / cross-origin hops; checked in <head> before anything else.
-    document.cookie = 'post_register_redirect=' + encodeURIComponent(redirectFresh) + ';path=/;max-age=120;SameSite=Lax';
-    try { sessionStorage.setItem('post_register_redirect', redirectFresh); } catch (ex) {}
-    try { localStorage.setItem('return_to_after_auth', accountHome); } catch (ex) {}
     form.querySelectorAll('input[name="return_to"]').forEach(function (inp) {
       inp.value = accountHome;
     });
