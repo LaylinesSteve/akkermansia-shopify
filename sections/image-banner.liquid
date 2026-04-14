@@ -131,20 +131,46 @@
               {{ block.settings.texta }}
             </div>
           {%- when 'buttons' -%}
+            {%- liquid
+              assign _btn1_label = block.settings.button_label_1
+              assign _btn1_link = block.settings.button_link_1
+              if customer
+                assign _is_hcp_btn = false
+                if customer.tags contains 'healthcare_provider'
+                  assign _is_hcp_btn = true
+                endif
+                if customer.note != blank
+                  assign _note_btn = customer.note | downcase
+                  if _note_btn contains 'registration type: hcp' or _note_btn contains 'registration type:hcp'
+                    assign _is_hcp_btn = true
+                  endif
+                endif
+                if _is_hcp_btn
+                  assign _hcp_btn_coll = collections['health-care-professionals']
+                  if _hcp_btn_coll != blank
+                    assign _btn1_label = 'Shop'
+                    assign _btn1_link = _hcp_btn_coll.url
+                  else
+                    assign _btn1_label = 'Shop'
+                    assign _btn1_link = '/collections/health-care-professionals'
+                  endif
+                endif
+              endif
+            -%}
             <div
-              class="banner__buttons{% if block.settings.button_label_1 != blank and block.settings.button_label_2 != blank %} banner__buttons--multiple{% endif %}"
+              class="banner__buttons{% if _btn1_label != blank and block.settings.button_label_2 != blank %} banner__buttons--multiple{% endif %}"
               {{ block.shopify_attributes }}
             >
-              {%- if block.settings.button_label_1 != blank -%}
+              {%- if _btn1_label != blank -%}
                 <a
-                  {% if block.settings.button_link_1 == blank %}
+                  {% if _btn1_link == blank %}
                     role="link" aria-disabled="true"
                   {% else %}
-                    href="{{ block.settings.button_link_1 }}"
+                    href="{{ _btn1_link }}"
                   {% endif %}
                   class="button{% if block.settings.button_style_secondary_1 %} button--secondary{% else %} button--primary{% endif %}"
                 >
-                  {{- block.settings.button_label_1 | escape -}}
+                  {{- _btn1_label | escape -}}
                 </a>
               {%- endif -%}
               {%- if block.settings.button_label_2 != blank -%}
