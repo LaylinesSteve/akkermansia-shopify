@@ -36,6 +36,25 @@
       <script src="{{ 'animations.js' | asset_url }}" defer="defer"></script>
     {%- endif -%}
 
+    <script>
+    (function(){
+      try {
+        var m = document.cookie.match(/(?:^|;\s*)post_register_redirect=([^;]*)/);
+        if (!m) return;
+        var target = decodeURIComponent(m[1]);
+        document.cookie = 'post_register_redirect=;path=/;max-age=0';
+        try { sessionStorage.removeItem('post_register_redirect'); } catch(e){}
+        try { localStorage.removeItem('return_to_after_auth'); } catch(e){}
+        if (target && target.charAt(0) === '/') {
+          var here = window.location.pathname + window.location.search;
+          if (here !== target) {
+            window.location.replace(target);
+          }
+        }
+      } catch(e){}
+    })();
+    </script>
+
     {{ content_for_header }}
 
     {%- liquid
@@ -392,30 +411,6 @@ h5,
   p, span, button, small, a, span{font-family: 'Kohinoorregukar' !important;letter-spacing: 0 !important;}
 
  </style> 
-
-<script>
-(function() {
-  try {
-    function pathKey(p) {
-      if (!p) return '';
-      return p.split('?')[0].split('#')[0];
-    }
-
-    // Post-registration redirect — runs for ALL visitors (customer may not be logged in yet).
-    var POST_REG_KEY = 'post_register_redirect';
-    var postRegTarget = sessionStorage.getItem(POST_REG_KEY);
-    if (postRegTarget) {
-      sessionStorage.removeItem(POST_REG_KEY);
-      try { localStorage.removeItem('return_to_after_auth'); } catch (ex) {}
-      var here = window.location.pathname + window.location.search;
-      if (postRegTarget.charAt(0) === '/' && here !== postRegTarget) {
-        window.location.replace(postRegTarget);
-        return;
-      }
-    }
-  } catch(e) {}
-})();
-</script>
 
 {% if customer %}
 {%- liquid

@@ -280,15 +280,7 @@
 <!-- Cloudinary Upload Widget -->
 <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript" async></script>
 
-{%- liquid
-  assign hcp_reg_coll = collections['health-care-professionals']
-  assign hcp_register_dest = '/collections/health-care-professionals'
-  if hcp_reg_coll != blank
-    assign hcp_register_dest = hcp_reg_coll.url
-  endif
--%}
 <script type="application/json" id="register-account-home">{{ routes.account_url | json }}</script>
-<script type="application/json" id="register-hcp-dest">{{ hcp_register_dest | json }}</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -333,7 +325,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   var accountHome = parsePath('register-account-home', '/account');
-  var hcpDest = parsePath('register-hcp-dest', '/collections/health-care-professionals');
 
   // Function to toggle HCP fields visibility
   function toggleHcpFields(isHcp) {
@@ -518,17 +509,16 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-    var redirectTarget = isHcp ? hcpDest : accountHome;
+    // All signups → account page with cache-bust so customer tags are fresh.
+    var sep = accountHome.indexOf('?') === -1 ? '?' : '&';
+    var redirectFresh = accountHome + sep + '_t=' + Date.now();
 
-    // Bust Shopify's edge cache so the redirected page renders with the logged-in customer.
-    var sep = redirectTarget.indexOf('?') === -1 ? '?' : '&';
-    var redirectTargetFresh = redirectTarget + sep + '_t=' + Date.now();
-
-    // Shopify often ignores return_to on create_customer; sessionStorage is the reliable fallback.
-    try { sessionStorage.setItem('post_register_redirect', redirectTargetFresh); } catch (ex) {}
-    try { localStorage.setItem('return_to_after_auth', redirectTarget); } catch (ex) {}
+    // Cookie survives Shop Pay / cross-origin hops; checked in <head> before anything else.
+    document.cookie = 'post_register_redirect=' + encodeURIComponent(redirectFresh) + ';path=/;max-age=120;SameSite=Lax';
+    try { sessionStorage.setItem('post_register_redirect', redirectFresh); } catch (ex) {}
+    try { localStorage.setItem('return_to_after_auth', accountHome); } catch (ex) {}
     form.querySelectorAll('input[name="return_to"]').forEach(function (inp) {
-      inp.value = redirectTarget;
+      inp.value = accountHome;
     });
 
     // Show loading state
