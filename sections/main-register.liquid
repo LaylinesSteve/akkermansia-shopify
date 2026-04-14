@@ -171,11 +171,24 @@
     {%- liquid
       assign register_return_url = routes.account_url
       if request.params.return_url != blank
-        assign register_return_url = request.params.return_url
+        assign pdown = request.params.return_url | downcase
+        unless pdown contains '/account/login' or pdown contains '/account/register' or pdown contains '/account/recover' or pdown contains '/account/activate' or pdown contains '/account/reset' or pdown contains '/challenge'
+          assign register_return_url = request.params.return_url
+        endunless
       elsif request.params.return_to != blank
-        assign register_return_url = request.params.return_to
+        assign pdown = request.params.return_to | downcase
+        unless pdown contains '/account/login' or pdown contains '/account/register' or pdown contains '/account/recover' or pdown contains '/account/activate' or pdown contains '/account/reset' or pdown contains '/challenge'
+          assign register_return_url = request.params.return_to
+        endunless
       elsif request.referer != blank
-        assign register_return_url = request.referer
+        assign ref_down = request.referer | downcase
+        assign referer_is_account_gate = false
+        if ref_down contains '/account/login' or ref_down contains '/account/register' or ref_down contains '/account/recover' or ref_down contains '/account/activate' or ref_down contains '/account/reset' or ref_down contains '/challenge'
+          assign referer_is_account_gate = true
+        endif
+        unless referer_is_account_gate
+          assign register_return_url = request.referer
+        endunless
       endif
       assign hcp_register_collection = collections['health-care-professionals']
       assign hcp_register_path = '/collections/health-care-professionals'
@@ -294,6 +307,7 @@
 <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript" async></script>
 
 <script type="application/json" id="hcp-after-register-path">{{ hcp_register_path | json }}</script>
+<script type="application/json" id="register-account-home">{{ routes.account_url | json }}</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -315,26 +329,48 @@ document.addEventListener('DOMContentLoaded', function() {
   const form = document.querySelector('form');
   const submitBtn = document.getElementById('submit-btn');
 
-  // ===== NEW: capture intended return URL =====
+  // ===== Post-signup return URL (never send people back to login/register/challenge) =====
   const params = new URLSearchParams(window.location.search);
-  const rawReturnTo =
-    params.get('return_to') ||
-    document.referrer ||
-    (window.location.pathname + window.location.search + window.location.hash);
+  var accountHome = '/account';
+  try {
+    var ahEl = document.getElementById('register-account-home');
+    if (ahEl && ahEl.textContent) {
+      var ah = JSON.parse(ahEl.textContent);
+      if (typeof ah === 'string' && ah.indexOf('/') === 0) accountHome = ah;
+    }
+  } catch (e1) {}
 
   function sanitizeReturnTo(raw) {
     try {
-      // allow relative paths outright
       if (!/^https?:\/\//i.test(raw)) return raw || '/';
       const u = new URL(raw, window.location.origin);
       if (u.origin !== window.location.origin) return '/';
       return u.pathname + u.search + u.hash || '/';
     } catch(e) { return '/'; }
   }
-  const returnTo = sanitizeReturnTo(rawReturnTo);
+
+  function isAuthGatePath(path) {
+    if (!path) return true;
+    var p = path.split('?')[0].split('#')[0].toLowerCase();
+    if (p === accountHome.toLowerCase()) return false;
+    return (
+      p === '/account/login' ||
+      p === '/account/register' ||
+      p === '/account/recover' ||
+      p.indexOf('/account/activate') === 0 ||
+      p.indexOf('/account/reset') === 0 ||
+      p === '/challenge'
+    );
+  }
+
+  const rawReturnTo =
+    params.get('return_to') ||
+    document.referrer ||
+    (window.location.pathname + window.location.search + window.location.hash);
+  var candidate = sanitizeReturnTo(rawReturnTo);
+  const returnTo = isAuthGatePath(candidate) ? accountHome : candidate;
   // ===========================================
-  // Healthcare providers land on the HCP collection after signup (unless ?return_to= is present).
-  // Path comes from Liquid (locale/markets-aware); avoids hardcoded /collections/... 404s.
+  // Healthcare providers → HCP collection path from Liquid (Markets/locale aware).
   var hcpAfterRegisterPath = '/collections/health-care-professionals';
   try {
     var hcpPathEl = document.getElementById('hcp-after-register-path');
