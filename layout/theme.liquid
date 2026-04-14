@@ -425,6 +425,18 @@ h5,
       return p.split('?')[0].split('#')[0];
     }
 
+    // Post-registration redirect (most reliable — sessionStorage survives Shopify's own redirect to /).
+    var POST_REG_KEY = 'post_register_redirect';
+    var postRegTarget = sessionStorage.getItem(POST_REG_KEY);
+    if (postRegTarget) {
+      sessionStorage.removeItem(POST_REG_KEY);
+      try { localStorage.removeItem('return_to_after_auth'); } catch (ex) {}
+      if (postRegTarget.charAt(0) === '/' && pathKey(window.location.pathname) !== pathKey(postRegTarget)) {
+        window.location.replace(postRegTarget);
+        return;
+      }
+    }
+
     var HCP_PATH = {{ hcp_redirect_path | json }};
 
     var HCP_POST_LOGIN_KEY = 'hcp_post_login_redirect';

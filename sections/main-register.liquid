@@ -280,7 +280,15 @@
 <!-- Cloudinary Upload Widget -->
 <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript" async></script>
 
+{%- liquid
+  assign hcp_reg_coll = collections['health-care-professionals']
+  assign hcp_register_dest = '/collections/health-care-professionals'
+  if hcp_reg_coll != blank
+    assign hcp_register_dest = hcp_reg_coll.url
+  endif
+-%}
 <script type="application/json" id="register-account-home">{{ routes.account_url | json }}</script>
+<script type="application/json" id="register-hcp-dest">{{ hcp_register_dest | json }}</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -307,26 +315,25 @@ document.addEventListener('DOMContentLoaded', function() {
     return;
   }
 
-  var accountHome = '/account';
-  try {
-    var ahEl = document.getElementById('register-account-home');
-    if (ahEl && ahEl.textContent) {
-      var ah = JSON.parse(ahEl.textContent);
-      if (typeof ah === 'string') {
-        if (ah.indexOf('/') === 0) {
-          accountHome = ah;
-        } else if (/^https?:\/\//i.test(ah)) {
-          var u = new URL(ah);
-          accountHome = u.pathname + u.search + u.hash;
+  function parsePath(id, fallback) {
+    try {
+      var el = document.getElementById(id);
+      if (el && el.textContent) {
+        var v = JSON.parse(el.textContent);
+        if (typeof v === 'string') {
+          if (v.indexOf('/') === 0) return v;
+          if (/^https?:\/\//i.test(v)) {
+            var u = new URL(v);
+            return u.pathname + u.search + u.hash;
+          }
         }
       }
-    }
-  } catch (e1) {}
-
-  var returnToInput = form.querySelector('input[name="return_to"]');
-  if (returnToInput) {
-    returnToInput.value = accountHome;
+    } catch (e) {}
+    return fallback;
   }
+
+  var accountHome = parsePath('register-account-home', '/account');
+  var hcpDest = parsePath('register-hcp-dest', '/collections/health-care-professionals');
 
   // Function to toggle HCP fields visibility
   function toggleHcpFields(isHcp) {
@@ -510,11 +517,11 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-    // Always land on account home after signup (consumer and HCP); avoids / and pre-Account localStorage issues.
-    var redirectTarget = accountHome;
-    try {
-      localStorage.setItem('return_to_after_auth', redirectTarget);
-    } catch (e) {}
+    var redirectTarget = isHcp ? hcpDest : accountHome;
+
+    // Shopify often ignores return_to on create_customer; sessionStorage is the reliable fallback.
+    try { sessionStorage.setItem('post_register_redirect', redirectTarget); } catch (ex) {}
+    try { localStorage.setItem('return_to_after_auth', redirectTarget); } catch (ex) {}
     form.querySelectorAll('input[name="return_to"]').forEach(function (inp) {
       inp.value = redirectTarget;
     });
