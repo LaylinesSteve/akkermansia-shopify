@@ -142,7 +142,8 @@
                     show_vendor: section.settings.show_vendor,
                     show_rating: section.settings.show_rating,
                     section_id: section.id,
-                    quick_add: section.settings.quick_add
+                    quick_add: section.settings.quick_add,
+                    show_hcp_unit_pricing_note: section.settings.show_pricing_footnote
                   %}
                 </li>
               {%- endfor -%}
@@ -260,6 +261,13 @@
       "step": 1,
       "default": 8,
       "label": "t:sections.customer-tag-collection-list.settings.products_per_collection.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pricing_footnote",
+      "default": true,
+      "label": "t:sections.customer-tag-collection-list.settings.show_pricing_footnote.label",
+      "info": "t:sections.customer-tag-collection-list.settings.show_pricing_footnote.info"
     },
     {
       "type": "range",

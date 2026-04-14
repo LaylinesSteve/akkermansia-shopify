@@ -687,6 +687,10 @@
         "products_per_collection": {
           "label": "Maximum products per collection"
         },
+        "show_pricing_footnote": {
+          "label": "Show per-unit pricing note under prices",
+          "info": "Same note as on the Health Care Professionals collection: per-unit pricing and case pack shipping."
+        },
         "show_view_all_link": {
           "label": "Show “View all” when a collection has more products",
           "info": "Links to that collection’s page."

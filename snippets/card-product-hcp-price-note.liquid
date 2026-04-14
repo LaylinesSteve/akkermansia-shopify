@@ -1,6 +1,7 @@
 {%- comment -%}
-  Shown under the collection card price on the Health Care Professionals collection
-  for customers tagged healthcare_provider. Pass show_note: true from card-product.
+  Shown under the card price on the Health Care Professionals collection (healthcare_provider),
+  or when card-product is rendered with show_hcp_unit_pricing_note (e.g. customer-tag collection section).
+  Pass show_note: true from card-product.
 {%- endcomment -%}
 {%- if show_note -%}
   <div class="card__hcp-price-note">

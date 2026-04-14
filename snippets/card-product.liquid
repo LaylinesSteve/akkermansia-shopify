@@ -15,6 +15,7 @@
   - horizontal_class: {Boolean} Add a card--horizontal class if set to true. Default: false (optional)
   - horizontal_quick_add: {Boolean} Changes the quick add button styles when set to true. Default: false (optional)
   - placeholder_image: {String} The placeholder image to use when no product exists. Default: 'product-apparel-2' (optional)
+  - show_hcp_unit_pricing_note: {Boolean} When true, show the HCP per-unit / case shipping footnote under the price (e.g. tag-gated sections that are not the HCP collection template). Default: false (optional)
 
   Usage:
   {% render 'card-product', show_vendor: section.settings.show_vendor %}
@@ -45,9 +46,13 @@
       endunless
     endif
     assign show_hcp_collection_price_note = false
-    if show_card_product_price and collection != blank and collection.handle == 'health-care-professionals'
-      if customer and customer.tags contains 'healthcare_provider'
+    if show_card_product_price
+      if show_hcp_unit_pricing_note
         assign show_hcp_collection_price_note = true
+      elsif collection != blank and collection.handle == 'health-care-professionals'
+        if customer and customer.tags contains 'healthcare_provider'
+          assign show_hcp_collection_price_note = true
+        endif
       endif
     endif
   -%}
