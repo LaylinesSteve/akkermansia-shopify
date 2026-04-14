@@ -326,6 +326,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
   var accountHome = parsePath('register-account-home', '/account');
 
+  // Kill the "page before Account" stash so it can't override the post-register redirect.
+  try { localStorage.removeItem('return_to_after_auth'); } catch (e) {}
+
+  // Set cookie on click (fires before Shop Pay can intercept the submit event).
+  submitBtn.addEventListener('click', function() {
+    var sep = accountHome.indexOf('?') === -1 ? '?' : '&';
+    var fresh = accountHome + sep + '_t=' + Date.now();
+    document.cookie = 'post_register_redirect=' + encodeURIComponent(fresh) + ';path=/;max-age=300;SameSite=Lax';
+  });
+
   // Function to toggle HCP fields visibility
   function toggleHcpFields(isHcp) {
     if (isHcp) {
