@@ -63,19 +63,12 @@
         "featured_collection_iz7JJb": {
           "type": "featured_collection",
           "settings": {
-            "collection": ""
-          }
-        },
-        "featured_collection_QGyGbz": {
-          "type": "featured_collection",
-          "settings": {
-            "collection": ""
+            "collection": "health-care-professionals"
           }
         }
       },
       "block_order": [
-        "featured_collection_iz7JJb",
-        "featured_collection_QGyGbz"
+        "featured_collection_iz7JJb"
       ],
       "name": "t:sections.customer-tag-collection-list.presets.name",
       "settings": {
