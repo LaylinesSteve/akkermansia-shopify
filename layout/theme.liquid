@@ -404,6 +404,18 @@ h5,
   if customer.tags contains 'healthcare_provider'
     assign is_hcp_customer = true
   endif
+  # healthcare_provider tag may arrive via Flow after signup; registration note is immediate.
+  assign is_hcp_by_note = false
+  if customer.note != blank
+    assign note_l = customer.note | downcase
+    if note_l contains 'registration type: hcp' or note_l contains 'registration type:hcp'
+      assign is_hcp_by_note = true
+    endif
+  endif
+  assign is_hcp_for_redirect = false
+  if is_hcp_customer or is_hcp_by_note
+    assign is_hcp_for_redirect = true
+  endif
 -%}
 <script>
 (function() {
@@ -424,7 +436,7 @@ h5,
     }
 
     var HCP_POST_LOGIN_KEY = 'hcp_post_login_redirect';
-    var isHcpProvider = {{ is_hcp_customer | json }};
+    var isHcpProvider = {{ is_hcp_for_redirect | json }};
 
     if (isHcpProvider && sessionStorage.getItem(HCP_POST_LOGIN_KEY)) {
       sessionStorage.removeItem(HCP_POST_LOGIN_KEY);
@@ -438,7 +450,7 @@ h5,
       sessionStorage.removeItem(HCP_POST_LOGIN_KEY);
     }
 
-    // Do not send tagged practitioners to the "page before Account" stashed by the global click handler.
+    // Do not send HCP signups (tag or note) to the "page before Account" stashed by the global click handler.
     if (isHcpProvider) {
       try {
         localStorage.removeItem('return_to_after_auth');
