@@ -150,7 +150,7 @@
   
   <h1>{{ 'customer.register.title' | t }}</h1>
   
-  {%- form 'create_customer' -%}
+  {%- form 'create_customer', return_to: routes.account_url -%}
     <!-- Registration Type Selector -->
     <div class="registration-type-selector">
       <h3>I am registering as:</h3>
@@ -168,12 +168,10 @@
 
     <!-- Hidden field: stored in customer note so you can see in Admin (Customers > Note) and in Liquid via customer.note. Use snippet 'customer-registration-type' to detect hcp vs consumer. -->
     <input type="hidden" name="customer[note][Registration Type]" id="registration-type-hidden" value="consumer">
-    {%- liquid
-      # After signup, always return_to account home (reliable vs homepage / referer / localStorage).
-      assign register_return_url = routes.account_url
-    -%}
-    {%- comment -%} return_to must stay unencoded in the value; url_encode breaks Shopify redirects (404). {%- endcomment -%}
-    <input type="hidden" name="return_to" id="register-return-to-input" value="{{ register_return_url | escape }}">
+    {%- comment -%}
+      return_to is set via {% form %} so Shopify emits a single correct hidden field (Markets / locale aware).
+      JS on submit still syncs all return_to inputs to the same destination as a safeguard.
+    {%- endcomment -%}
     {%- if form.errors -%}
       <h2 class="form__message" tabindex="-1" autofocus>
         <svg aria-hidden="true" focusable="false">
@@ -314,11 +312,18 @@ document.addEventListener('DOMContentLoaded', function() {
     var ahEl = document.getElementById('register-account-home');
     if (ahEl && ahEl.textContent) {
       var ah = JSON.parse(ahEl.textContent);
-      if (typeof ah === 'string' && ah.indexOf('/') === 0) accountHome = ah;
+      if (typeof ah === 'string') {
+        if (ah.indexOf('/') === 0) {
+          accountHome = ah;
+        } else if (/^https?:\/\//i.test(ah)) {
+          var u = new URL(ah);
+          accountHome = u.pathname + u.search + u.hash;
+        }
+      }
     }
   } catch (e1) {}
 
-  const returnToInput = document.getElementById('register-return-to-input');
+  var returnToInput = form.querySelector('input[name="return_to"]');
   if (returnToInput) {
     returnToInput.value = accountHome;
   }
@@ -448,33 +453,32 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Show/hide file upload when reseller checkbox changes
-  resellerCheckbox.addEventListener('change', function() {
-    if (this.checked) {
-      uploadContainer.classList.add('show');
-      if (!uploadWidget) {
-        initializeUploadWidget();
+  if (resellerCheckbox && uploadContainer && uploadBtn && infoDiv && certificateUrlInput) {
+    resellerCheckbox.addEventListener('change', function() {
+      if (this.checked) {
+        uploadContainer.classList.add('show');
+        if (!uploadWidget) {
+          initializeUploadWidget();
+        }
+      } else {
+        uploadContainer.classList.remove('show');
+        uploadedFileUrl = '';
+        certificateUrlInput.value = '';
+        infoDiv.innerHTML = '';
+        infoDiv.className = 'file-info';
+        uploadBtn.textContent = 'Choose Certificate File';
+        uploadBtn.disabled = false;
       }
-    } else {
-      uploadContainer.classList.remove('show');
-      // Clear uploaded file data
-      uploadedFileUrl = '';
-      certificateUrlInput.value = '';
-      infoDiv.innerHTML = '';
-      infoDiv.className = 'file-info';
-      uploadBtn.textContent = 'Choose Certificate File';
-      uploadBtn.disabled = false;
-    }
-  });
+    });
 
-  // Handle upload button click
-  uploadBtn.addEventListener('click', function() {
-    if (uploadWidget) {
-      uploadWidget.open();
-    } else {
-      showFileError('Upload widget not initialized. Please try again.');
-    }
-  });
+    uploadBtn.addEventListener('click', function() {
+      if (uploadWidget) {
+        uploadWidget.open();
+      } else {
+        showFileError('Upload widget not initialized. Please try again.');
+      }
+    });
+  }
 
   // Form submission validation
   form.addEventListener('submit', function(e) {

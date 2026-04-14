@@ -671,7 +671,7 @@
       }
     },
     "customer-tag-collection-list": {
-      "name": "Collection list (customer tag)",
+      "name": "Collection products (customer tag)",
       "settings": {
         "header_access": {
           "content": "Customer access"
@@ -679,10 +679,21 @@
         "required_customer_tags": {
           "label": "Required customer tags",
           "info": "Comma-separated. Logged-in customers see this section only if they have at least one of these tags. Tag names are case-sensitive. Default: healthcare_provider."
+        },
+        "show_collection_headings": {
+          "label": "Show collection name above each group",
+          "info": "Uses the title of each collection you add as a block."
+        },
+        "products_per_collection": {
+          "label": "Maximum products per collection"
+        },
+        "show_view_all_link": {
+          "label": "Show “View all” when a collection has more products",
+          "info": "Links to that collection’s page."
         }
       },
       "presets": {
-        "name": "Collection list (customer tag)"
+        "name": "Collection products (customer tag)"
       }
     },
     "contact-form": {

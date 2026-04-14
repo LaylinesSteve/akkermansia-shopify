@@ -442,13 +442,6 @@ h5,
       sessionStorage.removeItem(HCP_POST_LOGIN_KEY);
     }
 
-    // Do not send HCP signups (tag or note) to the "page before Account" stashed by the global click handler.
-    if (isHcpProvider) {
-      try {
-        localStorage.removeItem('return_to_after_auth');
-      } catch (e) {}
-    }
-
     var key = 'return_to_after_auth';
     var raw = localStorage.getItem(key);
     if (!raw) return;
