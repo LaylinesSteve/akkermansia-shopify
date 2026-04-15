@@ -172,7 +172,7 @@
           Sign in to See Pricing
         </a>
         <p class="restricted-buy-button__register-text">
-          Need an account? <a href="{{ routes.account_register_url }}?return_to={{ request.path | url_encode }}">Register here</a>
+          Need an account? <a href="{{ routes.account_register_url }}?return_to={{ request.path | url_encode }}&type=hcp">Register here</a>
         </p>
       {%- else -%}
         {%- comment -%} Logged in but doesn't have required tag {%- endcomment -%}
