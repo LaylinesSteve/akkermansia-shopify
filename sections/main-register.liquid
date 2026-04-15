@@ -397,8 +397,14 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
 
-    // Initialize based on default selection (consumer)
-    toggleHcpFields(false);
+    // Auto-select HCP if ?type=hcp is in the URL, otherwise default to consumer.
+    var urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('type') === 'hcp') {
+      registrationTypeHcp.checked = true;
+      toggleHcpFields(true);
+    } else {
+      toggleHcpFields(false);
+    }
   }
 
   const CLOUDINARY_CLOUD_NAME = 'dacv4ke6z';  // Get from Cloudinary dashboard

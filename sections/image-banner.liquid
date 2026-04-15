@@ -134,8 +134,8 @@
             {%- liquid
               assign _btn1_label = block.settings.button_label_1
               assign _btn1_link = block.settings.button_link_1
+              assign _is_hcp_btn = false
               if customer
-                assign _is_hcp_btn = false
                 if customer.tags contains 'healthcare_provider'
                   assign _is_hcp_btn = true
                 endif
@@ -145,14 +145,23 @@
                     assign _is_hcp_btn = true
                   endif
                 endif
-                if _is_hcp_btn
-                  assign _hcp_btn_coll = collections['health-care-professionals']
-                  if _hcp_btn_coll != blank
-                    assign _btn1_label = 'Shop'
-                    assign _btn1_link = _hcp_btn_coll.url
+              endif
+              if _is_hcp_btn
+                assign _hcp_btn_coll = collections['health-care-professionals']
+                if _hcp_btn_coll != blank
+                  assign _btn1_label = 'Shop'
+                  assign _btn1_link = _hcp_btn_coll.url
+                else
+                  assign _btn1_label = 'Shop'
+                  assign _btn1_link = '/collections/health-care-professionals'
+                endif
+              else
+                assign _link_down = _btn1_link | downcase
+                if _link_down contains '/account/register'
+                  if _btn1_link contains '?'
+                    assign _btn1_link = _btn1_link | append: '&type=hcp'
                   else
-                    assign _btn1_label = 'Shop'
-                    assign _btn1_link = '/collections/health-care-professionals'
+                    assign _btn1_link = _btn1_link | append: '?type=hcp'
                   endif
                 endif
               endif
