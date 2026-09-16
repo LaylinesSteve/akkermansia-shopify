@@ -1,326 +1,217 @@
-{% comment %}
-  Renders a standard dropdown style menu for the header.
+Liquid syntax error (snippets/header-dropdown-menu line 82): Expected end_of_string but found pipe in "link.title | downcase == 'shop' or link.handle == 'shop'"{% comment %}
 
-  Usage:
-  {% render 'header-dropdown-menu' %}
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{% comment %}\n  Renders a standard dropdown style menu for the header.\n\n
+    \ Usage:\n  {% render 'header-dropdown-menu' %}\n{% endcomment %}\n\n<style>\n
+    \ .header__menu-item--with-image {\n    display: flex;\n    align-items: center;\n
+    \   gap: 0.75rem;\n  }\n  \n  .header__menu-image-wrapper {\n    flex-shrink:
+    0;\n    display: block;\n  }\n  \n  .header__menu-item-image {\n    width: 80px;\n
+    \   height: auto;\n    border-radius: 4px;\n    object-fit: cover;\n    display:
+    block;\n  }\n  \n  .header__submenu .header__menu-item-image {\n    width: 60px;\n
+    \ }\n\n  /* Shop dropdown: bigger text */\n  .header__submenu--shop .header__menu-item
+    {\n    font-size: 1.25rem !important;\n  }\n\n  /* Shop dropdown: product-style
+    card items */\n  .header__submenu--shop .shop-card-item {\n    display: flex;\n
+    \   align-items: center;\n    gap: 0.75rem;\n    padding: 0.4rem 1rem;\n  }\n
+    \ \n  .header__submenu--shop .shop-card-item .shop-card-image {\n    width: 80px;\n
+    \   height: 80px;\n    border-radius: 8px;\n    object-fit: cover;\n    display:
+    block;\n    flex-shrink: 0;\n  }\n\n  .header__submenu--shop .shop-card-item .shop-card-title
+    {\n    font-size: 1.25rem;\n    font-weight: 500;\n  }\n</style>\n\n<nav class=\"header__inline-menu\">\n
+    \ <ul class=\"list-menu list-menu--inline\" role=\"list\">\n    {%- for link in
+    section.settings.menu.links -%}\n      <li>\n        {%- if link.links != blank
+    -%}\n          <header-menu>\n            <details id=\"Details-HeaderMenu-{{
+    forloop.index }}\">\n              <summary\n                id=\"HeaderMenu-{{
+    link.handle }}\"\n                class=\"header__menu-item list-menu__item link
+    focus-inset\"\n              >\n                <span\n                  {%- if
+    link.child_active %}\n                    class=\"header__active-menu-item\"\n
+    \                 {% endif %}\n                >\n                  {{- link.title
+    | escape -}}\n                </span>\n                {% render 'icon-caret'
+    %}\n              </summary>\n              <ul\n                id=\"HeaderMenu-MenuList-{{
+    forloop.index }}\"\n                class=\"header__submenu list-menu list-menu--disclosure
+    color-{{ section.settings.menu_color_scheme }} gradient caption-large motion-reduce
+    global-settings-popup{% if link.title | downcase == 'shop' or link.handle == 'shop'
+    %} header__submenu--shop{% endif %}\"\n                role=\"list\"\n                tabindex=\"-1\"\n
+    \             >\n                {%- comment -%} Check if this is the Shop menu
+    (case-insensitive) {%- endcomment -%}\n                {%- assign is_shop_menu
+    = false -%}\n                {%- assign link_title_lower = link.title | downcase
+    -%}\n                {%- if link_title_lower == 'shop' or link.handle == 'shop'
+    or link_title_lower contains 'shop' -%}\n                  {%- assign is_shop_menu
+    = true -%}\n                {%- endif -%}\n                \n                {%-
+    for childlink in link.links -%}\n                  <li>\n                    {%-
+    comment -%} Detect HCP link by title {%- endcomment -%}\n                    {%-
+    assign childlink_title_lower = childlink.title | downcase -%}\n                    {%-
+    assign is_hcp_link = false -%}\n                    {%- if childlink_title_lower
+    contains 'health care professional' or childlink_title_lower contains 'healthcare
+    professional' or childlink_title_lower contains 'hcp' or childlink_title_lower
+    contains 'professional' -%}\n                      {%- assign is_hcp_link = true
+    -%}\n                    {%- endif -%}\n\n                    {%- comment -%}
+    Get image from product or assign stethoscope for HCP {%- endcomment -%}\n                    {%-
+    assign menu_item_image = null -%}\n                    {%- assign use_hcp_image
+    = false -%}\n                    \n                    {%- comment -%} Try to
+    get product from URL or type {%- endcomment -%}\n                    {%- assign
+    menu_product = null -%}\n                    {%- if childlink.type == 'product'
+    -%}\n                      {%- assign menu_product = childlink.object -%}\n                    {%-
+    elsif childlink.url contains '/products/' -%}\n                      {%- assign
+    product_handle = childlink.url | split: '/products/' | last | split: '?' | first
+    | split: '#' | first -%}\n                      {%- assign menu_product = all_products[product_handle]
+    -%}\n                      {%- comment -%} If all_products doesn't work, try products
+    collection {%- endcomment -%}\n                      {%- if menu_product == null
+    -%}\n                        {%- for product in collections.all.products -%}\n
+    \                         {%- if product.handle == product_handle -%}\n                            {%-
+    assign menu_product = product -%}\n                            {%- break -%}\n
+    \                         {%- endif -%}\n                        {%- endfor -%}\n
+    \                     {%- endif -%}\n                    {%- endif -%}\n                    \n
+    \                   {%- comment -%} For Shop menu: product images for products,
+    stethoscope for HCP {%- endcomment -%}\n                    {%- if is_shop_menu
+    and is_hcp_link -%}\n                      {%- assign use_hcp_image = true -%}\n
+    \                   {%- elsif menu_product != null -%}\n                      {%-
+    if is_shop_menu -%}\n                        {%- if menu_product.featured_media
+    != blank -%}\n                          {%- assign menu_item_image = menu_product.featured_media
+    -%}\n                        {%- elsif menu_product.media != blank and menu_product.media.size
+    > 0 -%}\n                          {%- assign menu_item_image = menu_product.media[0]
+    -%}\n                        {%- endif -%}\n                      {%- endif -%}\n
+    \                   {%- elsif childlink.type == 'collection' -%}\n                      {%-
+    if childlink.object.featured_image != blank -%}\n                        {%- assign
+    menu_item_image = childlink.object.featured_image -%}\n                      {%-
+    endif -%}\n                    {%- endif -%}\n                    \n                    <!--
+    DEBUG: title=\"{{ childlink.title | escape }}\" lower=\"{{ childlink_title_lower
+    }}\" is_shop={{ is_shop_menu }} is_hcp={{ is_hcp_link }} use_hcp_img={{ use_hcp_image
+    }} has_children={{ childlink.links | size }} url=\"{{ childlink.url }}\" type=\"{{
+    childlink.type }}\" -->\n                    {%- if is_shop_menu and use_hcp_image
+    -%}\n                      {%- comment -%} HCP link styled like a product card
+    with stethoscope image (works with or without child links) {%- endcomment -%}\n
+    \                     <a\n                        id=\"HeaderMenu-{{ link.handle
+    }}-{{ childlink.handle }}\"\n                        href=\"{{ childlink.url }}\"\n
+    \                       class=\"header__menu-item list-menu__item link link--text
+    focus-inset caption-large shop-card-item{% if childlink.current %} list-menu__item--active{%
+    endif %}\"\n                        {% if childlink.current %}\n                          aria-current=\"page\"\n
+    \                       {% endif %}\n                      >\n                        <img\n
+    \                         src=\"https://cdn.shopify.com/s/files/1/0699/8071/7276/files/stethoscope-icon.jpg?v=1770731738\"\n
+    \                         alt=\"{{ childlink.title | escape }}\"\n                          class=\"shop-card-image\"\n
+    \                         loading=\"lazy\"\n                          width=\"80\"\n
+    \                         height=\"80\"\n                        >\n                        <span
+    class=\"shop-card-title\">{{ childlink.title | escape }}</span>\n                      </a>\n
+    \                   {%- elsif childlink.links == blank -%}\n                      <a\n
+    \                       id=\"HeaderMenu-{{ link.handle }}-{{ childlink.handle
+    }}\"\n                        href=\"{{ childlink.url }}\"\n                        class=\"header__menu-item
+    list-menu__item link link--text focus-inset caption-large{% if childlink.current
+    %} list-menu__item--active{% endif %}{% if menu_item_image != null %} header__menu-item--with-image{%
+    endif %}\"\n                        {% if childlink.current %}\n                          aria-current=\"page\"\n
+    \                       {% endif %}\n                      >\n                        {%-
+    if menu_item_image != null -%}\n                          <span class=\"header__menu-image-wrapper\">\n
+    \                           <img \n                              src=\"{{ menu_item_image
+    | image_url: width: 80 }}\"\n                              alt=\"{{ menu_item_image.alt
+    | default: childlink.title | escape }}\"\n                              class=\"header__menu-item-image\"\n
+    \                             loading=\"lazy\"\n                              width=\"80\"\n
+    \                             height=\"{{ 80 | divided_by: menu_item_image.aspect_ratio
+    | round }}\"\n                            >\n                          </span>\n
+    \                       {%- endif -%}\n                        <span>{{ childlink.title
+    | escape }}</span>\n                      </a>\n                    {%- else -%}\n
+    \                     <details id=\"Details-HeaderSubMenu-{{ link.handle }}-{{
+    childlink.handle }}\">\n                        <summary\n                          id=\"HeaderMenu-{{
+    link.handle }}-{{ childlink.handle }}\"\n                          class=\"header__menu-item
+    link link--text list-menu__item focus-inset caption-large{% if menu_item_image
+    != null %} header__menu-item--with-image{% endif %}\"\n                        >\n
+    \                         {%- if menu_item_image != null -%}\n                            <span
+    class=\"header__menu-image-wrapper\">\n                              <img \n                                src=\"{{
+    menu_item_image | image_url: width: 80 }}\"\n                                alt=\"{{
+    menu_item_image.alt | default: childlink.title | escape }}\"\n                                class=\"header__menu-item-image\"\n
+    \                               loading=\"lazy\"\n                                width=\"80\"\n
+    \                               height=\"{{ 80 | divided_by: menu_item_image.aspect_ratio
+    | round }}\"\n                              >\n                            </span>\n
+    \                         {%- endif -%}\n                          <span>{{ childlink.title
+    | escape }}</span>\n                          {% render 'icon-caret' %}\n                        </summary>\n
+    \                       <ul\n                          id=\"HeaderMenu-SubMenuList-{{
+    link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}\"\n                          class=\"header__submenu
+    list-menu motion-reduce\"\n                        >\n                          {%-
+    for grandchildlink in childlink.links -%}\n                            <li>\n
+    \                             {%- comment -%} Get image for grandchild menu item
+    {%- endcomment -%}\n                              {%- assign grandchild_image
+    = null -%}\n                              \n                              {%-
+    comment -%} Try to get product from URL if type is not detected {%- endcomment
+    -%}\n                              {%- assign grandchild_product = null -%}\n
+    \                             {%- if grandchildlink.type == 'product' -%}\n                                {%-
+    assign grandchild_product = grandchildlink.object -%}\n                              {%-
+    elsif grandchildlink.url contains '/products/' -%}\n                                {%-
+    assign product_handle = grandchildlink.url | split: '/products/' | last | split:
+    '?' | first -%}\n                                {%- assign grandchild_product
+    = all_products[product_handle] -%}\n                              {%- endif -%}\n
+    \                             \n                              {%- if grandchildlink.type
+    == 'collection' -%}\n                                {%- if grandchildlink.object.metafields.custom.menu_image
+    != blank -%}\n                                  {%- assign grandchild_image =
+    grandchildlink.object.metafields.custom.menu_image -%}\n                                {%-
+    elsif grandchildlink.object.metafields.theme.menu_image != blank -%}\n                                  {%-
+    assign grandchild_image = grandchildlink.object.metafields.theme.menu_image -%}\n
+    \                               {%- elsif grandchildlink.object.featured_image
+    != blank -%}\n                                  {%- assign grandchild_image =
+    grandchildlink.object.featured_image -%}\n                                {%-
+    endif -%}\n                              {%- elsif grandchild_product != null
+    -%}\n                                {%- if grandchild_product.metafields.custom.menu_image
+    != blank -%}\n                                  {%- assign grandchild_image =
+    grandchild_product.metafields.custom.menu_image -%}\n                                {%-
+    elsif grandchild_product.metafields.theme.menu_image != blank -%}\n                                  {%-
+    assign grandchild_image = grandchild_product.metafields.theme.menu_image -%}\n
+    \                               {%- elsif grandchild_product.metafields.shopify.menu_image
+    != blank -%}\n                                  {%- assign grandchild_image =
+    grandchild_product.metafields.shopify.menu_image -%}\n                                {%-
+    elsif grandchild_product.featured_media != blank -%}\n                                  {%-
+    assign grandchild_image = grandchild_product.featured_media -%}\n                                {%-
+    endif -%}\n                              {%- elsif grandchildlink.type == 'page'
+    -%}\n                                {%- if grandchildlink.object.metafields.custom.menu_image
+    != blank -%}\n                                  {%- assign grandchild_image =
+    grandchildlink.object.metafields.custom.menu_image -%}\n                                {%-
+    elsif grandchildlink.object.metafields.theme.menu_image != blank -%}\n                                  {%-
+    assign grandchild_image = grandchildlink.object.metafields.theme.menu_image -%}\n
+    \                               {%- endif -%}\n                              {%-
+    endif -%}\n                              \n                              <a\n
+    \                               id=\"HeaderMenu-{{ link.handle }}-{{ childlink.handle
+    }}-{{ grandchildlink.handle }}\"\n                                href=\"{{ grandchildlink.url
+    }}\"\n                                class=\"header__menu-item list-menu__item
+    link link--text focus-inset caption-large{% if grandchildlink.current %} list-menu__item--active{%
+    endif %}{% if grandchild_image != null %} header__menu-item--with-image{% endif
+    %}\"\n                                {% if grandchildlink.current %}\n                                  aria-current=\"page\"\n
+    \                               {% endif %}\n                              >\n
+    \                               {%- if grandchild_image != null -%}\n                                  <span
+    class=\"header__menu-image-wrapper\">\n                                    {%-
+    if grandchild_image.url != blank -%}\n                                      {%-
+    comment -%} File metafield object with .url property {%- endcomment -%}\n                                      <img
+    \n                                        src=\"{{ grandchild_image.url }}\"\n
+    \                                       alt=\"{{ grandchild_image.alt | default:
+    grandchildlink.title | escape }}\"\n                                        class=\"header__menu-item-image\"\n
+    \                                       loading=\"lazy\"\n                                        width=\"60\"\n
+    \                                       height=\"60\"\n                                      >\n
+    \                                   {%- elsif grandchild_image contains 'http'
+    or grandchild_image contains '//' -%}\n                                      {%-
+    comment -%} External URL string {%- endcomment -%}\n                                      <img
+    \n                                        src=\"{{ grandchild_image }}\"\n                                        alt=\"{{
+    grandchildlink.title | escape }}\"\n                                        class=\"header__menu-item-image\"\n
+    \                                       loading=\"lazy\"\n                                        width=\"60\"\n
+    \                                       height=\"60\"\n                                      >\n
+    \                                   {%- else -%}\n                                      {%-
+    comment -%} Shopify image object {%- endcomment -%}\n                                      <img
+    \n                                        src=\"{{ grandchild_image | image_url:
+    width: 60 }}\"\n                                        alt=\"{{ grandchild_image.alt
+    | default: grandchildlink.title | escape }}\"\n                                        class=\"header__menu-item-image\"\n
+    \                                       loading=\"lazy\"\n                                        width=\"60\"\n
+    \                                       height=\"{{ 60 | divided_by: grandchild_image.aspect_ratio
+    | round }}\"\n                                      >\n                                    {%-
+    endif -%}\n                                  </span>\n                                {%-
+    endif -%}\n                                <span>{{ grandchildlink.title | escape
+    }}</span>\n                              </a>\n                            </li>\n
+    \                         {%- endfor -%}\n                        </ul>\n                      </details>\n
+    \                   {%- endif -%}\n                  </li>\n                {%-
+    endfor -%}\n              </ul>\n            </details>\n          </header-menu>\n
+    \       {%- else -%}\n          <a\n            id=\"HeaderMenu-{{ link.handle
+    }}\"\n            href=\"{{ link.url }}\"\n            class=\"header__menu-item
+    list-menu__item link link--text focus-inset\"\n            {% if link.current
+    %}\n              aria-current=\"page\"\n            {% endif %}\n          >\n
+    \           <span\n              {%- if link.current %}\n                class=\"header__active-menu-item\"\n
+    \             {% endif %}\n            >\n              {{- link.title | escape
+    -}}\n            </span>\n          </a>\n        {%- endif -%}\n      </li>\n
+    \   {%- endfor -%}\n  </ul>\n</nav>\n"
+  to: 'Liquid syntax error (snippets/header-dropdown-menu line 82): Expected end_of_string
+    but found pipe in "link.title | downcase == ''shop'' or link.handle == ''shop''"'
+  position: 0..160
 {% endcomment %}
-
-<style>
-  .header__menu-item--with-image {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-  
-  .header__menu-image-wrapper {
-    flex-shrink: 0;
-    display: block;
-  }
-  
-  .header__menu-item-image {
-    width: 80px;
-    height: auto;
-    border-radius: 4px;
-    object-fit: cover;
-    display: block;
-  }
-  
-  .header__submenu .header__menu-item-image {
-    width: 60px;
-  }
-
-  /* Shop dropdown: bigger text */
-  .header__submenu--shop .header__menu-item {
-    font-size: 1.25rem !important;
-  }
-
-  /* Shop dropdown: product-style card items */
-  .header__submenu--shop .shop-card-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.4rem 1rem;
-  }
-  
-  .header__submenu--shop .shop-card-item .shop-card-image {
-    width: 80px;
-    height: 80px;
-    border-radius: 8px;
-    object-fit: cover;
-    display: block;
-    flex-shrink: 0;
-  }
-
-  .header__submenu--shop .shop-card-item .shop-card-title {
-    font-size: 1.25rem;
-    font-weight: 500;
-  }
-</style>
-
-<nav class="header__inline-menu">
-  <ul class="list-menu list-menu--inline" role="list">
-    {%- for link in section.settings.menu.links -%}
-      <li>
-        {%- if link.links != blank -%}
-          <header-menu>
-            <details id="Details-HeaderMenu-{{ forloop.index }}">
-              <summary
-                id="HeaderMenu-{{ link.handle }}"
-                class="header__menu-item list-menu__item link focus-inset"
-              >
-                <span
-                  {%- if link.child_active %}
-                    class="header__active-menu-item"
-                  {% endif %}
-                >
-                  {{- link.title | escape -}}
-                </span>
-                {% render 'icon-caret' %}
-              </summary>
-              <ul
-                id="HeaderMenu-MenuList-{{ forloop.index }}"
-                class="header__submenu list-menu list-menu--disclosure color-{{ section.settings.menu_color_scheme }} gradient caption-large motion-reduce global-settings-popup{% if link.title | downcase == 'shop' or link.handle == 'shop' %} header__submenu--shop{% endif %}"
-                role="list"
-                tabindex="-1"
-              >
-                {%- comment -%} Check if this is the Shop menu (case-insensitive) {%- endcomment -%}
-                {%- assign is_shop_menu = false -%}
-                {%- assign link_title_lower = link.title | downcase -%}
-                {%- if link_title_lower == 'shop' or link.handle == 'shop' or link_title_lower contains 'shop' -%}
-                  {%- assign is_shop_menu = true -%}
-                {%- endif -%}
-                
-                {%- for childlink in link.links -%}
-                  <li>
-                    {%- comment -%} Detect HCP link by title {%- endcomment -%}
-                    {%- assign childlink_title_lower = childlink.title | downcase -%}
-                    {%- assign is_hcp_link = false -%}
-                    {%- if childlink_title_lower contains 'health care professional' or childlink_title_lower contains 'healthcare professional' or childlink_title_lower contains 'hcp' or childlink_title_lower contains 'professional' -%}
-                      {%- assign is_hcp_link = true -%}
-                    {%- endif -%}
-
-                    {%- comment -%} Get image from product or assign stethoscope for HCP {%- endcomment -%}
-                    {%- assign menu_item_image = null -%}
-                    {%- assign use_hcp_image = false -%}
-                    
-                    {%- comment -%} Try to get product from URL or type {%- endcomment -%}
-                    {%- assign menu_product = null -%}
-                    {%- if childlink.type == 'product' -%}
-                      {%- assign menu_product = childlink.object -%}
-                    {%- elsif childlink.url contains '/products/' -%}
-                      {%- assign product_handle = childlink.url | split: '/products/' | last | split: '?' | first | split: '#' | first -%}
-                      {%- assign menu_product = all_products[product_handle] -%}
-                      {%- comment -%} If all_products doesn't work, try products collection {%- endcomment -%}
-                      {%- if menu_product == null -%}
-                        {%- for product in collections.all.products -%}
-                          {%- if product.handle == product_handle -%}
-                            {%- assign menu_product = product -%}
-                            {%- break -%}
-                          {%- endif -%}
-                        {%- endfor -%}
-                      {%- endif -%}
-                    {%- endif -%}
-                    
-                    {%- comment -%} For Shop menu: product images for products, stethoscope for HCP {%- endcomment -%}
-                    {%- if is_shop_menu and is_hcp_link -%}
-                      {%- assign use_hcp_image = true -%}
-                    {%- elsif menu_product != null -%}
-                      {%- if is_shop_menu -%}
-                        {%- if menu_product.featured_media != blank -%}
-                          {%- assign menu_item_image = menu_product.featured_media -%}
-                        {%- elsif menu_product.media != blank and menu_product.media.size > 0 -%}
-                          {%- assign menu_item_image = menu_product.media[0] -%}
-                        {%- endif -%}
-                      {%- endif -%}
-                    {%- elsif childlink.type == 'collection' -%}
-                      {%- if childlink.object.featured_image != blank -%}
-                        {%- assign menu_item_image = childlink.object.featured_image -%}
-                      {%- endif -%}
-                    {%- endif -%}
-                    
-                    <!-- DEBUG: title="{{ childlink.title | escape }}" lower="{{ childlink_title_lower }}" is_shop={{ is_shop_menu }} is_hcp={{ is_hcp_link }} use_hcp_img={{ use_hcp_image }} has_children={{ childlink.links | size }} url="{{ childlink.url }}" type="{{ childlink.type }}" -->
-                    {%- if is_shop_menu and use_hcp_image -%}
-                      {%- comment -%} HCP link styled like a product card with stethoscope image (works with or without child links) {%- endcomment -%}
-                      <a
-                        id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
-                        href="{{ childlink.url }}"
-                        class="header__menu-item list-menu__item link link--text focus-inset caption-large shop-card-item{% if childlink.current %} list-menu__item--active{% endif %}"
-                        {% if childlink.current %}
-                          aria-current="page"
-                        {% endif %}
-                      >
-                        <img
-                          src="https://cdn.shopify.com/s/files/1/0699/8071/7276/files/stethoscope-icon.jpg?v=1770731738"
-                          alt="{{ childlink.title | escape }}"
-                          class="shop-card-image"
-                          loading="lazy"
-                          width="80"
-                          height="80"
-                        >
-                        <span class="shop-card-title">{{ childlink.title | escape }}</span>
-                      </a>
-                    {%- elsif childlink.links == blank -%}
-                      <a
-                        id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
-                        href="{{ childlink.url }}"
-                        class="header__menu-item list-menu__item link link--text focus-inset caption-large{% if childlink.current %} list-menu__item--active{% endif %}{% if menu_item_image != null %} header__menu-item--with-image{% endif %}"
-                        {% if childlink.current %}
-                          aria-current="page"
-                        {% endif %}
-                      >
-                        {%- if menu_item_image != null -%}
-                          <span class="header__menu-image-wrapper">
-                            <img 
-                              src="{{ menu_item_image | image_url: width: 80 }}"
-                              alt="{{ menu_item_image.alt | default: childlink.title | escape }}"
-                              class="header__menu-item-image"
-                              loading="lazy"
-                              width="80"
-                              height="{{ 80 | divided_by: menu_item_image.aspect_ratio | round }}"
-                            >
-                          </span>
-                        {%- endif -%}
-                        <span>{{ childlink.title | escape }}</span>
-                      </a>
-                    {%- else -%}
-                      <details id="Details-HeaderSubMenu-{{ link.handle }}-{{ childlink.handle }}">
-                        <summary
-                          id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
-                          class="header__menu-item link link--text list-menu__item focus-inset caption-large{% if menu_item_image != null %} header__menu-item--with-image{% endif %}"
-                        >
-                          {%- if menu_item_image != null -%}
-                            <span class="header__menu-image-wrapper">
-                              <img 
-                                src="{{ menu_item_image | image_url: width: 80 }}"
-                                alt="{{ menu_item_image.alt | default: childlink.title | escape }}"
-                                class="header__menu-item-image"
-                                loading="lazy"
-                                width="80"
-                                height="{{ 80 | divided_by: menu_item_image.aspect_ratio | round }}"
-                              >
-                            </span>
-                          {%- endif -%}
-                          <span>{{ childlink.title | escape }}</span>
-                          {% render 'icon-caret' %}
-                        </summary>
-                        <ul
-                          id="HeaderMenu-SubMenuList-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
-                          class="header__submenu list-menu motion-reduce"
-                        >
-                          {%- for grandchildlink in childlink.links -%}
-                            <li>
-                              {%- comment -%} Get image for grandchild menu item {%- endcomment -%}
-                              {%- assign grandchild_image = null -%}
-                              
-                              {%- comment -%} Try to get product from URL if type is not detected {%- endcomment -%}
-                              {%- assign grandchild_product = null -%}
-                              {%- if grandchildlink.type == 'product' -%}
-                                {%- assign grandchild_product = grandchildlink.object -%}
-                              {%- elsif grandchildlink.url contains '/products/' -%}
-                                {%- assign product_handle = grandchildlink.url | split: '/products/' | last | split: '?' | first -%}
-                                {%- assign grandchild_product = all_products[product_handle] -%}
-                              {%- endif -%}
-                              
-                              {%- if grandchildlink.type == 'collection' -%}
-                                {%- if grandchildlink.object.metafields.custom.menu_image != blank -%}
-                                  {%- assign grandchild_image = grandchildlink.object.metafields.custom.menu_image -%}
-                                {%- elsif grandchildlink.object.metafields.theme.menu_image != blank -%}
-                                  {%- assign grandchild_image = grandchildlink.object.metafields.theme.menu_image -%}
-                                {%- elsif grandchildlink.object.featured_image != blank -%}
-                                  {%- assign grandchild_image = grandchildlink.object.featured_image -%}
-                                {%- endif -%}
-                              {%- elsif grandchild_product != null -%}
-                                {%- if grandchild_product.metafields.custom.menu_image != blank -%}
-                                  {%- assign grandchild_image = grandchild_product.metafields.custom.menu_image -%}
-                                {%- elsif grandchild_product.metafields.theme.menu_image != blank -%}
-                                  {%- assign grandchild_image = grandchild_product.metafields.theme.menu_image -%}
-                                {%- elsif grandchild_product.metafields.shopify.menu_image != blank -%}
-                                  {%- assign grandchild_image = grandchild_product.metafields.shopify.menu_image -%}
-                                {%- elsif grandchild_product.featured_media != blank -%}
-                                  {%- assign grandchild_image = grandchild_product.featured_media -%}
-                                {%- endif -%}
-                              {%- elsif grandchildlink.type == 'page' -%}
-                                {%- if grandchildlink.object.metafields.custom.menu_image != blank -%}
-                                  {%- assign grandchild_image = grandchildlink.object.metafields.custom.menu_image -%}
-                                {%- elsif grandchildlink.object.metafields.theme.menu_image != blank -%}
-                                  {%- assign grandchild_image = grandchildlink.object.metafields.theme.menu_image -%}
-                                {%- endif -%}
-                              {%- endif -%}
-                              
-                              <a
-                                id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
-                                href="{{ grandchildlink.url }}"
-                                class="header__menu-item list-menu__item link link--text focus-inset caption-large{% if grandchildlink.current %} list-menu__item--active{% endif %}{% if grandchild_image != null %} header__menu-item--with-image{% endif %}"
-                                {% if grandchildlink.current %}
-                                  aria-current="page"
-                                {% endif %}
-                              >
-                                {%- if grandchild_image != null -%}
-                                  <span class="header__menu-image-wrapper">
-                                    {%- if grandchild_image.url != blank -%}
-                                      {%- comment -%} File metafield object with .url property {%- endcomment -%}
-                                      <img 
-                                        src="{{ grandchild_image.url }}"
-                                        alt="{{ grandchild_image.alt | default: grandchildlink.title | escape }}"
-                                        class="header__menu-item-image"
-                                        loading="lazy"
-                                        width="60"
-                                        height="60"
-                                      >
-                                    {%- elsif grandchild_image contains 'http' or grandchild_image contains '//' -%}
-                                      {%- comment -%} External URL string {%- endcomment -%}
-                                      <img 
-                                        src="{{ grandchild_image }}"
-                                        alt="{{ grandchildlink.title | escape }}"
-                                        class="header__menu-item-image"
-                                        loading="lazy"
-                                        width="60"
-                                        height="60"
-                                      >
-                                    {%- else -%}
-                                      {%- comment -%} Shopify image object {%- endcomment -%}
-                                      <img 
-                                        src="{{ grandchild_image | image_url: width: 60 }}"
-                                        alt="{{ grandchild_image.alt | default: grandchildlink.title | escape }}"
-                                        class="header__menu-item-image"
-                                        loading="lazy"
-                                        width="60"
-                                        height="{{ 60 | divided_by: grandchild_image.aspect_ratio | round }}"
-                                      >
-                                    {%- endif -%}
-                                  </span>
-                                {%- endif -%}
-                                <span>{{ grandchildlink.title | escape }}</span>
-                              </a>
-                            </li>
-                          {%- endfor -%}
-                        </ul>
-                      </details>
-                    {%- endif -%}
-                  </li>
-                {%- endfor -%}
-              </ul>
-            </details>
-          </header-menu>
-        {%- else -%}
-          <a
-            id="HeaderMenu-{{ link.handle }}"
-            href="{{ link.url }}"
-            class="header__menu-item list-menu__item link link--text focus-inset"
-            {% if link.current %}
-              aria-current="page"
-            {% endif %}
-          >
-            <span
-              {%- if link.current %}
-                class="header__active-menu-item"
-              {% endif %}
-            >
-              {{- link.title | escape -}}
-            </span>
-          </a>
-        {%- endif -%}
-      </li>
-    {%- endfor -%}
-  </ul>
-</nav>

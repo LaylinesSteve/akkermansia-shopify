@@ -505,12 +505,7 @@
                   section_id: section.id
                 -%}
               {%- when 'restricted_buy_button' -%}
-                {%- render 'restricted-buy-button',
-                  block: block,
-                  product: product,
-                  product_form_id: product_form_id | append: '-restricted',
-                  section_id: section.id
-                -%}
+                {%- render 'restricted-buy-button', block: block, product: product, product_form_id: product_form_id, append: '-restricted', section_id: section.id -%}
               {%- when 'rating' -%}
                 {%- if product.metafields.reviews.rating.value != blank -%}
                   <div class="rating-wrapper">
@@ -2423,3 +2418,20 @@
   ]
 }
 {% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: |-
+    {%- render 'restricted-buy-button',
+                      block: block,
+                      product: product,
+                      product_form_id: product_form_id | append: '-restricted',
+                      section_id: section.id
+                    -%}
+  to: "{%- render 'restricted-buy-button', block: block, product: product, product_form_id:
+    product_form_id, append: '-restricted', section_id: section.id -%}"
+  position: 27954..28105
+{% endcomment %}

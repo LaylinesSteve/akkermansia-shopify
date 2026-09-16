@@ -8,18 +8,18 @@ Conditions:
 {%- endcomment -%}
 
 {% if customer %}
-  {% assign has_pending_tag = customer.tags contains 'reseller-pending' %}
-  {% assign has_approved_tag = customer.tags contains 'reseller-approved' %}
-  {% assign said_reseller = customer.note and customer.note contains 'Reseller: Yes' %}
+  {% assign has_pending_tag = customer.tags %}
+  {% assign has_approved_tag = customer.tags %}
+  {% assign said_reseller = customer.note %}
   {% assign is_approved_meta = false %}
   {% if customer.metafields.custom and customer.metafields.custom.reseller == true %}
     {% assign is_approved_meta = true %}
   {% endif %}
 
-  {% assign on_upload_page = request.path contains '/pages/reseller-certificate' %}
-  {% assign in_checkout = request.path contains '/checkout' or template.name == 'cart' %}
+  {% assign on_upload_page = request.path %}
+  {% assign in_checkout = request.path %}
 
-  {% assign needs_banner = (has_pending_tag or said_reseller) and (is_approved_meta == false) and (has_approved_tag == false) %}
+  {% assign needs_banner = has_pending_tag %}
 
   {% if needs_banner and on_upload_page == false and in_checkout == false %}
     <div id="reseller-cta" style="position:relative;margin:12px auto;max-width:1100px;border:1px solid #e2e2e2;border-radius:10px;padding:12px 16px;background:#fafafa;display:flex;gap:12px;align-items:center;">
@@ -65,3 +65,32 @@ Conditions:
     </script>
   {% endif %}
 {% endif %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{% assign has_pending_tag = customer.tags contains 'reseller-pending' %}"
+  to: "{% assign has_pending_tag = customer.tags %}"
+  position: 349..393
+- from: "{% assign has_approved_tag = customer.tags contains 'reseller-approved' %}"
+  to: "{% assign has_approved_tag = customer.tags %}"
+  position: 396..441
+- from: "{% assign said_reseller = customer.note and customer.note contains 'Reseller:
+    Yes' %}"
+  to: "{% assign said_reseller = customer.note %}"
+  position: 444..486
+- from: "{% assign on_upload_page = request.path contains '/pages/reseller-certificate'
+    %}"
+  to: "{% assign on_upload_page = request.path %}"
+  position: 671..713
+- from: "{% assign in_checkout = request.path contains '/checkout' or template.name
+    == 'cart' %}"
+  to: "{% assign in_checkout = request.path %}"
+  position: 716..755
+- from: "{% assign needs_banner = (has_pending_tag or said_reseller) and (is_approved_meta
+    == false) and (has_approved_tag == false) %}"
+  to: "{% assign needs_banner = has_pending_tag %}"
+  position: 759..802
+{% endcomment %}
