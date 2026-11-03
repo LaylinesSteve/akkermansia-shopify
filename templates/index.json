@@ -514,7 +514,6 @@
         "column_TmREH4",
         "column_6Yq3nf"
       ],
-      "disabled": true,
       "custom_css": [
         ".multicolumn-card__info {border: 1px solid #c6b6b0; border-radius: 10px; min-height: 30rem; padding: 3rem; padding-top: 7rem; margin-top: -4.3rem; margin-left: 20px; margin-right: 20px;}",
         ".multicolumn__title {display: flex; justify-content: center;}"
