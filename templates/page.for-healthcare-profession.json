@@ -23,15 +23,15 @@
         "heading_d8NC6C": {
           "type": "heading",
           "settings": {
-            "heading": "A Breakthrough Metabolic Health Solution",
-            "heading_size": "h1"
+            "heading": "Introducing METAbiotics™ &nbsp;",
+            "heading_size": "h2"
           }
         },
         "text_EJgRmk": {
           "type": "text",
           "settings": {
-            "texta": "<p>The Akkermansia Company provides dietary supplement solutions to help patients with Metabolic and Gut related health conditions.</p><p>All The Akkermansia Company products are developed with the only safe, stable and clinically proven form of pasteurized <em>Akkermansia muciniphila</em>, <em>Akkermansia</em> MucT™, the essential microbe associated with the root cause of numerous chronic health condition to deliver better health outcomes.</p>",
-            "text_style": "subtitle"
+            "texta": "<h3>The Akkermansia Company has rebranded.</h3><h3>Designed to better support your practice.</h3>",
+            "text_style": "body"
           }
         },
         "buttons_8VQXzG": {
@@ -40,7 +40,7 @@
             "button_label_1": "Explore  METAbiotics™ ",
             "button_link_1": "https://shopmetabiotics.com/pages/professionals",
             "button_style_secondary_1": false,
-            "button_label_2": "Shop on Fullscript",
+            "button_label_2": "",
             "button_link_2": "https://fullscript.com/catalog/products?brands=QnJhbmQtOTI3",
             "button_style_secondary_2": false
           }
@@ -56,15 +56,15 @@
         "@media (max-width: 768px) {.banner__content {background-color: #031834; }}"
       ],
       "settings": {
-        "image": "shopify://shop_images/hcp-hero.jpg",
-        "image_overlay_opacity": 40,
+        "image": "shopify://shop_images/Homepage_Desktop_1920_x_1082_1.jpg",
+        "image_overlay_opacity": 0,
         "image_height": "medium",
-        "desktop_content_position": "middle-left",
+        "desktop_content_position": "top-left",
         "show_text_box": true,
         "desktop_content_alignment": "left",
         "color_scheme": "scheme-5",
         "image_behavior": "none",
-        "mobile_content_alignment": "center",
+        "mobile_content_alignment": "left",
         "stack_images_on_mobile": true,
         "show_text_below": true
       }
