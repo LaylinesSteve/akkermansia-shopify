@@ -15,14 +15,14 @@
         "heading_tNw3An": {
           "type": "heading",
           "settings": {
-            "heading": "Introducing METAbiotics™ &nbsp;",
+            "heading": "<strong>Introducing METAbiotics™ &nbsp;</strong>",
             "heading_size": "h2"
           }
         },
         "text": {
           "type": "text",
           "settings": {
-            "texta": "<h3>Our new brand and professional wesbite are now live! Explore our refreshed look and enhanced professional website, designed to better support you, your practice, and your patients.</h3>",
+            "texta": "<h3><strong>Our new brand and professional wesbite are now live! Explore our refreshed look and enhanced professional website, designed to better support you, your practice, and your patients.</strong></h3>",
             "text_style": "body"
           }
         },
