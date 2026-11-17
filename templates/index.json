@@ -12,18 +12,25 @@
     "image_banner": {
       "type": "image-banner",
       "blocks": {
+        "heading_tNw3An": {
+          "type": "heading",
+          "settings": {
+            "heading": "Introducing METAbiotics™ &nbsp;",
+            "heading_size": "h2"
+          }
+        },
         "text": {
           "type": "text",
           "settings": {
-            "texta": "<h1>Introducing METAbiotics™&nbsp;</h1>",
-            "text_style": "subtitle"
+            "texta": "<h3>Our new brand and professional wesbite are now live! Explore our refreshed look and enhanced professional website, designed to better support you, your practice, and your patients.</h3>",
+            "text_style": "body"
           }
         },
         "buttons_9peqka": {
           "type": "buttons",
           "settings": {
-            "button_label_1": "Discover Akkermansia",
-            "button_link_1": "shopify://pages/about-akkermansia-1",
+            "button_label_1": "Explore METAbiotics™ ",
+            "button_link_1": "https://shopmetabiotics.com/pages/professionals?_kx=w6U6K7ZNBV_kNe3-7L4e6HJyjOWO87y-_QlMzgQzacTeGVlUQl9dGQjQaa-PdhxZ.SLYNmu",
             "button_style_secondary_1": false,
             "button_label_2": "",
             "button_link_2": "",
@@ -32,6 +39,7 @@
         }
       },
       "block_order": [
+        "heading_tNw3An",
         "text",
         "buttons_9peqka"
       ],
@@ -39,7 +47,7 @@
         "image": "shopify://shop_images/Homepage_Desktop_1920_x_1082_1.jpg",
         "image_overlay_opacity": 0,
         "image_height": "adapt",
-        "desktop_content_position": "middle-left",
+        "desktop_content_position": "top-left",
         "show_text_box": false,
         "desktop_content_alignment": "left",
         "color_scheme": "scheme-1",
