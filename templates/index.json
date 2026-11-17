@@ -12,18 +12,11 @@
     "image_banner": {
       "type": "image-banner",
       "blocks": {
-        "heading": {
-          "type": "heading",
-          "settings": {
-            "heading": "A Clinically Proven Breakthrough for Your Gut Health",
-            "heading_size": "h0"
-          }
-        },
         "text": {
           "type": "text",
           "settings": {
-            "texta": "<p>Introducing <em>Akkermansia muciniphila</em> MucT™, from the scientists who discovered it: a first of its kind solution that promotes gut barrier integrity for better overall health and wellness.*</p>",
-            "text_style": "body"
+            "texta": "<h1>Introducing METAbiotics™&nbsp;</h1>",
+            "text_style": "subtitle"
           }
         },
         "buttons_9peqka": {
@@ -39,12 +32,11 @@
         }
       },
       "block_order": [
-        "heading",
         "text",
         "buttons_9peqka"
       ],
       "settings": {
-        "image": "shopify://shop_images/img.jpg",
+        "image": "shopify://shop_images/Homepage_Desktop_1920_x_1082_1.jpg",
         "image_overlay_opacity": 0,
         "image_height": "adapt",
         "desktop_content_position": "middle-left",
