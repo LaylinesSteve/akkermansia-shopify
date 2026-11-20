@@ -43,6 +43,9 @@
         "text",
         "buttons_9peqka"
       ],
+      "custom_css": [
+        "@media screen and (min-width: 750px) {.banner {max-height: calc(100vh - 106px); } .banner__media img {object-position: bottom; } .banner__box {padding-top: 0; } .banner__content {padding-top: 32px; }}"
+      ],
       "settings": {
         "image": "shopify://shop_images/Homepage_Desktop_1920_x_1082_1.jpg",
         "image_overlay_opacity": 0,
@@ -50,7 +53,7 @@
         "desktop_content_position": "top-left",
         "show_text_box": false,
         "desktop_content_alignment": "left",
-        "color_scheme": "scheme-1",
+        "color_scheme": "scheme-5",
         "image_behavior": "none",
         "mobile_content_alignment": "center",
         "stack_images_on_mobile": true,
