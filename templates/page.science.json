@@ -321,6 +321,7 @@
         "caption_FmPXwL",
         "button_RYtCKG"
       ],
+      "disabled": true,
       "settings": {
         "image": "shopify://shop_images/img_3.png",
         "height": "adapt",
