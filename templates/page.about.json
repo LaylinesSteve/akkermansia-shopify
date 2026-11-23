@@ -30,7 +30,7 @@
         "text_enKfTd": {
           "type": "text",
           "settings": {
-            "texta": "<p><em>Akkermansia muciniphila</em> is a species of microbe found in the human gut microbiota.</p><p>It was first isolated by Dr. Muriel Derrien in 2004 in the laboratory of pre-eminent Microbiologist Prof. Willem M. de Vos. </p><p>The Chair of Microbiology at Wageningen University in the Netherlands for over 25 years, Willem de Vos has published over 600-peer-reviewed publications and been the subject of more than 170,000 citations.</p><p></p><p></p><p><em><strong>Akkermansia muciniphila</strong></em><strong>was deposited in the American Type Culture Collection (ATCC) under the reference ATCC® BAA-835™</strong></p><p></p><p></p>",
+            "texta": "<p><em><strong>Akkermansia muciniphila</strong></em><strong>&nbsp;is a species of microbe found in the human gut microbiota.</strong></p><p><strong>It was first isolated by Dr. Muriel Derrien in 2004 in the laboratory of pre-eminent Microbiologist Prof. Willem M. de Vos.&nbsp;</strong></p><p><strong>The Chair of Microbiology at Wageningen University in the Netherlands for over 25 years, Willem de Vos has published over 600-peer-reviewed publications and been the subject of more than 170,000 citations.</strong></p><p></p><p></p><p><em><strong>Akkermansia muciniphila</strong></em><strong>was deposited in the American Type Culture Collection (ATCC) under the reference ATCC® BAA-835™</strong></p><p></p><p></p>",
             "text_style": "body"
           }
         }
@@ -43,7 +43,7 @@
         "@media screen and (min-width: 750px) {h1 {color: white; } p {color: white; }}"
       ],
       "settings": {
-        "image": "shopify://shop_images/About-Akkermansia-1.webp",
+        "image": "shopify://shop_images/iStock-1163670497_copy.jpg",
         "image_overlay_opacity": 30,
         "image_height": "medium",
         "desktop_content_position": "middle-left",
