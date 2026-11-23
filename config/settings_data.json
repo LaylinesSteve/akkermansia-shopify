@@ -204,20 +204,12 @@
               "heading": "Support",
               "menu": "footer-support"
             }
-          },
-          "brand_information_DqXJ6h": {
-            "type": "brand_information",
-            "disabled": true,
-            "settings": {
-              "show_social": true
-            }
           }
         },
         "block_order": [
           "footer-0",
           "link_list_rP6pwX",
-          "link_list_GiPafB",
-          "brand_information_DqXJ6h"
+          "link_list_GiPafB"
         ],
         "settings": {
           "smalltxtfooter": "<p>*These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure or prevent any disease.This website is operated by The Akkermansia Company, a company based in Rue Granbonpré 11H , B-1435, Mont-Saint-Guibert (Belgium)While the website is hosted and operated in the United States, we provide products and services to customers globally, including Europe. However, the range of products offered may vary from jurisdiction to jurisdiction. Please be aware that all information on this website is governed by US law and regulations. By accessing this website, you acknowledge and agree to this.If you are accessing this website from outside the United States, please be aware that the information provided may not be appropriate or applicable to your location. By using this website, you agree that all matters relating to your access to or use of this website shall be governed by the laws of the United States, without regard to conflicts of laws principles.The content provided on this website, including but not limited to text, graphics, images, and other material, is for informational purposes only. It is not intended to be a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified healthcare provider with any questions you may have regarding a medical condition or treatment.<br/></p>",
