@@ -47,7 +47,7 @@
         "@media screen and (min-width: 750px) {.banner {max-height: calc(100vh - 106px); } .banner__media img {object-position: bottom; } .banner__box {padding-top: 0; } .banner__content {padding-top: 32px; }}"
       ],
       "settings": {
-        "image": "shopify://shop_images/Homepage_Desktop_1920_x_1082_1.jpg",
+        "image": "shopify://shop_images/Homepage_Desktop_1920_x_1083.jpg",
         "image_overlay_opacity": 0,
         "image_height": "adapt",
         "desktop_content_position": "top-left",
